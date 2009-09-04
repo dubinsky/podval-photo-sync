@@ -6,7 +6,6 @@ import com.zenfolio.www.api._1_1.Group;
 import com.zenfolio.www.api._1_1.PhotoSet;
 import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
 import com.zenfolio.www.api._1_1.GroupElement;
-import com.zenfolio.www.api._1_1.GroupUpdater;
 
 import java.rmi.RemoteException;
 
@@ -29,42 +28,92 @@ public final class Uploader {
         NoSuchAlgorithmException, IOException
     {
         zenfolio = new ZfApiStub();
-        Login.login(zenfolio, login, password);
+
+        if (password != null) {
+            Login.login(zenfolio, login, password);
+        }
     }
 
 
-    public void scan(final String groupPath, final String filePath) throws RemoteException {
-        scan(find(groupPath), new File(filePath), 0);
+    public void sync(final String groupPath, final String filePath) throws RemoteException {
+        final Group root = Util.asGroup(find(groupPath));
+        if (filePath != null) {
+            sync(root, new File(filePath), 0);
+        } else {
+            list(root, 0);
+        }
     }
 
 
-    private void scan(final Group group, final File directory, int level) throws RemoteException {
+    private void sync(final Group group, final File directory, int level) throws RemoteException {
         indent(level);
-        System.out.println(directory.getName());
+
+        System.out.println(group.getTitle());
 
         if (!directory.isDirectory()) {
+            // @todo do not crash!!!
             throw new IllegalArgumentException("Not a directory: " + directory);
         }
 
         for (final File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                scan(findOrCreateGroup(group, file.getName()), file, level+1);
+                final boolean shouldBeGroup = Util.hasSubDirectories(file);
+
+                sync(group, file, shouldBeGroup, level);
+
             } else {
                 if (isPhoto(file)) {
                     System.out.println("Skipping photo " + file + " on the group level");
                 }
             }
         }
+
+        // @todo enumerate elements that are not in the directory!!!
+    }
+
+
+    private void sync(final Group group, final File directory, final boolean shouldBeGroup, final int level)
+        throws RemoteException
+    {
+        final String name = directory.getName();
+
+        GroupElement element = Util.find(group, name);
+
+        if (element == null) {
+            element = (shouldBeGroup) ?
+                Util.createGroup(zenfolio, group, name) :
+                Util.createGallery(zenfolio, group, name);
+        }
+
+        final int nextLevel = level + 1;
+
+        if (element instanceof Group) {
+            if (!shouldBeGroup) {
+                // @todo do not crash!!!
+                throw new IllegalArgumentException("Is not a group, but should be: " + name);
+            }
+
+            sync((Group) element, directory, nextLevel);
+        } else if (element instanceof PhotoSet) {
+            if (shouldBeGroup) {
+                // @todo do not crash!!!
+                throw new IllegalArgumentException("Is a group, but should not be: " + name);
+            }
+
+            sync((PhotoSet) element, directory, nextLevel);
+        }
+    }
+
+
+    private void sync(final PhotoSet gallery, final File directory, final int level)
+        throws RemoteException
+    {
+        // @todo sync galleries!!!
     }
 
 
     private boolean isPhoto(final File file) {
         return file.getName().endsWith(".jpg");
-    }
-
-
-    public void list(final String path) throws RemoteException {
-        list(find(path), 0);
     }
 
 
@@ -99,61 +148,13 @@ public final class Uploader {
     }
 
 
-    private Group findOrCreateGroup(final Group group, final String name) throws RemoteException {
-        final Group result;
+    private GroupElement find(final String path) throws RemoteException {
+        GroupElement result = zenfolio.loadGroupHierarchy(login);
 
-        final GroupElement subGroup = find(group, name);
-
-        if (subGroup != null) {
-            result = asGroup(subGroup);
-        } else {
-            final GroupUpdater updater = new GroupUpdater();
-            updater.setTitle(name);
-            result = zenfolio.createGroup(group.getId(), updater);
-        }
-
-        return result;
-    }
-
-
-    private Group find(final String path) throws RemoteException {
-        Group result = zenfolio.loadGroupHierarchy(login);
-
-        for (final String name : path.split("/")) {
-            if (!name.isEmpty()) {
-                final GroupElement element = find(result, name);
-                if (!(element instanceof Group)) {
-                    throw new IllegalArgumentException("Not a group: " + element);
-                }
-                result = (Group) element;
-            }
-        }
-
-        return result;
-    }
-
-
-    private Group asGroup(final GroupElement element) {
-        if (!(element instanceof Group)) {
-            throw new IllegalArgumentException("Not a group: " + element);
-        }
-
-        return (Group) element;
-    }
-
-
-    private GroupElement find(final Group group, final String name) {
-        Group result = null;
-
-        final ArrayOfChoice1Choice[] elements = group.getElements().getArrayOfChoice1Choice();
-        if (elements != null) {
-            for (int i = 0; i < elements.length; i++) {
-                final ArrayOfChoice1Choice element = elements[i];
-                final Group subGroup = element.getGroup();
-                final String subGroupName = subGroup.getTitle();
-                if ((subGroup != null) && (subGroupName.equals(name))) {
-                    result = subGroup;
-                    break;
+        if (path != null) {
+            for (final String name : path.split("/")) {
+                if (!name.isEmpty()) {
+                    result = Util.find(Util.asGroup(result), name);
                 }
             }
         }
@@ -164,13 +165,18 @@ public final class Uploader {
 
     public static void main(final String[] args) throws Exception {
         final String login = args[0];
-        final String password = args[1];
-        final String groupPath = args[2];
-        final String path = args[3];
+        final String password = getArg(args, 1);
+        final String groupPath =  getArg(args, 2);
+        final String path =  getArg(args, 3);
 
         final Uploader uploader = new Uploader(login, password);
         uploader.connect();
-        uploader.scan(groupPath, path);
+        uploader.sync(groupPath, path);
+    }
+
+
+    private static String getArg(final String[] args, final int n) {
+        return (args.length > n) ? args[n] : null;
     }
 
 
