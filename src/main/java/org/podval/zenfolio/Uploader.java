@@ -1,11 +1,11 @@
 package org.podval.zenfolio;
 
-import com.zenfolio.www.api._1_1.ZfApi;
-import com.zenfolio.www.api._1_1.ZfApiStub;
 import com.zenfolio.www.api._1_1.Group;
 import com.zenfolio.www.api._1_1.PhotoSet;
 import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
 import com.zenfolio.www.api._1_1.GroupElement;
+import com.zenfolio.www.api._1_1.Photo;
+import com.zenfolio.www.api._1_1.PhotoSetType;
 
 import java.rmi.RemoteException;
 
@@ -18,97 +18,132 @@ import java.io.UnsupportedEncodingException;
 
 public final class Uploader {
 
-    public Uploader(final String login, final String password) {
-        this.login = login;
-        this.password = password;
+    public Uploader(
+        final String login,
+        final String password,
+        final String groupPath,
+        final String directoryPath,
+        final boolean doIt) throws RemoteException
+    {
+        this.zenfolio = new Zenfolio(login, password);
+
+        this.groupPath = groupPath;
+        this.directoryPath = directoryPath;
+        this.doIt = doIt;
     }
 
 
-    protected final void connect() throws RemoteException, UnsupportedEncodingException,
+    public void doIt()  throws RemoteException, UnsupportedEncodingException,
         NoSuchAlgorithmException, IOException
     {
-        zenfolio = new ZfApiStub();
+        zenfolio.connect();
 
-        if (password != null) {
-            Login.login(zenfolio, login, password);
-        }
-    }
+        final Group root = zenfolio.findGroup(groupPath);
+        final File rootDirectory = Files.getDirectory(directoryPath);
 
-
-    public void sync(final String groupPath, final String filePath) throws RemoteException {
-        final Group root = Util.asGroup(find(groupPath));
-        if (filePath != null) {
-            sync(root, new File(filePath), 0);
+        if (rootDirectory != null) {
+            syncGroup(root, rootDirectory, 0);
         } else {
             list(root, 0);
         }
     }
 
 
-    private void sync(final Group group, final File directory, int level) throws RemoteException {
-        indent(level);
+    private void syncGroup(final Group group, final File directory, int level) throws RemoteException {
+        println(level, group.getTitle());
 
-        System.out.println(group.getTitle());
+        level++;
 
-        if (!directory.isDirectory()) {
-            // @todo do not crash!!!
-            throw new IllegalArgumentException("Not a directory: " + directory);
-        }
+        syncGroupFromDirectory(group, directory, level);
+        syncGroupToDirectory(group, directory, level);
+    }
 
+
+    private void syncGroupFromDirectory(final Group group, final File directory, int level)
+        throws RemoteException
+    {
         for (final File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                final boolean shouldBeGroup = Util.hasSubDirectories(file);
-
-                sync(group, file, shouldBeGroup, level);
+                sync(group, file, level);
 
             } else {
                 if (isPhoto(file)) {
-                    System.out.println("Skipping photo " + file + " on the group level");
+                    println(level, "Skipping photo " + file + " on the group level");
                 }
             }
         }
-
-        // @todo enumerate elements that are not in the directory!!!
     }
 
 
-    private void sync(final Group group, final File directory, final boolean shouldBeGroup, final int level)
+    private void sync(final Group group, final File directory, final int level)
         throws RemoteException
     {
         final String name = directory.getName();
+        final boolean shouldBeGroup = Files.hasSubDirectories(directory);
 
-        GroupElement element = Util.find(group, name);
+        GroupElement element = zenfolio.find(group, name);
 
         if (element == null) {
+            final String message =
+                ((doIt) ? "creating" : "'creating'") + " " +
+                ((shouldBeGroup) ? "group" : "gallery") + " " + name;
+
+            println(level, message);
+
             element = (shouldBeGroup) ?
-                Util.createGroup(zenfolio, group, name) :
-                Util.createGallery(zenfolio, group, name);
+                zenfolio.createGroup(group, name, doIt) :
+                zenfolio.createGallery(group, name, doIt);
         }
 
-        final int nextLevel = level + 1;
-
         if (element instanceof Group) {
-            if (!shouldBeGroup) {
-                // @todo do not crash!!!
-                throw new IllegalArgumentException("Is not a group, but should be: " + name);
-            }
-
-            sync((Group) element, directory, nextLevel);
-        } else if (element instanceof PhotoSet) {
             if (shouldBeGroup) {
-                // @todo do not crash!!!
-                throw new IllegalArgumentException("Is a group, but should not be: " + name);
+                syncGroup((Group) element, directory, level);
+            } else {
+                println(level, "Is not a group, but should be: " + name);
             }
-
-            sync((PhotoSet) element, directory, nextLevel);
+        } else if (element instanceof PhotoSet) {
+            if (!shouldBeGroup) {
+                syncGallery((PhotoSet) element, directory, level);
+            } else {
+                println(level, "Is a group, but should not be: " + name);
+            }
         }
     }
 
 
-    private void sync(final PhotoSet gallery, final File directory, final int level)
+    private void syncGroupToDirectory(final Group group, final File directory, int level) {
+        final ArrayOfChoice1Choice[] elements = zenfolio.getElements(group);
+
+        if (elements != null) {
+            for (final ArrayOfChoice1Choice choice : elements) {
+                final GroupElement element = (choice.getGroup() != null) ? choice.getGroup() : choice.getPhotoSet();
+                final String name = element.getTitle();
+                final File file = new File(directory, name);
+                if (!file.exists()) {
+                    println(level, "No file for the element: " + name);
+                }
+            }
+        }
+    }
+
+
+    private void syncGallery(final PhotoSet gallery, final File directory, final int level)
         throws RemoteException
     {
-        // @todo sync galleries!!!
+        for (final File file : directory.listFiles()) {
+            if (isPhoto(file)) {
+                final String name = getName(file);
+                final Photo photo = zenfolio.find(gallery, name);
+                if (photo == null) {
+                    final String message = ((doIt) ? "adding" : "'adding'") + " photo";
+//                    println(level, message);
+
+                    // @todo
+                }
+            } else {
+//                println(level, "Skipping non-photo " + file + " on the gallery level");
+            }
+        }
     }
 
 
@@ -117,19 +152,27 @@ public final class Uploader {
     }
 
 
-    private void list(final Group group, final int level) {
-        System.out.println(group.getTitle());
+    private String getName(final File file) {
+        final String filename = file.getName();
+        final int dot = filename.lastIndexOf(".");
+        return (dot == -1) ? filename : filename.substring(0, dot);
+    }
 
-        final ArrayOfChoice1Choice[] elements = group.getElements().getArrayOfChoice1Choice();
+
+    private void list(final Group group, int level) {
+        println(level, group.getTitle());
+
+        level++;
+
+        final ArrayOfChoice1Choice[] elements = zenfolio.getElements(group);
         if (elements != null) {
-            for (int i = 0; i < elements.length; i++) {
-                final ArrayOfChoice1Choice element = elements[i];
+            for (final ArrayOfChoice1Choice element : elements) {
                 final Group subGroup = element.getGroup();
                 indent(level);
                 if (subGroup != null) {
-                    list(subGroup, level + 1);
+                    list(subGroup, level);
                 } else {
-                    list(element.getPhotoSet(), level + 1);
+                    list(element.getPhotoSet(), level);
                 }
             }
         }
@@ -137,7 +180,13 @@ public final class Uploader {
 
 
     private void list(final PhotoSet set, final int level) {
-        System.out.println(set.getTitle());
+        println(level, set.getTitle());
+    }
+
+
+    private void println(final int level, final String line) {
+        indent(level);
+        System.out.println(line);
     }
 
 
@@ -148,30 +197,14 @@ public final class Uploader {
     }
 
 
-    private GroupElement find(final String path) throws RemoteException {
-        GroupElement result = zenfolio.loadGroupHierarchy(login);
-
-        if (path != null) {
-            for (final String name : path.split("/")) {
-                if (!name.isEmpty()) {
-                    result = Util.find(Util.asGroup(result), name);
-                }
-            }
-        }
-
-        return result;
-    }
-
-
     public static void main(final String[] args) throws Exception {
         final String login = args[0];
         final String password = getArg(args, 1);
         final String groupPath =  getArg(args, 2);
         final String path =  getArg(args, 3);
 
-        final Uploader uploader = new Uploader(login, password);
-        uploader.connect();
-        uploader.sync(groupPath, path);
+        final Uploader uploader = new Uploader(login, password, groupPath, path, false);
+        uploader.doIt();
     }
 
 
@@ -180,11 +213,14 @@ public final class Uploader {
     }
 
 
-    private final String login;
+    private Zenfolio zenfolio;
 
 
-    private final String password;
+    private final String groupPath;
 
 
-    private ZfApi zenfolio;
+    private final String directoryPath;
+
+
+    private final boolean doIt;
 }
