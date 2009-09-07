@@ -140,8 +140,10 @@ public final class Synchronizer extends Processor {
 
             } else {
                 final String name = Files.getName(file);
+                final String extension = Files.getExtension(file);
+
                 final Photo photo = getZenfolio().findPhotoByFileName(gallery, name + ".jpg");
-                if (photo == null) {
+                if ((photo == null) && "jpg".equals(extension)) {
                     addPhoto(gallery, directory, name, level);
                 }
             }
@@ -152,6 +154,9 @@ public final class Synchronizer extends Processor {
     private void addPhoto(final PhotoSet gallery, final File directory, final String name, final int level)
         throws IOException
     {
+        // After a photo is added, nothing gets refreshed on the client side, so I need to make
+        // sure that all photos are added exactly once!
+
         final File jpgFile = new File(directory, name + ".jpg");
 
         if (jpgFile.exists()) {
