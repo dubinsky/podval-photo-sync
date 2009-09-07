@@ -13,9 +13,30 @@ public final class Item {
     }
 
 
+    public String getName() {
+        return name;
+    }
+
+
     /* package */ void add(final String extension, final File file) {
         // @todo detect duplicates?
         components.put(extension, file);
+    }
+
+
+    public File get(final String extension) {
+        return components.get(extension);
+    }
+
+
+    public boolean exists(final String extension) {
+        return get(extension) != null;
+    }
+
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
 

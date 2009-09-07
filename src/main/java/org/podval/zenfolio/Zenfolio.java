@@ -142,7 +142,7 @@ public class Zenfolio {
     public ArrayOfChoice1Choice[] getElements(final Group group) {
         final ArrayOfChoice1 array = group.getElements();
 
-        return (array == null) ? null : array.getArrayOfChoice1Choice();
+        return (array == null) ? new ArrayOfChoice1Choice[0] : array.getArrayOfChoice1Choice();
     }
 
 
@@ -153,7 +153,7 @@ public class Zenfolio {
 
         final int id = photoSet.getId();
 
-        if ((getPhotos(photoSet) == null) && (id != 0)) {
+        if (id != 0) {
             result = connection.loadPhotoSet(id);
         } else {
             result = photoSet;
@@ -166,14 +166,11 @@ public class Zenfolio {
     public Photo findPhotoByFileName(final PhotoSet photoSet, final String name) {
         Photo result = null;
 
-        final Photo[] photos = getPhotos(photoSet);
-        if (photos != null) {
-            for (final Photo photo : photos) {
-                final String fileName = photo.getFileName();
-                if (fileName.equals(name)) {
-                    result = photo;
-                    break;
-                }
+        for (final Photo photo : getPhotos(photoSet)) {
+            final String fileName = photo.getFileName();
+            if (fileName.equals(name)) {
+                result = photo;
+                break;
             }
         }
 
@@ -184,7 +181,7 @@ public class Zenfolio {
     public Photo[] getPhotos(final PhotoSet photoSet) {
         final ArrayOfPhoto array = photoSet.getPhotos();
 
-        return (array == null) ? null : array.getPhoto();
+        return (array == null) ? new Photo[0] : array.getPhoto();
     }
 
 

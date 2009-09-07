@@ -1,7 +1,7 @@
 package org.podval.directory;
 
+import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -10,7 +10,16 @@ import java.io.File;
 
 public final class Directory {
 
+    public Directory(final String directoryPath) {
+        this(new File(directoryPath));
+    }
+
+
     public Directory(final File directory) {
+        if (!directory.exists()) {
+            throw new IllegalArgumentException("Does not exist: " + directory);
+        }
+
         if (!directory.isDirectory()) {
             throw new IllegalArgumentException("Not a directory: " + directory);
         }
@@ -18,6 +27,11 @@ public final class Directory {
         this.directory = directory;
 
         load();
+    }
+
+
+    public String getName() {
+        return directory.getName();
     }
 
 
@@ -33,7 +47,7 @@ public final class Directory {
 
 
     private void loadDirectory(final File subDirectory) {
-        subDirectories.add(subDirectory);
+        subDirectories.put(subDirectory.getName(), subDirectory);
     }
 
 
@@ -55,8 +69,24 @@ public final class Directory {
     }
 
 
+    public Collection<File> getSubDirectories() {
+        // @todo enforce immutability?
+        return subDirectories.values();
+    }
+
+
+    public File getSubDirectory(final String name) {
+        return subDirectories.get(name);
+    }
+
+
     public Item getItem(final String name) {
         return items.get(name);
+    }
+
+
+    public Collection<Item> getItems() {
+        return items.values();
     }
 
 
@@ -77,7 +107,7 @@ public final class Directory {
     private final File directory;
 
 
-    private final List<File> subDirectories = new LinkedList<File>();
+    private final Map<String, File> subDirectories = new HashMap<String, File>();
 
 
     private final Map<String, Item> items = new HashMap<String, Item>();
