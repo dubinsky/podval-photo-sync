@@ -5,23 +5,6 @@ import java.io.File;
 
 public final class Files {
 
-    public static File getDirectory(final String path) {
-        final File result;
-
-        if (path != null) {
-            result = new File(path);
-
-            if (!result.isDirectory()) {
-                throw new IllegalArgumentException("Not a directory: " + result);
-            }
-        } else {
-            result = null;
-        }
-
-        return result;
-    }
-
-
     public static boolean hasSubDirectories(final File directory) {
         boolean result = false;
 
@@ -33,5 +16,24 @@ public final class Files {
         }
 
         return result;
+    }
+
+
+    public static String getName(final File file) {
+        final String filename = file.getName();
+        final int dot = filename.lastIndexOf(".");
+        return (dot == -1) ? filename : filename.substring(0, dot);
+    }
+
+
+    public static String getExtension(final File file) {
+        final String filename = file.getName();
+        final int dot = filename.lastIndexOf(".");
+        return (dot == -1) ? filename : filename.substring(dot+1);
+    }
+
+
+    public static boolean exists(final File directory, final String name, final String extension) {
+        return new File(directory, name + "." + extension).exists();
     }
 }
