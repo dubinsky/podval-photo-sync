@@ -180,8 +180,8 @@ public class Zenfolio {
 
     public Photo[] getPhotos(final PhotoSet photoSet) {
         final ArrayOfPhoto array = photoSet.getPhotos();
-
-        return (array == null) ? new Photo[0] : array.getPhoto();
+        final Photo[] result = (array == null) ?  null : array.getPhoto();
+        return (result == null) ? new Photo[0] : result;
     }
 
 

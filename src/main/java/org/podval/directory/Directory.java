@@ -71,6 +71,7 @@ public final class Directory {
 
     public Collection<File> getSubDirectories() {
         // @todo enforce immutability?
+        // @todo  sort them
         return subDirectories.values();
     }
 
@@ -86,6 +87,7 @@ public final class Directory {
 
 
     public Collection<Item> getItems() {
+        // @todo  sort them
         return items.values();
     }
 
