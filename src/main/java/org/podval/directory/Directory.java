@@ -1,9 +1,12 @@
 package org.podval.directory;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Collections;
 
 import java.io.File;
 
@@ -36,12 +39,20 @@ public final class Directory {
 
 
     private void load() {
+        final Map<String, Map<String, File>> bunches = new HashMap<String, Map<String, File>>();
+
         for (final File file : directory.listFiles()) {
             if (file.isDirectory()) {
                 loadDirectory(file);
             } else {
-                loadFile(file);
+                loadFile(file, bunches);
             }
+        }
+
+        for (final String name : bunches.keySet()) {
+            final Map<String, File> bunch = bunches.get(name);
+            final Item item = makeItem(name, bunch);
+            items.put(name, item);
         }
     }
 
@@ -51,16 +62,22 @@ public final class Directory {
     }
 
 
-    private void loadFile(final File file) {
+    private void loadFile(final File file, final Map<String, Map<String, File>> bunches) {
         final String name = getName(file);
 
-        Item item = getItem(name);
-        if (item == null) {
-            item = new Item(name);
-            items.put(name, item);
+        Map<String, File> bunch = bunches.get(name);
+        if (bunch == null) {
+            bunch = new HashMap<String, File>();
+            // @todo duplicates?
+            bunches.put(name, bunch);
         }
 
-        item.add(getExtension(file), file);
+        bunch.put(getExtension(file), file);
+    }
+
+
+    private Item makeItem(final String name, final Map<String, File> components) {
+        return new Item(name, components);
     }
 
 
@@ -70,9 +87,7 @@ public final class Directory {
 
 
     public Collection<File> getSubDirectories() {
-        // @todo enforce immutability?
-        // @todo  sort them
-        return subDirectories.values();
+        return sortedValues(subDirectories);
     }
 
 
@@ -86,9 +101,19 @@ public final class Directory {
     }
 
 
-    public Collection<Item> getItems() {
-        // @todo  sort them
-        return items.values();
+    public List<Item> getItems() {
+        return sortedValues(items);
+    }
+
+
+    private <T> List<T> sortedValues(final Map<String, T> map) {
+        final List<String> keys = new LinkedList<String>(map.keySet());
+        final List<T> result = new ArrayList<T>(keys.size());
+        Collections.sort(keys);
+        for (final String key : keys) {
+            result.add(map.get(key));
+        }
+        return Collections.unmodifiableList(result);
     }
 
 

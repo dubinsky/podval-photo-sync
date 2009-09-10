@@ -1,26 +1,21 @@
 package org.podval.directory;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Comparator;
 
 import java.io.File;
 
 
 public final class Item {
 
-    /* package */ Item(final String name) {
+    /* package */ Item(final String name, final Map<String, File> components) {
         this.name = name;
+        this.components = components;
     }
 
 
     public String getName() {
         return name;
-    }
-
-
-    /* package */ void add(final String extension, final File file) {
-        // @todo detect duplicates?
-        components.put(extension, file);
     }
 
 
@@ -43,5 +38,5 @@ public final class Item {
     private final String name;
 
 
-    private final Map<String, File> components = new HashMap<String, File>();
+    private final Map<String, File> components;
 }
