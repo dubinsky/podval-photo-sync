@@ -39,6 +39,28 @@
                 <overWrite>true</overWrite>
               </configuration>
             </plugin>
+            <plugin>
+              <artifactId>maven-assembly-plugin</artifactId>
+              <configuration>
+                <descriptorRefs>
+                  <descriptorRef>jar-with-dependencies</descriptorRef>
+                </descriptorRefs>
+                <archive>
+                  <manifest>
+                  <mainClass>org.podval.zenfolio.Main</mainClass>
+                  </manifest>
+                </archive>
+              </configuration>
+              <executions>
+                <execution>
+                  <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                  <phase>package</phase> <!-- append to the packaging phase. -->
+                  <goals>
+                    <goal>single</goal> <!-- goals == mojos -->
+                  </goals>
+                </execution>
+              </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -56,6 +78,14 @@
         <version>4.6</version>
         <scope>test</scope>
       </dependency>
-  </dependencies>
+
+      <dependency>
+        <artifactId>axis2-adb</artifactId>
+        <groupId>org.apache.axis2</groupId>
+        <type>jar</type>
+        <version>1.5</version>
+      </dependency>
+    </dependencies>
 </project>
+
 

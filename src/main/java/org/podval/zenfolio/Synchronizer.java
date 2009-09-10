@@ -91,7 +91,9 @@ public final class Synchronizer extends Processor {
             if (shouldBeGroup) {
                 message(level, "Is not a group, but should be: " + name);
             } else {
-                syncGallery(getZenfolio().populate((PhotoSet) element), directory, level);
+                final Gallery gallery = new Gallery(getZenfolio(), (PhotoSet) element);
+                gallery.populate();
+                syncGallery(gallery, directory, level);
             }
         }
     }
@@ -109,10 +111,10 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void syncGallery(final PhotoSet gallery, final Directory directory, final int level)
+    private void syncGallery(final Gallery gallery, final Directory directory, final int level)
         throws RemoteException, IOException
     {
-        println(level, gallery.getTitle());
+        println(level, gallery.getName());
 
         // @todo skip the collections!
 
@@ -121,7 +123,7 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void syncGalleryFromDirectory(final PhotoSet gallery, final Directory directory, final int level)
+    private void syncGalleryFromDirectory(final Gallery gallery, final Directory directory, final int level)
         throws IOException
     {
         for (final Item item : directory.getItems()) {
@@ -129,7 +131,7 @@ public final class Synchronizer extends Processor {
                 message(level, "Skipping non-photo " + item + " on the gallery level");
 
             } else {
-                final Photo photo = getZenfolio().findPhotoByFileName(gallery, item.getName() + ".jpg");
+                final Photo photo = gallery.findPhotoByFileName(item.getName() + ".jpg");
                 if (photo == null) {
                     addPhoto(gallery, directory, item, level);
                 }
@@ -138,7 +140,7 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void addPhoto(final PhotoSet gallery, final Directory directory, final Item item, final int level)
+    private void addPhoto(final Gallery gallery, final Directory directory, final Item item, final int level)
         throws IOException
     {
         final String name = item.getName();
@@ -148,7 +150,7 @@ public final class Synchronizer extends Processor {
             message(level, message);
 
             if (doIt) {
-                final String status = getZenfolio().postFile(gallery, item.get("jpg"));
+                final String status = gallery.postFile(item.get("jpg"));
                 if (status != null) {
                     message(level, status);
                 }
@@ -160,7 +162,7 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void syncGalleryToDirectory(final PhotoSet gallery, final Directory directory, final int level) {
+    private void syncGalleryToDirectory(final Gallery gallery, final Directory directory, final int level) {
         // @todo
     }
 
