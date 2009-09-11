@@ -17,7 +17,7 @@ public final class Main {
 
         final Processor processor = (path == null) ?
             new Lister(login, password, groupPath) :
-            new Synchronizer(login, password, groupPath, path, true);
+            new Synchronizer(login, password, groupPath, path, false);
 
         processor.run();
     }

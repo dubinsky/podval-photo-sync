@@ -1,7 +1,5 @@
 package org.podval.zenfolio;
 
-import com.zenfolio.www.api._1_1.Group;
-
 import java.rmi.RemoteException;
 
 import java.security.NoSuchAlgorithmException;
@@ -33,11 +31,35 @@ public abstract class Processor {
     {
         zenfolio.connect();
 
-        run(zenfolio.findGroup(groupPath));
+        run(findGroupByPath(groupPath));
     }
 
 
-    protected abstract void run(final Group rootGroup) throws RemoteException, IOException;
+    public GroupNg findGroupByPath(final String path) throws RemoteException {
+        GroupNg result = zenfolio.loadGroupHierarchy();
+
+        if (path != null) {
+            for (final String name : path.split("/")) {
+                if (!name.isEmpty()) {
+                    result = asGroup(result.find(name));
+                }
+            }
+        }
+
+        return result;
+    }
+
+
+    private GroupNg asGroup(final ZenfolioDirectory element) {
+        if (!(element instanceof GroupNg)) {
+            throw new IllegalArgumentException("Not a group: " + element);
+        }
+
+        return (GroupNg) element;
+    }
+
+
+    protected abstract void run(final GroupNg rootGroup) throws RemoteException, IOException;
 
 
     protected final void message(final int level, final String line) {

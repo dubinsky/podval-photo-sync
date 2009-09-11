@@ -19,25 +19,22 @@ public final class Lister extends Processor {
 
 
     @Override
-    protected void run(final Group rootGroup) {
+    protected void run(final GroupNg rootGroup) {
         list(rootGroup, 0);
     }
 
 
-    private void list(final Group group, int level) {
-        println(level, group.getTitle());
+    private void list(final GroupNg group, int level) {
+        println(level, group.getName());
 
         level++;
 
-        final ArrayOfChoice1Choice[] elements = getZenfolio().getElements(group);
-        if (elements != null) {
-            for (final ArrayOfChoice1Choice element : elements) {
-                final Group subGroup = element.getGroup();
-                if (subGroup != null) {
-                    list(subGroup, level);
-                } else {
-                    list(element.getPhotoSet(), level);
-                }
+        for (final ArrayOfChoice1Choice element : group.getElements()) {
+            final Group subGroup = element.getGroup();
+            if (subGroup != null) {
+                list(new GroupNg(getZenfolio(), subGroup), level);
+            } else {
+                list(element.getPhotoSet(), level);
             }
         }
     }

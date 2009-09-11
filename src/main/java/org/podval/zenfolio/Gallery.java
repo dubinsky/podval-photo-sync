@@ -24,7 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
-public final class Gallery {
+public final class Gallery extends ZenfolioDirectory {
 
     public Gallery(final Zenfolio zenfolio, final PhotoSet photoSet) {
         this.zenfolio = zenfolio;

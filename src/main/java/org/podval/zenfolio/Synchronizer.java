@@ -32,15 +32,15 @@ public final class Synchronizer extends Processor {
 
 
     @Override
-    protected void run(final Group rootGroup) throws RemoteException, IOException {
+    protected void run(final GroupNg rootGroup) throws RemoteException, IOException {
         syncGroup(rootGroup, new Directory(rootDirectoryPath), 0);
     }
 
 
-    private void syncGroup(final Group group, final Directory directory, int level)
+    private void syncGroup(final GroupNg group, final Directory directory, int level)
         throws RemoteException, IOException
     {
-        println(level, group.getTitle());
+        println(level, group.getName());
 
         level++;
 
@@ -49,7 +49,7 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void syncGroupFromDirectory(final Group group, final Directory directory, int level)
+    private void syncGroupFromDirectory(final GroupNg group, final Directory directory, int level)
         throws RemoteException, IOException
     {
         for (final Item item : directory.getItems()) {
@@ -62,13 +62,13 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void sync(final Group group, final Directory directory, final int level)
+    private void sync(final GroupNg group, final Directory directory, final int level)
         throws RemoteException, IOException
     {
         final String name = directory.getName();
         final boolean shouldBeGroup = directory.hasSubDirectories();
 
-        GroupElement element = getZenfolio().find(group, name);
+        ZenfolioDirectory element = group.find(name);
 
         if (element == null) {
             final String message =
@@ -77,21 +77,21 @@ public final class Synchronizer extends Processor {
 
             message(level, message);
 
-            element = getZenfolio().create(group, name, shouldBeGroup, doIt);
+            element = create(group, name, shouldBeGroup, doIt);
         }
 
-        if (element instanceof Group) {
+        if (element instanceof GroupNg) {
             if (!shouldBeGroup) {
                 message(level, "Is a group, but should not be: " + name);
             } else {
-                syncGroup((Group) element, directory, level);
+                syncGroup((GroupNg) element, directory, level);
             }
 
-        } else if (element instanceof PhotoSet) {
+        } else if (element instanceof Gallery) {
             if (shouldBeGroup) {
                 message(level, "Is not a group, but should be: " + name);
             } else {
-                final Gallery gallery = new Gallery(getZenfolio(), (PhotoSet) element);
+                final Gallery gallery = (Gallery) element;
                 gallery.populate();
                 syncGallery(gallery, directory, level);
             }
@@ -99,8 +99,27 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void syncGroupToDirectory(final Group group, final Directory directory, int level) {
-        for (final ArrayOfChoice1Choice choice : getZenfolio().getElements(group)) {
+    private ZenfolioDirectory create(
+        final GroupNg group,
+        final String name,
+        final boolean shouldBeGroup,
+        final boolean doIt) throws RemoteException
+    {
+        final ZenfolioDirectory result;
+
+        if (shouldBeGroup) {
+            result = (doIt) ? group.createGroup(name) : group.createFakeGroup(name);
+        } else {
+            result = (doIt) ? group.createGallery(name) : group.createFakeGallery(name);
+        }
+
+        return result;
+    }
+
+
+
+    private void syncGroupToDirectory(final GroupNg group, final Directory directory, int level) {
+        for (final ArrayOfChoice1Choice choice : group.getElements()) {
             final GroupElement element = (choice.getGroup() != null) ? choice.getGroup() : choice.getPhotoSet();
             final String name = element.getTitle();
             final File subDirectory = directory.getSubDirectory(name);
