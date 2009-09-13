@@ -17,6 +17,9 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 
+import java.util.List;
+import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.Date;
 
 import java.io.File;
@@ -32,11 +35,13 @@ public final class Gallery extends ZenfolioDirectory {
     }
 
 
+    @Override
     public String getName() {
         return photoSet.getTitle();
     }
 
 
+    @Override
     public void populate() throws RemoteException {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
 
@@ -48,10 +53,23 @@ public final class Gallery extends ZenfolioDirectory {
     }
 
 
-    public Photo findPhotoByFileName(final String name) {
+    @Override
+    public List<ZenfolioDirectory> getSubDirectories() {
+        return new LinkedList<ZenfolioDirectory>();
+    }
+
+
+    @Override
+    public ZenfolioDirectory getSubDirectory(final String name) {
+        return null;
+    }
+
+
+    @Override
+    public Photo getItem(final String name) {
         Photo result = null;
 
-        for (final Photo photo : getPhotos()) {
+        for (final Photo photo : getItems()) {
             final String fileName = photo.getFileName();
             if (fileName.equals(name)) {
                 result = photo;
@@ -63,10 +81,49 @@ public final class Gallery extends ZenfolioDirectory {
     }
 
 
-    public Photo[] getPhotos() {
-        final ArrayOfPhoto array = photoSet.getPhotos();
-        final Photo[] result = (array == null) ?  null : array.getPhoto();
-        return (result == null) ? new Photo[0] : result;
+    @Override
+    public List<Photo> getItems() {
+        final ArrayOfPhoto photos = photoSet.getPhotos();
+        final Photo[] array = (photos == null) ?  null : photos.getPhoto();
+        Photo[] result = (array == null) ? new Photo[0] : array;
+        return Arrays.asList(result);
+    }
+
+
+    @Override
+    public boolean canHaveSubDirectories() {
+        return false;
+    }
+
+
+    @Override
+    protected void checkSubDirectoryType(
+        final boolean canHaveDirectories,
+        final boolean canHaveItems)
+    {
+        // will not be called - checked in the base class
+    }
+
+
+    @Override
+    protected ZenfolioDirectory doCreateSubDirectory(
+        final String name,
+        final boolean canHaveDirectories,
+        final boolean canHaveItems) throws RemoteException
+    {
+        // will not be called - checked in the base class
+        throw new UnsupportedOperationException("Gallery can not have subdirectories");
+    }
+
+
+    @Override
+    protected ZenfolioDirectory doCreateFakeSubDirectory(
+        final String name,
+        final boolean canHaveDirectories,
+        final boolean canHaveItems) throws RemoteException
+    {
+        // will not be called - checked in the base class
+        throw new UnsupportedOperationException("Gallery can not have subdirectories");
     }
 
 

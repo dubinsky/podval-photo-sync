@@ -65,8 +65,8 @@ public class Zenfolio {
     }
 
 
-    public GroupNg loadGroupHierarchy() throws RemoteException {
-        return new GroupNg(this, connection.loadGroupHierarchy(login));
+    public ZenfolioDirectory loadGroupHierarchy() throws RemoteException {
+        return new Group(this, connection.loadGroupHierarchy(login));
     }
 
 

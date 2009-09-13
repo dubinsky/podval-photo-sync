@@ -3,11 +3,7 @@ package org.podval.zenfolio;
 import org.podval.directory.Directory;
 import org.podval.directory.Item;
 
-import com.zenfolio.www.api._1_1.Group;
-import com.zenfolio.www.api._1_1.GroupElement;
-import com.zenfolio.www.api._1_1.PhotoSet;
 import com.zenfolio.www.api._1_1.Photo;
-import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
 
 import java.rmi.RemoteException;
 
@@ -32,43 +28,64 @@ public final class Synchronizer extends Processor {
 
 
     @Override
-    protected void run(final GroupNg rootGroup) throws RemoteException, IOException {
-        syncGroup(rootGroup, new Directory(rootDirectoryPath), 0);
+    protected void run(final ZenfolioDirectory rootDirectory) throws RemoteException, IOException {
+        syncGroup(rootDirectory, new Directory(rootDirectoryPath), 0);
     }
 
 
-    private void syncGroup(final GroupNg group, final Directory directory, int level)
+    private void syncGroup(final ZenfolioDirectory zenfolioDirectory, final Directory directory, int level)
         throws RemoteException, IOException
     {
-        println(level, group.getName());
+        println(level, zenfolioDirectory.getName());
 
         level++;
 
-        syncGroupFromDirectory(group, directory, level);
-        syncGroupToDirectory(group, directory, level);
+        syncToZenfolio(zenfolioDirectory, directory, level);
+        syncFromZenfolio(zenfolioDirectory, directory, level);
     }
 
 
-    private void syncGroupFromDirectory(final GroupNg group, final Directory directory, int level)
+    private void syncToZenfolio(final ZenfolioDirectory zenfolioDirectory, final Directory directory, int level)
         throws RemoteException, IOException
     {
         for (final Item item : directory.getItems()) {
-            message(level, "Skipping " + item + " on the group level");
+            if (directory.hasSubDirectories()) {
+                message(level, "Skipping " + item + " on the group level");
+            } else {
+                if (!isPhoto(item)) {
+                    message(level, "Skipping non-photo " + item + " on the gallery level");
+
+                } else {
+                    final Photo photo = zenfolioDirectory.getItem(item.getName() + ".jpg");
+                    if (photo == null) {
+                        addPhoto(zenfolioDirectory, item, level);
+                    }
+                }
+            }
         }
 
-        for (final File subDirectory : directory.getSubDirectories()) {
-            sync(group, new Directory(subDirectory), level);
+        // @todo skip the collections!
+
+        for (final File subDirectoryFile : directory.getSubDirectories()) {
+            final Directory subDirectory = new Directory(subDirectoryFile);
+            final ZenfolioDirectory element = getElementForSubDirectory(zenfolioDirectory, subDirectory, level);
+            element.populate();
+            syncGroup(element, subDirectory, level);
         }
     }
 
 
-    private void sync(final GroupNg group, final Directory directory, final int level)
-        throws RemoteException, IOException
+    private ZenfolioDirectory getElementForSubDirectory(
+        final ZenfolioDirectory zenfolioDirectory,
+        final Directory directory,
+        final int level) throws RemoteException, IOException
     {
+        ZenfolioDirectory result = null;
+
         final String name = directory.getName();
         final boolean shouldBeGroup = directory.hasSubDirectories();
 
-        ZenfolioDirectory element = group.find(name);
+        ZenfolioDirectory element = zenfolioDirectory.getSubDirectory(name);
 
         if (element == null) {
             final String message =
@@ -77,51 +94,40 @@ public final class Synchronizer extends Processor {
 
             message(level, message);
 
-            element = create(group, name, shouldBeGroup, doIt);
+            element = create(zenfolioDirectory, name, shouldBeGroup, doIt);
         }
 
-        if (element instanceof GroupNg) {
-            if (!shouldBeGroup) {
-                message(level, "Is a group, but should not be: " + name);
-            } else {
-                syncGroup((GroupNg) element, directory, level);
-            }
-
-        } else if (element instanceof Gallery) {
-            if (shouldBeGroup) {
-                message(level, "Is not a group, but should be: " + name);
-            } else {
-                final Gallery gallery = (Gallery) element;
-                gallery.populate();
-                syncGallery(gallery, directory, level);
-            }
-        }
-    }
-
-
-    private ZenfolioDirectory create(
-        final GroupNg group,
-        final String name,
-        final boolean shouldBeGroup,
-        final boolean doIt) throws RemoteException
-    {
-        final ZenfolioDirectory result;
-
-        if (shouldBeGroup) {
-            result = (doIt) ? group.createGroup(name) : group.createFakeGroup(name);
+        if (element.canHaveSubDirectories() && !shouldBeGroup) {
+            message(level, "Is a group, but should not be: " + name);
+        } if (!element.canHaveSubDirectories() && shouldBeGroup) {
+            message(level, "Is not a group, but should be: " + name);
         } else {
-            result = (doIt) ? group.createGallery(name) : group.createFakeGallery(name);
+            result = element;
         }
 
         return result;
     }
 
 
+    private ZenfolioDirectory create(
+        final ZenfolioDirectory zenfolioDirectory,
+        final String name,
+        final boolean shouldBeGroup,
+        final boolean doIt) throws RemoteException
+    {
+        final ZenfolioDirectory result;
 
-    private void syncGroupToDirectory(final GroupNg group, final Directory directory, int level) {
-        for (final ArrayOfChoice1Choice choice : group.getElements()) {
-            final GroupElement element = (choice.getGroup() != null) ? choice.getGroup() : choice.getPhotoSet();
-            final String name = element.getTitle();
+        result = (doIt) ?
+            zenfolioDirectory.createSubDirectory(name, shouldBeGroup, !shouldBeGroup) :
+            zenfolioDirectory.createFakeSubDirectory(name, shouldBeGroup, !shouldBeGroup);
+
+        return result;
+    }
+
+
+    private void syncFromZenfolio(final ZenfolioDirectory zenfolioDirectory, final Directory directory, int level) {
+        for (final ZenfolioDirectory zenfolioSubDirectory : zenfolioDirectory.getSubDirectories()) {
+            final String name = zenfolioSubDirectory.getName();
             final File subDirectory = directory.getSubDirectory(name);
             if (subDirectory == null) {
                 message(level, "No file for the element: " + name);
@@ -130,36 +136,7 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void syncGallery(final Gallery gallery, final Directory directory, final int level)
-        throws RemoteException, IOException
-    {
-        println(level, gallery.getName());
-
-        // @todo skip the collections!
-
-        syncGalleryFromDirectory(gallery, directory, level+1);
-        syncGalleryToDirectory(gallery, directory, level+1);
-    }
-
-
-    private void syncGalleryFromDirectory(final Gallery gallery, final Directory directory, final int level)
-        throws IOException
-    {
-        for (final Item item : directory.getItems()) {
-            if (!isPhoto(item)) {
-                message(level, "Skipping non-photo " + item + " on the gallery level");
-
-            } else {
-                final Photo photo = gallery.findPhotoByFileName(item.getName() + ".jpg");
-                if (photo == null) {
-                    addPhoto(gallery, directory, item, level);
-                }
-            }
-        }
-    }
-
-
-    private void addPhoto(final Gallery gallery, final Directory directory, final Item item, final int level)
+    private void addPhoto(final ZenfolioDirectory zenfolioDirectory, final Item item, final int level)
         throws IOException
     {
         final String name = item.getName();
@@ -169,6 +146,8 @@ public final class Synchronizer extends Processor {
             message(level, message);
 
             if (doIt) {
+                // @todo factor OUT!!!
+                final Gallery gallery = (Gallery) zenfolioDirectory;
                 final String status = gallery.postFile(item.get("jpg"));
                 if (status != null) {
                     message(level, status);
@@ -178,11 +157,6 @@ public final class Synchronizer extends Processor {
         } else {
             message(level, "Raw conversions are not yet implemented. Can not add " + name);
         }
-    }
-
-
-    private void syncGalleryToDirectory(final Gallery gallery, final Directory directory, final int level) {
-        // @todo
     }
 
 

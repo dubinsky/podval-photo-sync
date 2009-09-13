@@ -35,13 +35,14 @@ public abstract class Processor {
     }
 
 
-    public GroupNg findGroupByPath(final String path) throws RemoteException {
-        GroupNg result = zenfolio.loadGroupHierarchy();
+    public ZenfolioDirectory findGroupByPath(final String path) throws RemoteException {
+        ZenfolioDirectory result = zenfolio.loadGroupHierarchy();
 
         if (path != null) {
             for (final String name : path.split("/")) {
                 if (!name.isEmpty()) {
-                    result = asGroup(result.find(name));
+                    result = result.getSubDirectory(name);
+                    checkCanHaveSubDirectories(result);
                 }
             }
         }
@@ -50,16 +51,14 @@ public abstract class Processor {
     }
 
 
-    private GroupNg asGroup(final ZenfolioDirectory element) {
-        if (!(element instanceof GroupNg)) {
+    private void checkCanHaveSubDirectories(final ZenfolioDirectory element) {
+        if (!element.canHaveSubDirectories()) {
             throw new IllegalArgumentException("Not a group: " + element);
         }
-
-        return (GroupNg) element;
     }
 
 
-    protected abstract void run(final GroupNg rootGroup) throws RemoteException, IOException;
+    protected abstract void run(final ZenfolioDirectory rootDirectory) throws RemoteException, IOException;
 
 
     protected final void message(final int level, final String line) {
