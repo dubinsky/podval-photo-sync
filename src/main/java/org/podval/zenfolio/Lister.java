@@ -1,6 +1,5 @@
 package org.podval.zenfolio;
 
-import com.zenfolio.www.api._1_1.Photo;
 import java.rmi.RemoteException;
 
 
@@ -16,12 +15,12 @@ public final class Lister extends Processor {
 
 
     @Override
-    protected void run(final ZenfolioDirectory rootDirectory) {
+    protected void run(final ZenfolioDirectory rootDirectory) throws RemoteException {
         list(rootDirectory, 0);
     }
 
 
-    private void list(final ZenfolioDirectory directory, int level) {
+    private void list(final ZenfolioDirectory directory, int level) throws RemoteException {
         println(level, directory.getName());
 
         level++;

@@ -1,12 +1,13 @@
 package org.podval.directory;
 
+import org.podval.things.Thing;
+
 import java.util.Map;
-import java.util.Comparator;
 
 import java.io.File;
 
 
-public final class Item {
+public final class Item extends Thing {
 
     /* package */ Item(final String name, final Map<String, File> components) {
         this.name = name;
@@ -14,6 +15,7 @@ public final class Item {
     }
 
 
+    @Override
     public String getName() {
         return name;
     }
@@ -26,12 +28,6 @@ public final class Item {
 
     public boolean exists(final String extension) {
         return get(extension) != null;
-    }
-
-
-    @Override
-    public String toString() {
-        return getName();
     }
 
 

@@ -4,7 +4,6 @@ import com.zenfolio.www.api._1_1.ArrayOfChoice1;
 import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
 import com.zenfolio.www.api._1_1.GroupElement;
 import com.zenfolio.www.api._1_1.GroupUpdater;
-import com.zenfolio.www.api._1_1.Photo;
 import com.zenfolio.www.api._1_1.PhotoSet;
 import com.zenfolio.www.api._1_1.PhotoSetType;
 import com.zenfolio.www.api._1_1.PhotoSetUpdater;
@@ -29,15 +28,16 @@ public final class Group extends ZenfolioDirectory {
     }
 
 
-    @Override
-    public void populate() throws RemoteException {
+    private void ensureIsPopulated() {
+        if (!isPopulated) {
+            populate();
+            isPopulated = true;
+        }
     }
 
 
     @Override
-    public List<ZenfolioDirectory> getSubDirectories() {
-        final List<ZenfolioDirectory> result = new LinkedList<ZenfolioDirectory>();
-
+    protected void populate() {
         for (final ArrayOfChoice1Choice element : getElements()) {
             GroupElement subGroup = element.getGroup();
 
@@ -46,10 +46,30 @@ public final class Group extends ZenfolioDirectory {
                 new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup) :
                 new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
 
-            result.add(subDirectory);
+            subFolders.add(subDirectory);
         }
+    }
 
-        return result;
+
+    private ArrayOfChoice1Choice[] getElements() {
+        final ArrayOfChoice1 array = group.getElements();
+
+        return (array == null) ? new ArrayOfChoice1Choice[0] : array.getArrayOfChoice1Choice();
+    }
+
+
+    @Override
+    public boolean hasSubDirectories() {
+        return !getSubDirectories().isEmpty();
+    }
+
+
+    @Override
+    public List<ZenfolioDirectory> getSubDirectories() {
+        ensureIsPopulated();
+
+        // @todo sort and immute?
+        return subFolders;
     }
 
 
@@ -79,13 +99,6 @@ public final class Group extends ZenfolioDirectory {
     @Override
     public Photo getItem(final String name) {
         return null;
-    }
-
-
-    private ArrayOfChoice1Choice[] getElements() {
-        final ArrayOfChoice1 array = group.getElements();
-
-        return (array == null) ? new ArrayOfChoice1Choice[0] : array.getArrayOfChoice1Choice();
     }
 
 
@@ -156,4 +169,10 @@ public final class Group extends ZenfolioDirectory {
 
 
     private com.zenfolio.www.api._1_1.Group group;
+
+
+    private boolean isPopulated;
+
+
+    private final List<ZenfolioDirectory> subFolders = new LinkedList<ZenfolioDirectory>();
 }

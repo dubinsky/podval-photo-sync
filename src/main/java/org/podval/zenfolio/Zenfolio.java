@@ -37,7 +37,7 @@ public class Zenfolio {
     }
 
 
-    private void login() throws RemoteException, UnsupportedEncodingException, NoSuchAlgorithmException, IOException {
+    private void login() throws UnsupportedEncodingException, NoSuchAlgorithmException, IOException {
         final AuthChallenge authChallenge = connection.getChallenge(login);
 
         final byte[] challenge = Bytes.readBytes(authChallenge.getChallenge());

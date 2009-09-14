@@ -1,30 +1,21 @@
 package org.podval.zenfolio;
 
-import com.zenfolio.www.api._1_1.Photo;
+import org.podval.things.Folder;
 
 import java.rmi.RemoteException;
 
+import java.util.Collection;
 import java.util.List;
 
 
-public abstract class ZenfolioDirectory {
+public abstract class ZenfolioDirectory extends Folder {
 
-    public abstract String getName();
-
-
-    public abstract void populate() throws RemoteException;
+    @Override
+    public abstract Collection<ZenfolioDirectory> getSubDirectories();
 
 
-    public abstract List<ZenfolioDirectory> getSubDirectories();
-
-
-    public abstract ZenfolioDirectory getSubDirectory(final String name);
-
-
-    public abstract List<Photo> getItems();
-
-
-    public abstract Photo getItem(final String name);
+    @Override
+    public abstract List<Photo> getItems() throws RemoteException;
 
 
     public final ZenfolioDirectory createSubDirectory(

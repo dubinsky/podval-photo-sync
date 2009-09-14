@@ -1,13 +1,12 @@
 package org.podval.zenfolio;
 
+import org.podval.things.Folder;
+
 import org.podval.directory.Directory;
 import org.podval.directory.Item;
 
-import com.zenfolio.www.api._1_1.Photo;
-
 import java.rmi.RemoteException;
 
-import java.io.File;
 import java.io.IOException;
 
 
@@ -66,11 +65,12 @@ public final class Synchronizer extends Processor {
 
         // @todo skip the collections!
 
-        for (final File subDirectoryFile : directory.getSubDirectories()) {
-            final Directory subDirectory = new Directory(subDirectoryFile);
+        for (final Directory subDirectory : directory.getSubDirectories()) {
             final ZenfolioDirectory element = getElementForSubDirectory(zenfolioDirectory, subDirectory, level);
-            element.populate();
-            syncGroup(element, subDirectory, level);
+
+            if (element != null) {
+                syncGroup(element, subDirectory, level);
+            }
         }
     }
 
@@ -126,9 +126,9 @@ public final class Synchronizer extends Processor {
 
 
     private void syncFromZenfolio(final ZenfolioDirectory zenfolioDirectory, final Directory directory, int level) {
-        for (final ZenfolioDirectory zenfolioSubDirectory : zenfolioDirectory.getSubDirectories()) {
+        for (final Folder zenfolioSubDirectory : zenfolioDirectory.getSubDirectories()) {
             final String name = zenfolioSubDirectory.getName();
-            final File subDirectory = directory.getSubDirectory(name);
+            final Directory subDirectory = directory.getSubDirectory(name);
             if (subDirectory == null) {
                 message(level, "No file for the element: " + name);
             }

@@ -1,8 +1,6 @@
 package org.podval.zenfolio;
 
 import com.zenfolio.www.api._1_1.PhotoSet;
-import com.zenfolio.www.api._1_1.ArrayOfPhoto;
-import com.zenfolio.www.api._1_1.Photo;
 
 import java.rmi.RemoteException;
 
@@ -19,7 +17,6 @@ import org.apache.commons.httpclient.methods.multipart.StringPart;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Arrays;
 import java.util.Date;
 
 import java.io.File;
@@ -41,15 +38,36 @@ public final class Gallery extends ZenfolioDirectory {
     }
 
 
+    private void ensureIsPopulated() throws RemoteException {
+        if (!isPopulated) {
+            populate();
+            isPopulated = true;
+        }
+    }
+
+
     @Override
-    public void populate() throws RemoteException {
+    protected void populate() throws RemoteException {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
 
         final int id = photoSet.getId();
 
         if (id != 0) {
             photoSet = zenfolio.getConnection().loadPhotoSet(id);
+
+            if ((photoSet.getPhotos() != null) && (photoSet.getPhotos().getPhoto() != null)) {
+                for (final com.zenfolio.www.api._1_1.Photo rawPhoto : photoSet.getPhotos().getPhoto()) {
+                    final Photo photo = new Photo(zenfolio, rawPhoto);
+                    photos.add(photo);
+                }
+            }
         }
+    }
+
+
+    @Override
+    public boolean hasSubDirectories() {
+        return false;
     }
 
 
@@ -66,12 +84,11 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     @Override
-    public Photo getItem(final String name) {
+    public Photo getItem(final String name) throws RemoteException {
         Photo result = null;
 
         for (final Photo photo : getItems()) {
-            final String fileName = photo.getFileName();
-            if (fileName.equals(name)) {
+            if (photo.getName().equals(name)) {
                 result = photo;
                 break;
             }
@@ -82,11 +99,11 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     @Override
-    public List<Photo> getItems() {
-        final ArrayOfPhoto photos = photoSet.getPhotos();
-        final Photo[] array = (photos == null) ?  null : photos.getPhoto();
-        Photo[] result = (array == null) ? new Photo[0] : array;
-        return Arrays.asList(result);
+    public List<Photo> getItems() throws RemoteException {
+        ensureIsPopulated();
+
+        // @todo sort and immute?
+        return photos;
     }
 
 
@@ -183,4 +200,10 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     private PhotoSet photoSet;
+
+
+    private boolean isPopulated;
+
+
+    private final List<Photo> photos = new LinkedList<Photo>();
 }

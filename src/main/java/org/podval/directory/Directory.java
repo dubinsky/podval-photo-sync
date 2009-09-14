@@ -8,10 +8,12 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 
+import org.podval.things.Folder;
+
 import java.io.File;
 
 
-public final class Directory {
+public final class Directory extends Folder {
 
     public Directory(final String directoryPath) {
         this(new File(directoryPath));
@@ -28,17 +30,25 @@ public final class Directory {
         }
 
         this.directory = directory;
-
-        load();
     }
 
 
+    @Override
     public String getName() {
         return directory.getName();
     }
 
 
-    private void load() {
+    private void ensureIsPopulated() {
+        if (!isPopulated) {
+            populate();
+            isPopulated = true;
+        }
+    }
+
+
+    @Override
+    protected void populate() {
         final Map<String, Map<String, File>> bunches = new HashMap<String, Map<String, File>>();
 
         for (final File file : directory.listFiles()) {
@@ -58,7 +68,7 @@ public final class Directory {
 
 
     private void loadDirectory(final File subDirectory) {
-        subDirectories.put(subDirectory.getName(), subDirectory);
+        subDirectories.put(subDirectory.getName(), new Directory(subDirectory));
     }
 
 
@@ -81,27 +91,36 @@ public final class Directory {
     }
 
 
+    @Override
     public boolean hasSubDirectories() {
-        return !subDirectories.isEmpty();
+        return !getSubDirectories().isEmpty();
     }
 
 
-    public Collection<File> getSubDirectories() {
+    @Override
+    public Collection<Directory> getSubDirectories() {
+        ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
-    public File getSubDirectory(final String name) {
+    @Override
+    public Directory getSubDirectory(final String name) {
+        ensureIsPopulated();
         return subDirectories.get(name);
     }
 
 
+    @Override
     public Item getItem(final String name) {
+        ensureIsPopulated();
         return items.get(name);
     }
 
 
+    @Override
     public List<Item> getItems() {
+        ensureIsPopulated();
         return sortedValues(items);
     }
 
@@ -134,7 +153,10 @@ public final class Directory {
     private final File directory;
 
 
-    private final Map<String, File> subDirectories = new HashMap<String, File>();
+    private boolean isPopulated;
+
+
+    private final Map<String, Directory> subDirectories = new HashMap<String, Directory>();
 
 
     private final Map<String, Item> items = new HashMap<String, Item>();
