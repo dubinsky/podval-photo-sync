@@ -1,5 +1,8 @@
 package org.podval.zenfolio;
 
+import org.podval.things.Folder;
+import org.podval.things.ThingsException;
+
 import com.zenfolio.www.api._1_1.PhotoSet;
 
 import java.rmi.RemoteException;
@@ -24,7 +27,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
-public final class Gallery extends ZenfolioDirectory {
+public final class Gallery extends Folder<Photo> {
 
     public Gallery(final Zenfolio zenfolio, final PhotoSet photoSet) {
         this.zenfolio = zenfolio;
@@ -38,22 +41,18 @@ public final class Gallery extends ZenfolioDirectory {
     }
 
 
-    private void ensureIsPopulated() throws RemoteException {
-        if (!isPopulated) {
-            populate();
-            isPopulated = true;
-        }
-    }
-
-
     @Override
-    protected void populate() throws RemoteException {
+    protected void populate() throws ThingsException {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
 
         final int id = photoSet.getId();
 
         if (id != 0) {
-            photoSet = zenfolio.getConnection().loadPhotoSet(id);
+            try {
+                photoSet = zenfolio.getConnection().loadPhotoSet(id);
+            } catch (final RemoteException e) {
+                throw new ThingsException(e);
+            }
 
             if ((photoSet.getPhotos() != null) && (photoSet.getPhotos().getPhoto() != null)) {
                 for (final com.zenfolio.www.api._1_1.Photo rawPhoto : photoSet.getPhotos().getPhoto()) {
@@ -66,25 +65,19 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     @Override
-    public boolean hasSubDirectories() {
-        return false;
+    public List<Folder<Photo>> getSubDirectories() {
+        return new LinkedList<Folder<Photo>>();
     }
 
 
     @Override
-    public List<ZenfolioDirectory> getSubDirectories() {
-        return new LinkedList<ZenfolioDirectory>();
-    }
-
-
-    @Override
-    public ZenfolioDirectory getSubDirectory(final String name) {
+    public Folder<Photo> getSubDirectory(final String name) {
         return null;
     }
 
 
     @Override
-    public Photo getItem(final String name) throws RemoteException {
+    public Photo getItem(final String name) throws ThingsException {
         Photo result = null;
 
         for (final Photo photo : getItems()) {
@@ -99,7 +92,7 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     @Override
-    public List<Photo> getItems() throws RemoteException {
+    public List<Photo> getItems() throws ThingsException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -123,10 +116,10 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     @Override
-    protected ZenfolioDirectory doCreateSubDirectory(
+    protected Folder<Photo> doCreateSubDirectory(
         final String name,
         final boolean canHaveDirectories,
-        final boolean canHaveItems) throws RemoteException
+        final boolean canHaveItems) throws ThingsException
     {
         // will not be called - checked in the base class
         throw new UnsupportedOperationException("Gallery can not have subdirectories");
@@ -134,10 +127,10 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     @Override
-    protected ZenfolioDirectory doCreateFakeSubDirectory(
+    protected Folder<Photo> doCreateFakeSubDirectory(
         final String name,
         final boolean canHaveDirectories,
-        final boolean canHaveItems) throws RemoteException
+        final boolean canHaveItems) throws ThingsException
     {
         // will not be called - checked in the base class
         throw new UnsupportedOperationException("Gallery can not have subdirectories");
@@ -200,9 +193,6 @@ public final class Gallery extends ZenfolioDirectory {
 
 
     private PhotoSet photoSet;
-
-
-    private boolean isPopulated;
 
 
     private final List<Photo> photos = new LinkedList<Photo>();

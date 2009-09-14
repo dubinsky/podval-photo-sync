@@ -1,11 +1,13 @@
 package org.podval.zenfolio;
 
-import java.rmi.RemoteException;
+import org.podval.things.Folder;
+import org.podval.things.ThingsException;
 
 import java.security.NoSuchAlgorithmException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.rmi.RemoteException;
 
 
 public abstract class Processor {
@@ -13,20 +15,19 @@ public abstract class Processor {
     protected Processor(
         final String login,
         final String password,
-        final String groupPath) throws RemoteException
+        final String groupPath) throws ThingsException
     {
-        this.zenfolio = new Zenfolio(login, password);
+        try {
+            this.zenfolio = new Zenfolio(login, password);
+        } catch (final RemoteException e) {
+            throw new ThingsException(e);
+        }
 
         this.groupPath = groupPath;
     }
 
 
-    protected final Zenfolio getZenfolio() {
-        return zenfolio;
-    }
-
-
-    public final void run()  throws RemoteException, UnsupportedEncodingException,
+    public final void run() throws ThingsException, UnsupportedEncodingException,
         NoSuchAlgorithmException, IOException
     {
         zenfolio.connect();
@@ -35,8 +36,14 @@ public abstract class Processor {
     }
 
 
-    public ZenfolioDirectory findGroupByPath(final String path) throws RemoteException {
-        ZenfolioDirectory result = zenfolio.loadGroupHierarchy();
+    public Folder<Photo> findGroupByPath(final String path) throws ThingsException {
+        Folder<Photo> result;
+
+        try {
+            result = zenfolio.loadGroupHierarchy();
+        } catch (final RemoteException e) {
+            throw new ThingsException(e);
+        }
 
         if (path != null) {
             for (final String name : path.split("/")) {
@@ -51,14 +58,14 @@ public abstract class Processor {
     }
 
 
-    private void checkCanHaveSubDirectories(final ZenfolioDirectory element) {
+    private void checkCanHaveSubDirectories(final Folder<Photo> element) {
         if (!element.canHaveSubDirectories()) {
             throw new IllegalArgumentException("Not a group: " + element);
         }
     }
 
 
-    protected abstract void run(final ZenfolioDirectory rootDirectory) throws RemoteException, IOException;
+    protected abstract void run(final Folder<Photo> rootDirectory) throws ThingsException, IOException;
 
 
     protected final void message(final int level, final String line) {

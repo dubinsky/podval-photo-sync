@@ -14,6 +14,8 @@ import org.apache.axis2.transport.http.HTTPConstants;
 
 import org.apache.commons.httpclient.Header;
 
+import org.podval.things.Folder;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -65,7 +67,7 @@ public class Zenfolio {
     }
 
 
-    public ZenfolioDirectory loadGroupHierarchy() throws RemoteException {
+    public Folder<Photo> loadGroupHierarchy() throws RemoteException {
         return new Group(this, connection.loadGroupHierarchy(login));
     }
 

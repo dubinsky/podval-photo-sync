@@ -1,5 +1,8 @@
 package org.podval.directory;
 
+import org.podval.things.Folder;
+import org.podval.things.ThingsException;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.LinkedList;
@@ -8,12 +11,10 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 
-import org.podval.things.Folder;
-
 import java.io.File;
 
 
-public final class Directory extends Folder {
+public final class Directory extends Folder<Item> {
 
     public Directory(final String directoryPath) {
         this(new File(directoryPath));
@@ -36,14 +37,6 @@ public final class Directory extends Folder {
     @Override
     public String getName() {
         return directory.getName();
-    }
-
-
-    private void ensureIsPopulated() {
-        if (!isPopulated) {
-            populate();
-            isPopulated = true;
-        }
     }
 
 
@@ -92,36 +85,64 @@ public final class Directory extends Folder {
 
 
     @Override
-    public boolean hasSubDirectories() {
-        return !getSubDirectories().isEmpty();
-    }
-
-
-    @Override
-    public Collection<Directory> getSubDirectories() {
+    public Collection<Directory> getSubDirectories() throws ThingsException {
         ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
     @Override
-    public Directory getSubDirectory(final String name) {
+    public Directory getSubDirectory(final String name) throws ThingsException {
         ensureIsPopulated();
         return subDirectories.get(name);
     }
 
 
     @Override
-    public Item getItem(final String name) {
+    public Item getItem(final String name) throws ThingsException {
         ensureIsPopulated();
         return items.get(name);
     }
 
 
     @Override
-    public List<Item> getItems() {
+    public List<Item> getItems() throws ThingsException {
         ensureIsPopulated();
         return sortedValues(items);
+    }
+
+
+    @Override
+    protected void checkSubDirectoryType(
+        final boolean canHaveDirectories,
+        final boolean canHaveItems)
+    {
+    }
+
+
+    @Override
+    public boolean canHaveSubDirectories() {
+        return true;
+    }
+
+
+    @Override
+    protected Directory doCreateSubDirectory(
+        final String name,
+        final boolean canHaveDirectories,
+        final boolean canHaveItems) throws ThingsException
+    {
+        throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    protected Directory doCreateFakeSubDirectory(
+        final String name,
+        final boolean canHaveDirectories,
+        final boolean canHaveItems) throws ThingsException
+    {
+        throw new UnsupportedOperationException();
     }
 
 
@@ -151,9 +172,6 @@ public final class Directory extends Folder {
 
 
     private final File directory;
-
-
-    private boolean isPopulated;
 
 
     private final Map<String, Directory> subDirectories = new HashMap<String, Directory>();

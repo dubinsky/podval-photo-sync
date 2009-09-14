@@ -1,5 +1,8 @@
 package org.podval.zenfolio;
 
+import org.podval.things.Folder;
+import org.podval.things.ThingsException;
+
 import com.zenfolio.www.api._1_1.ArrayOfChoice1;
 import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
 import com.zenfolio.www.api._1_1.GroupElement;
@@ -14,7 +17,7 @@ import java.util.List;
 import java.util.LinkedList;
 
 
-public final class Group extends ZenfolioDirectory {
+public final class Group extends Folder<Photo> {
 
     public Group(final Zenfolio zenfolio, final com.zenfolio.www.api._1_1.Group group) {
         this.zenfolio = zenfolio;
@@ -28,20 +31,12 @@ public final class Group extends ZenfolioDirectory {
     }
 
 
-    private void ensureIsPopulated() {
-        if (!isPopulated) {
-            populate();
-            isPopulated = true;
-        }
-    }
-
-
     @Override
     protected void populate() {
         for (final ArrayOfChoice1Choice element : getElements()) {
             GroupElement subGroup = element.getGroup();
 
-            final ZenfolioDirectory subDirectory =
+            final Folder<Photo> subDirectory =
                 (subGroup != null) ?
                 new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup) :
                 new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
@@ -59,13 +54,7 @@ public final class Group extends ZenfolioDirectory {
 
 
     @Override
-    public boolean hasSubDirectories() {
-        return !getSubDirectories().isEmpty();
-    }
-
-
-    @Override
-    public List<ZenfolioDirectory> getSubDirectories() {
+    public List<Folder<Photo>> getSubDirectories() throws ThingsException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -74,10 +63,10 @@ public final class Group extends ZenfolioDirectory {
 
 
     @Override
-    public ZenfolioDirectory getSubDirectory(final String name) {
-        ZenfolioDirectory result = null;
+    public Folder<Photo> getSubDirectory(final String name) throws ThingsException {
+        Folder<Photo> result = null;
 
-        for (final ZenfolioDirectory subDirectory : getSubDirectories()) {
+        for (final Folder<Photo> subDirectory : getSubDirectories()) {
             if (subDirectory.getName().equals(name)) {
                 result = subDirectory;
                 break;
@@ -103,21 +92,25 @@ public final class Group extends ZenfolioDirectory {
 
 
     @Override
-    public ZenfolioDirectory doCreateSubDirectory(
+    public Folder<Photo> doCreateSubDirectory(
         final String name,
         final boolean canHaveDirectories,
-        final boolean canHaveItems) throws RemoteException
+        final boolean canHaveItems) throws ThingsException
     {
-        final ZenfolioDirectory result;
+        final Folder<Photo> result;
 
-        if (canHaveDirectories) {
-            final GroupUpdater updater = new GroupUpdater();
-            updater.setTitle(name);
-            result = new Group(zenfolio, zenfolio.getConnection().createGroup(group.getId(), updater));
-        } else {
-            final PhotoSetUpdater updater = new PhotoSetUpdater();
-            updater.setTitle(name);
-            return new Gallery(zenfolio, zenfolio.getConnection().createPhotoSet(group.getId(), PhotoSetType.Gallery, updater));
+        try {
+            if (canHaveDirectories) {
+                final GroupUpdater updater = new GroupUpdater();
+                updater.setTitle(name);
+                result = new Group(zenfolio, zenfolio.getConnection().createGroup(group.getId(), updater));
+            } else {
+                final PhotoSetUpdater updater = new PhotoSetUpdater();
+                updater.setTitle(name);
+                return new Gallery(zenfolio, zenfolio.getConnection().createPhotoSet(group.getId(), PhotoSetType.Gallery, updater));
+            }
+        } catch (final RemoteException e) {
+            throw new ThingsException(e);
         }
 
         return result;
@@ -125,12 +118,12 @@ public final class Group extends ZenfolioDirectory {
 
 
     @Override
-    public ZenfolioDirectory doCreateFakeSubDirectory(
+    public Folder<Photo> doCreateFakeSubDirectory(
         final String name,
         final boolean canHaveDirectories,
-        final boolean canHaveItems) throws RemoteException
+        final boolean canHaveItems)
     {
-        final ZenfolioDirectory result;
+        final Folder<Photo> result;
 
         if (canHaveDirectories) {
             final com.zenfolio.www.api._1_1.Group group = new com.zenfolio.www.api._1_1.Group();
@@ -171,8 +164,5 @@ public final class Group extends ZenfolioDirectory {
     private com.zenfolio.www.api._1_1.Group group;
 
 
-    private boolean isPopulated;
-
-
-    private final List<ZenfolioDirectory> subFolders = new LinkedList<ZenfolioDirectory>();
+    private final List<Folder<Photo>> subFolders = new LinkedList<Folder<Photo>>();
 }
