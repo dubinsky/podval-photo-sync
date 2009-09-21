@@ -85,35 +85,35 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    public Collection<Directory> getSubDirectories() throws ThingsException {
+    public Collection<Directory> getFolders() throws ThingsException {
         ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
     @Override
-    public Directory getSubDirectory(final String name) throws ThingsException {
+    public Directory getFolder(final String name) throws ThingsException {
         ensureIsPopulated();
         return subDirectories.get(name);
     }
 
 
     @Override
-    public Item getItem(final String name) throws ThingsException {
+    public Item getThing(final String name) throws ThingsException {
         ensureIsPopulated();
         return items.get(name);
     }
 
 
     @Override
-    public List<Item> getItems() throws ThingsException {
+    public List<Item> getThings() throws ThingsException {
         ensureIsPopulated();
         return sortedValues(items);
     }
 
 
     @Override
-    protected void checkSubDirectoryType(
+    protected void checkFolderType(
         final boolean canHaveDirectories,
         final boolean canHaveItems)
     {
@@ -121,13 +121,13 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    public boolean canHaveSubDirectories() {
+    public boolean canHaveFolders() {
         return true;
     }
 
 
     @Override
-    protected Directory doCreateSubDirectory(
+    protected Directory doCreateFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -137,7 +137,7 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    protected Directory doCreateFakeSubDirectory(
+    protected Directory doCreateFakeFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException

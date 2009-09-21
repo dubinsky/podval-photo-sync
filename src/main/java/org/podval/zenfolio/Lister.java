@@ -26,11 +26,11 @@ public final class Lister extends Processor {
 
         level++;
 
-        for (final Folder<Photo> subDirectory : directory.getSubDirectories()) {
+        for (final Folder<Photo> subDirectory : directory.getFolders()) {
             list(subDirectory, level);
         }
 
-        for (final Photo photo : directory.getItems()) {
+        for (final Photo photo : directory.getThings()) {
         }
     }
 }

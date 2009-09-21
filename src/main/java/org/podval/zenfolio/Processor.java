@@ -48,7 +48,7 @@ public abstract class Processor {
         if (path != null) {
             for (final String name : path.split("/")) {
                 if (!name.isEmpty()) {
-                    result = result.getSubDirectory(name);
+                    result = result.getFolder(name);
                     checkCanHaveSubDirectories(result);
                 }
             }
@@ -59,7 +59,7 @@ public abstract class Processor {
 
 
     private void checkCanHaveSubDirectories(final Folder<Photo> element) {
-        if (!element.canHaveSubDirectories()) {
+        if (!element.canHaveFolders()) {
             throw new IllegalArgumentException("Not a group: " + element);
         }
     }

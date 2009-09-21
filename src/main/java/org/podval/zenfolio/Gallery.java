@@ -65,22 +65,22 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    public List<Folder<Photo>> getSubDirectories() {
+    public List<Folder<Photo>> getFolders() {
         return new LinkedList<Folder<Photo>>();
     }
 
 
     @Override
-    public Folder<Photo> getSubDirectory(final String name) {
+    public Folder<Photo> getFolder(final String name) {
         return null;
     }
 
 
     @Override
-    public Photo getItem(final String name) throws ThingsException {
+    public Photo getThing(final String name) throws ThingsException {
         Photo result = null;
 
-        for (final Photo photo : getItems()) {
+        for (final Photo photo : getThings()) {
             if (photo.getName().equals(name)) {
                 result = photo;
                 break;
@@ -92,7 +92,7 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    public List<Photo> getItems() throws ThingsException {
+    public List<Photo> getThings() throws ThingsException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -101,13 +101,13 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    public boolean canHaveSubDirectories() {
+    public boolean canHaveFolders() {
         return false;
     }
 
 
     @Override
-    protected void checkSubDirectoryType(
+    protected void checkFolderType(
         final boolean canHaveDirectories,
         final boolean canHaveItems)
     {
@@ -116,7 +116,7 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    protected Folder<Photo> doCreateSubDirectory(
+    protected Folder<Photo> doCreateFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -127,7 +127,7 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    protected Folder<Photo> doCreateFakeSubDirectory(
+    protected Folder<Photo> doCreateFakeFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException

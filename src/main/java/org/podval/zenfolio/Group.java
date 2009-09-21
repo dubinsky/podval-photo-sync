@@ -54,7 +54,7 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public List<Folder<Photo>> getSubDirectories() throws ThingsException {
+    public List<Folder<Photo>> getFolders() throws ThingsException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -63,10 +63,10 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public Folder<Photo> getSubDirectory(final String name) throws ThingsException {
+    public Folder<Photo> getFolder(final String name) throws ThingsException {
         Folder<Photo> result = null;
 
-        for (final Folder<Photo> subDirectory : getSubDirectories()) {
+        for (final Folder<Photo> subDirectory : getFolders()) {
             if (subDirectory.getName().equals(name)) {
                 result = subDirectory;
                 break;
@@ -78,7 +78,7 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public List<Photo> getItems() {
+    public List<Photo> getThings() {
         final List<Photo> result = new LinkedList<Photo>();
 
         return result;
@@ -86,13 +86,13 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public Photo getItem(final String name) {
+    public Photo getThing(final String name) {
         return null;
     }
 
 
     @Override
-    public Folder<Photo> doCreateSubDirectory(
+    public Folder<Photo> doCreateFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -118,7 +118,7 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public Folder<Photo> doCreateFakeSubDirectory(
+    public Folder<Photo> doCreateFakeFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems)
@@ -141,13 +141,13 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public boolean canHaveSubDirectories() {
+    public boolean canHaveFolders() {
         return true;
     }
 
 
     @Override
-    protected void checkSubDirectoryType(final boolean canHaveDirectories, final boolean canHaveItems) {
+    protected void checkFolderType(final boolean canHaveDirectories, final boolean canHaveItems) {
         if (canHaveDirectories && canHaveItems) {
             throw new IllegalArgumentException("Mixed directories not supported!");
         }

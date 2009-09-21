@@ -46,15 +46,15 @@ public final class Synchronizer extends Processor {
     private void syncToZenfolio(final Folder<Photo> zenfolioDirectory, final Directory directory, int level)
         throws ThingsException, IOException
     {
-        for (final Item item : directory.getItems()) {
-            if (directory.hasSubDirectories()) {
+        for (final Item item : directory.getThings()) {
+            if (directory.hasFolders()) {
                 message(level, "Skipping " + item + " on the group level");
             } else {
                 if (!isPhoto(item)) {
                     message(level, "Skipping non-photo " + item + " on the gallery level");
 
                 } else {
-                    final Photo photo = zenfolioDirectory.getItem(item.getName() + ".jpg");
+                    final Photo photo = zenfolioDirectory.getThing(item.getName() + ".jpg");
                     if (photo == null) {
                         addPhoto(zenfolioDirectory, item, level);
                     }
@@ -64,7 +64,7 @@ public final class Synchronizer extends Processor {
 
         // @todo skip the collections!
 
-        for (final Directory subDirectory : directory.getSubDirectories()) {
+        for (final Directory subDirectory : directory.getFolders()) {
             final Folder<Photo> element = getElementForSubDirectory(zenfolioDirectory, subDirectory, level);
 
             if (element != null) {
@@ -82,9 +82,9 @@ public final class Synchronizer extends Processor {
         Folder<Photo> result = null;
 
         final String name = directory.getName();
-        final boolean shouldBeGroup = directory.hasSubDirectories();
+        final boolean shouldBeGroup = directory.hasFolders();
 
-        Folder<Photo> element = zenfolioDirectory.getSubDirectory(name);
+        Folder<Photo> element = zenfolioDirectory.getFolder(name);
 
         if (element == null) {
             final String message =
@@ -96,9 +96,9 @@ public final class Synchronizer extends Processor {
             element = create(zenfolioDirectory, name, shouldBeGroup, doIt);
         }
 
-        if (element.canHaveSubDirectories() && !shouldBeGroup) {
+        if (element.canHaveFolders() && !shouldBeGroup) {
             message(level, "Is a group, but should not be: " + name);
-        } if (!element.canHaveSubDirectories() && shouldBeGroup) {
+        } if (!element.canHaveFolders() && shouldBeGroup) {
             message(level, "Is not a group, but should be: " + name);
         } else {
             result = element;
@@ -117,8 +117,8 @@ public final class Synchronizer extends Processor {
         final Folder<Photo> result;
 
         result = (doIt) ?
-            zenfolioDirectory.createSubDirectory(name, shouldBeGroup, !shouldBeGroup) :
-            zenfolioDirectory.createFakeSubDirectory(name, shouldBeGroup, !shouldBeGroup);
+            zenfolioDirectory.createFolder(name, shouldBeGroup, !shouldBeGroup) :
+            zenfolioDirectory.createFakeFolder(name, shouldBeGroup, !shouldBeGroup);
 
         return result;
     }
@@ -129,9 +129,9 @@ public final class Synchronizer extends Processor {
         final Directory directory,
         int level) throws ThingsException
     {
-        for (final Folder zenfolioSubDirectory : zenfolioDirectory.getSubDirectories()) {
+        for (final Folder zenfolioSubDirectory : zenfolioDirectory.getFolders()) {
             final String name = zenfolioSubDirectory.getName();
-            final Directory subDirectory = directory.getSubDirectory(name);
+            final Directory subDirectory = directory.getFolder(name);
             if (subDirectory == null) {
                 message(level, "No file for the element: " + name);
             }
