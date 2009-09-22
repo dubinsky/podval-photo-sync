@@ -1,62 +1,69 @@
-package org.podval.zenfolio;
+package org.podval.sync;
 
+
+import org.podval.things.Crate;
 import org.podval.things.Folder;
+import org.podval.things.Thing;
 import org.podval.things.ThingsException;
 
-import org.podval.directory.Directory;
 import org.podval.directory.Item;
+
+import org.podval.zenfolio.Gallery;
 
 import java.io.IOException;
 
 
-public final class Synchronizer extends Processor {
+public final class Synchronizer<L extends Thing, R extends Thing> extends Processor<L> {
 
     public Synchronizer(
-        final String login,
-        final String password,
+        final Crate<L> left,
+        final Crate<R> right,
         final String groupPath,
-        final String rootDirectoryPath,
         final boolean doIt) throws ThingsException
     {
-        super(login, password, groupPath);
-
-        this.rootDirectoryPath = rootDirectoryPath;
+        super(left, groupPath);
+        this.rightCrate = right;
         this.doIt = doIt;
     }
 
 
     @Override
-    protected void run(final Folder<Photo> rootDirectory) throws ThingsException, IOException {
-        syncGroup(rootDirectory, new Directory(rootDirectoryPath), 0);
+    protected void run(final Folder<L> rootFolder) throws ThingsException {
+        rightCrate.open();
+        syncGroup(rootFolder, rightCrate.getRootFolder(), 0);
     }
 
 
-    private void syncGroup(final Folder<Photo> zenfolioDirectory, final Directory directory, int level)
-        throws ThingsException, IOException
+    private void syncGroup(final Folder<L> left, final Folder<R> right, int level)
+        throws ThingsException
     {
-        println(level, zenfolioDirectory.getName());
+        println(level, left.getName());
 
         level++;
 
-        syncToZenfolio(zenfolioDirectory, directory, level);
-        syncFromZenfolio(zenfolioDirectory, directory, level);
+        syncToZenfolio(left, right, level);
+        syncFromZenfolio(left, right, level);
     }
 
 
-    private void syncToZenfolio(final Folder<Photo> zenfolioDirectory, final Directory directory, int level)
-        throws ThingsException, IOException
+    private void syncToZenfolio(final Folder<L> left, final Folder<R> right, int level)
+        throws ThingsException
     {
-        for (final Item item : directory.getThings()) {
-            if (directory.hasFolders()) {
+        for (final R item : right.getThings()) {
+            if (right.hasFolders()) {
                 message(level, "Skipping " + item + " on the group level");
             } else {
                 if (!isPhoto(item)) {
                     message(level, "Skipping non-photo " + item + " on the gallery level");
 
                 } else {
-                    final Photo photo = zenfolioDirectory.getThing(item.getName() + ".jpg");
-                    if (photo == null) {
-                        addPhoto(zenfolioDirectory, item, level);
+                    final L thing = left.getThing(item.getName() + ".jpg");
+                    if (thing == null) {
+                        try {
+                            addPhoto(left, item, level);
+                        } catch (final IOException e) {
+                            throw new ThingsException(e);
+                        }
                     }
                 }
             }
@@ -64,8 +71,8 @@ public final class Synchronizer extends Processor {
 
         // @todo skip the collections!
 
-        for (final Directory subDirectory : directory.getFolders()) {
-            final Folder<Photo> element = getElementForSubDirectory(zenfolioDirectory, subDirectory, level);
+        for (final Folder<R> subDirectory : right.getFolders()) {
+            final Folder<L> element = getElementForSubDirectory(left, subDirectory, level);
 
             if (element != null) {
                 syncGroup(element, subDirectory, level);
@@ -74,17 +81,17 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private Folder<Photo> getElementForSubDirectory(
-        final Folder<Photo> zenfolioDirectory,
-        final Directory directory,
-        final int level) throws ThingsException, IOException
+    private Folder<L> getElementForSubDirectory(
+        final Folder<L> zenfolioDirectory,
+        final Folder<R> directory,
+        final int level) throws ThingsException
     {
-        Folder<Photo> result = null;
+        Folder<L> result = null;
 
         final String name = directory.getName();
         final boolean shouldBeGroup = directory.hasFolders();
 
-        Folder<Photo> element = zenfolioDirectory.getFolder(name);
+        Folder<L> element = zenfolioDirectory.getFolder(name);
 
         if (element == null) {
             final String message =
@@ -108,13 +115,13 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private Folder<Photo> create(
-        final Folder<Photo> zenfolioDirectory,
+    private Folder<L> create(
+        final Folder<L> zenfolioDirectory,
         final String name,
         final boolean shouldBeGroup,
         final boolean doIt) throws ThingsException
     {
-        final Folder<Photo> result;
+        final Folder<L> result;
 
         result = (doIt) ?
             zenfolioDirectory.createFolder(name, shouldBeGroup, !shouldBeGroup) :
@@ -125,13 +132,13 @@ public final class Synchronizer extends Processor {
 
 
     private void syncFromZenfolio(
-        final Folder<Photo> zenfolioDirectory,
-        final Directory directory,
+        final Folder<L> zenfolioDirectory,
+        final Folder<R> directory,
         int level) throws ThingsException
     {
         for (final Folder zenfolioSubDirectory : zenfolioDirectory.getFolders()) {
             final String name = zenfolioSubDirectory.getName();
-            final Directory subDirectory = directory.getFolder(name);
+            final Folder<R> subDirectory = directory.getFolder(name);
             if (subDirectory == null) {
                 message(level, "No file for the element: " + name);
             }
@@ -139,11 +146,12 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private void addPhoto(final Folder<Photo> zenfolioDirectory, final Item item, final int level)
+    private void addPhoto(final Folder<L> zenfolioDirectory, final R right, final int level)
         throws IOException
     {
-        final String name = item.getName();
+        final String name = right.getName();
 
+        final Item item = (Item) right;
         if (item.exists("jpg")) {
             final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
             message(level, message);
@@ -163,7 +171,9 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private boolean isPhoto(final Item item) {
+    private boolean isPhoto(final R right) {
+        final Item item = (Item) right;
+
         return
             item.exists("jpg") ||
             item.exists("crw") ||
@@ -172,7 +182,7 @@ public final class Synchronizer extends Processor {
     }
 
 
-    private final String rootDirectoryPath;
+    private final Crate<R> rightCrate;
 
 
     private final boolean doIt;

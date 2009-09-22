@@ -15,42 +15,57 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.httpclient.Header;
 
 import org.podval.things.Folder;
+import org.podval.things.Crate;
+import org.podval.things.ThingsException;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import java.util.List;
 import java.util.ArrayList;
 
 
-public class Zenfolio {
+public class Zenfolio extends Crate {
 
-    public Zenfolio(final String login, final String password) throws RemoteException {
+    public Zenfolio(final String login, final String password) throws ThingsException {
         this.login = login;
         this.password = password;
-        this.connection = new ZfApiStub();
+        try {
+            this.connection = new ZfApiStub();
+        } catch (final RemoteException e) {
+            throw new ThingsException(e);
+        }
     }
 
 
-    public void connect() throws RemoteException, UnsupportedEncodingException, NoSuchAlgorithmException, IOException {
+    @Override
+    public void open() throws ThingsException {
         if (password != null) {
             login();
         }
     }
 
 
-    private void login() throws UnsupportedEncodingException, NoSuchAlgorithmException, IOException {
-        final AuthChallenge authChallenge = connection.getChallenge(login);
+    private void login() throws ThingsException {
+        try {
+            final AuthChallenge authChallenge = connection.getChallenge(login);
 
-        final byte[] challenge = Bytes.readBytes(authChallenge.getChallenge());
-        final byte[] passwordSalt = Bytes.readBytes(authChallenge.getPasswordSalt());
-        final byte[] passwordUtf8 = password.getBytes("UTF-8");
-        final byte[] passwordHash = Bytes.hash(Bytes.concatenate(passwordSalt, passwordUtf8));
-        final byte[] proof = Bytes.hash(Bytes.concatenate(challenge, passwordHash));
+            final byte[] challenge = Bytes.readBytes(authChallenge.getChallenge());
+            final byte[] passwordSalt = Bytes.readBytes(authChallenge.getPasswordSalt());
+            final byte[] passwordUtf8 = password.getBytes("UTF-8");
+            final byte[] passwordHash = Bytes.hash(Bytes.concatenate(passwordSalt, passwordUtf8));
+            final byte[] proof = Bytes.hash(Bytes.concatenate(challenge, passwordHash));
 
-        authToken = connection.authenticate(
-            Bytes.wrapBytes(challenge),
-            Bytes.wrapBytes(proof));
+            authToken = connection.authenticate(
+                    Bytes.wrapBytes(challenge),
+                    Bytes.wrapBytes(proof));
+
+        } catch (final RemoteException e) {
+            throw new ThingsException(e);
+        } catch (final IOException e) {
+            throw new ThingsException(e);
+        } catch (final NoSuchAlgorithmException e) {
+            throw new ThingsException(e);
+        }
 
         final Options options = ((Stub) connection)._getServiceClient().getOptions();
 
@@ -67,8 +82,13 @@ public class Zenfolio {
     }
 
 
-    public Folder<Photo> loadGroupHierarchy() throws RemoteException {
-        return new Group(this, connection.loadGroupHierarchy(login));
+    @Override
+    public Folder<Photo> getRootFolder() throws ThingsException {
+        try {
+            return new Group(this, connection.loadGroupHierarchy(login));
+        } catch (final RemoteException e) {
+            throw new ThingsException(e);
+        }
     }
 
 

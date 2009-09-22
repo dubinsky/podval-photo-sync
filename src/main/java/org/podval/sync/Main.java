@@ -1,4 +1,9 @@
-package org.podval.zenfolio;
+package org.podval.sync;
+
+import org.podval.things.Crate;
+
+import org.podval.directory.Root;
+import org.podval.zenfolio.Zenfolio;
 
 
 public final class Main {
@@ -15,9 +20,11 @@ public final class Main {
             path += suffix;
         }
 
+        final Crate crate = new Zenfolio(login, password);
+
         final Processor processor = (path == null) ?
-            new Lister(login, password, groupPath) :
-            new Synchronizer(login, password, groupPath, path, false);
+            new Lister(crate, groupPath) :
+            new Synchronizer(crate, new Root(path), groupPath, false);
 
         processor.run();
     }
