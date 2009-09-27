@@ -1,6 +1,5 @@
 package org.podval.sync;
 
-
 import org.podval.things.Crate;
 import org.podval.things.Folder;
 import org.podval.things.Thing;
@@ -13,31 +12,33 @@ import org.podval.zenfolio.Gallery;
 import java.io.IOException;
 
 
-public final class Synchronizer<L extends Thing, R extends Thing> extends Processor<L> {
+public final class Synchronizer<L extends Thing, R extends Thing> {
 
     public Synchronizer(
         final Crate<L> left,
         final Crate<R> right,
         final String groupPath,
-        final boolean doIt) throws ThingsException
+        final boolean doIt)
     {
-        super(left, groupPath);
+        this.leftCrate = left;
         this.rightCrate = right;
+        this.groupPath = groupPath;
         this.doIt = doIt;
+        this.out = new Indenter(System.out);
     }
 
 
-    @Override
-    protected void run(final Folder<L> rootFolder) throws ThingsException {
+    protected void run() throws ThingsException {
+        leftCrate.open();
         rightCrate.open();
-        syncGroup(rootFolder, rightCrate.getRootFolder(), 0);
+        syncGroup(leftCrate.getFolderByPath(groupPath), rightCrate.getRootFolder(), 0);
     }
 
 
     private void syncGroup(final Folder<L> left, final Folder<R> right, int level)
         throws ThingsException
     {
-        println(level, left.getName());
+        out.println(level, left.getName());
 
         level++;
 
@@ -51,10 +52,10 @@ public final class Synchronizer<L extends Thing, R extends Thing> extends Proces
     {
         for (final R item : right.getThings()) {
             if (right.hasFolders()) {
-                message(level, "Skipping " + item + " on the group level");
+                out.message(level, "Skipping " + item + " on the group level");
             } else {
                 if (!isPhoto(item)) {
-                    message(level, "Skipping non-photo " + item + " on the gallery level");
+                    out.message(level, "Skipping non-photo " + item + " on the gallery level");
 
                 } else {
                     final L thing = left.getThing(item.getName() + ".jpg");
@@ -98,15 +99,15 @@ public final class Synchronizer<L extends Thing, R extends Thing> extends Proces
                 ((doIt) ? "creating" : "'creating'") + " " +
                 ((shouldBeGroup) ? "group" : "gallery") + " " + name;
 
-            message(level, message);
+            out.message(level, message);
 
             element = create(zenfolioDirectory, name, shouldBeGroup, doIt);
         }
 
         if (element.canHaveFolders() && !shouldBeGroup) {
-            message(level, "Is a group, but should not be: " + name);
+            out.message(level, "Is a group, but should not be: " + name);
         } if (!element.canHaveFolders() && shouldBeGroup) {
-            message(level, "Is not a group, but should be: " + name);
+            out.message(level, "Is not a group, but should be: " + name);
         } else {
             result = element;
         }
@@ -140,7 +141,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> extends Proces
             final String name = zenfolioSubDirectory.getName();
             final Folder<R> subDirectory = directory.getFolder(name);
             if (subDirectory == null) {
-                message(level, "No file for the element: " + name);
+                out.message(level, "No file for the element: " + name);
             }
         }
     }
@@ -154,19 +155,19 @@ public final class Synchronizer<L extends Thing, R extends Thing> extends Proces
         final Item item = (Item) right;
         if (item.exists("jpg")) {
             final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
-            message(level, message);
+            out.message(level, message);
 
             if (doIt) {
                 // @todo factor OUT!!!
                 final Gallery gallery = (Gallery) zenfolioDirectory;
                 final String status = gallery.postFile(item.get("jpg"));
                 if (status != null) {
-                    message(level, status);
+                    out.message(level, status);
                 }
             }
 
         } else {
-            message(level, "Raw conversions are not yet implemented. Can not add " + name);
+            out.message(level, "Raw conversions are not yet implemented. Can not add " + name);
         }
     }
 
@@ -182,8 +183,17 @@ public final class Synchronizer<L extends Thing, R extends Thing> extends Proces
     }
 
 
+    private final Crate<L> leftCrate;
+
+
     private final Crate<R> rightCrate;
 
 
+    private final String groupPath;
+
+
     private final boolean doIt;
+
+
+    private final Indenter out;
 }

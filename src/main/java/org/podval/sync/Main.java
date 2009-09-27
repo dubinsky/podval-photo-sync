@@ -22,11 +22,11 @@ public final class Main {
 
         final Crate crate = new Zenfolio(login, password);
 
-        final Processor processor = (path == null) ?
-            new Lister(crate, groupPath) :
-            new Synchronizer(crate, new Root(path), groupPath, false);
-
-        processor.run();
+        if (path == null) {
+            new Lister(crate, groupPath).run();
+        } else {
+            new Synchronizer(crate, new Root(path), groupPath, false).run();
+        }
     }
 
 
