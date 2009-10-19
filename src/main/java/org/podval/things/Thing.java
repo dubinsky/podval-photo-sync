@@ -7,7 +7,7 @@ public abstract class Thing {
 
 
     @Override
-    public String toString() {
+    public final String toString() {
         return getName();
     }
 }

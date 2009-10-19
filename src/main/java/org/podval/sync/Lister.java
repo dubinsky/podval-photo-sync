@@ -8,17 +8,16 @@ import org.podval.things.ThingsException;
 
 public final class Lister<T extends Thing> {
 
-    public Lister(final Crate crate, final String groupPath) {
+    public Lister(final Crate crate, final String path) {
         this.crate = crate;
-        this.groupPath = groupPath;
+        this.path = path;
         this.out = new Indenter(System.out);
     }
 
 
     protected void run() throws ThingsException {
         crate.open();
-        final Folder<T> rootFolder = crate.getFolderByPath(groupPath);
-        list(rootFolder, 0);
+        list(crate.getFolderByPath(path), 0);
     }
 
 
@@ -39,7 +38,7 @@ public final class Lister<T extends Thing> {
     private final Crate crate;
 
 
-    private final String groupPath;
+    private final String path;
 
 
     private final Indenter out;

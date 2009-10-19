@@ -85,14 +85,14 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    public Collection<Directory> getFolders() throws ThingsException {
+    public Collection<Folder<Item>> getFolders() throws ThingsException {
         ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
     @Override
-    public Directory getFolder(final String name) throws ThingsException {
+    public Folder<Item> getFolder(final String name) throws ThingsException {
         ensureIsPopulated();
         return subDirectories.get(name);
     }
@@ -174,7 +174,7 @@ public final class Directory extends Folder<Item> {
     private final File directory;
 
 
-    private final Map<String, Directory> subDirectories = new HashMap<String, Directory>();
+    private final Map<String, Folder<Item>> subDirectories = new HashMap<String, Folder<Item>>();
 
 
     private final Map<String, Item> items = new HashMap<String, Item>();

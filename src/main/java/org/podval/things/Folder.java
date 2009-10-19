@@ -14,10 +14,10 @@ public abstract class Folder<T extends Thing> {
     }
 
 
-    public abstract <F extends Folder<T>> Collection<F> getFolders() throws ThingsException;
+    public abstract Collection<Folder<T>> getFolders() throws ThingsException;
 
 
-    public abstract <F extends Folder<T>> F getFolder(final String name) throws ThingsException;
+    public abstract Folder<T> getFolder(final String name) throws ThingsException;
 
 
     public abstract List<T> getThings() throws ThingsException;
@@ -35,6 +35,17 @@ public abstract class Folder<T extends Thing> {
 
 
     protected abstract void populate() throws ThingsException;
+
+
+    public Folder<T> create(
+        final String name,
+        final boolean canHaveFolders,
+        final boolean doIt) throws ThingsException
+    {
+        return (doIt) ?
+            createFolder(name, canHaveFolders, !canHaveFolders) :
+            createFakeFolder(name, canHaveFolders, !canHaveFolders);
+    }
 
 
     public final Folder<T> createFolder(
@@ -76,13 +87,13 @@ public abstract class Folder<T extends Thing> {
         final boolean canHaveThings);
 
 
-    protected abstract <F extends Folder<T>> F doCreateFolder(
+    protected abstract Folder<T> doCreateFolder(
         final String name,
         final boolean canHaveFolders,
         final boolean canHaveThings) throws ThingsException;
 
 
-    protected abstract <F extends Folder<T>> F doCreateFakeFolder(
+    protected abstract Folder<T> doCreateFakeFolder(
         final String name,
         final boolean canHaveFolders,
         final boolean canHaveThings) throws ThingsException;

@@ -3,7 +3,11 @@ package org.podval.sync;
 import org.podval.things.Crate;
 
 import org.podval.directory.Root;
+
 import org.podval.zenfolio.Zenfolio;
+
+import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.Option;
 
 
 public final class Main {

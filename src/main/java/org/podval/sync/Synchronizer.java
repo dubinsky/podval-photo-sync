@@ -17,12 +17,12 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     public Synchronizer(
         final Crate<L> left,
         final Crate<R> right,
-        final String groupPath,
+        final String leftPath,
         final boolean doIt)
     {
         this.leftCrate = left;
         this.rightCrate = right;
-        this.groupPath = groupPath;
+        this.leftPath = leftPath;
         this.doIt = doIt;
         this.out = new Indenter(System.out);
     }
@@ -31,37 +31,37 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     protected void run() throws ThingsException {
         leftCrate.open();
         rightCrate.open();
-        syncGroup(leftCrate.getFolderByPath(groupPath), rightCrate.getRootFolder(), 0);
+        syncFolder(leftCrate.getFolderByPath(leftPath), rightCrate.getRootFolder(), 0);
     }
 
 
-    private void syncGroup(final Folder<L> left, final Folder<R> right, int level)
+    private void syncFolder(final Folder<L> left, final Folder<R> right, int level)
         throws ThingsException
     {
         out.println(level, left.getName());
 
         level++;
 
-        syncToZenfolio(left, right, level);
-        syncFromZenfolio(left, right, level);
+        syncRightToLeft(left, right, level);
+        syncLeftToRight(left, right, level);
     }
 
 
-    private void syncToZenfolio(final Folder<L> left, final Folder<R> right, int level)
+    private void syncRightToLeft(final Folder<L> leftFolder, final Folder<R> rightFolder, int level)
         throws ThingsException
     {
-        for (final R item : right.getThings()) {
-            if (right.hasFolders()) {
-                out.message(level, "Skipping " + item + " on the group level");
+        for (final R rightThing : rightFolder.getThings()) {
+            if (rightFolder.hasFolders()) {
+                out.message(level, "Skipping " + rightThing + " on the folder level");
             } else {
-                if (!isPhoto(item)) {
-                    out.message(level, "Skipping non-photo " + item + " on the gallery level");
+                if (!isPhoto(rightThing)) {
+                    out.message(level, "Skipping non-photo " + rightThing + " on the gallery level");
 
                 } else {
-                    final L thing = left.getThing(item.getName() + ".jpg");
-                    if (thing == null) {
+                    final L leftThing = leftFolder.getThing(rightThing.getName() + ".jpg");
+                    if (leftThing == null) {
                         try {
-                            addPhoto(left, item, level);
+                            addPhoto(leftFolder, rightThing, level);
                         } catch (final IOException e) {
                             throw new ThingsException(e);
                         }
@@ -72,82 +72,66 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
 
         // @todo skip the collections!
 
-        for (final Folder<R> subDirectory : right.getFolders()) {
-            final Folder<L> element = getElementForSubDirectory(left, subDirectory, level);
+        for (final Folder<R> rightSubFolder : rightFolder.getFolders()) {
+            final Folder<L> element = getElementForSubDirectory(leftFolder, rightSubFolder, level);
 
             if (element != null) {
-                syncGroup(element, subDirectory, level);
+                syncFolder(element, rightSubFolder, level);
             }
         }
     }
 
 
     private Folder<L> getElementForSubDirectory(
-        final Folder<L> zenfolioDirectory,
-        final Folder<R> directory,
+        final Folder<L> leftFolder,
+        final Folder<R> rightFolder,
         final int level) throws ThingsException
     {
         Folder<L> result = null;
 
-        final String name = directory.getName();
-        final boolean shouldBeGroup = directory.hasFolders();
+        final String name = rightFolder.getName();
+        final boolean shouldHaveFolders = rightFolder.hasFolders();
 
-        Folder<L> element = zenfolioDirectory.getFolder(name);
+        Folder<L> leftSubFolder = leftFolder.getFolder(name);
 
-        if (element == null) {
+        if (leftSubFolder == null) {
             final String message =
                 ((doIt) ? "creating" : "'creating'") + " " +
-                ((shouldBeGroup) ? "group" : "gallery") + " " + name;
+                ((shouldHaveFolders) ? "group" : "gallery") + " " + name;
 
             out.message(level, message);
 
-            element = create(zenfolioDirectory, name, shouldBeGroup, doIt);
+            leftSubFolder = leftFolder.create(name, shouldHaveFolders, doIt);
         }
 
-        if (element.canHaveFolders() && !shouldBeGroup) {
-            out.message(level, "Is a group, but should not be: " + name);
-        } if (!element.canHaveFolders() && shouldBeGroup) {
-            out.message(level, "Is not a group, but should be: " + name);
+        if (leftSubFolder.canHaveFolders() && !shouldHaveFolders) {
+            out.message(level, "Can have sub-folders, but should't: " + name);
+        } if (!leftSubFolder.canHaveFolders() && shouldHaveFolders) {
+            out.message(level, "Can't have sub-folders, but should: " + name);
         } else {
-            result = element;
+            result = leftSubFolder;
         }
 
         return result;
     }
 
 
-    private Folder<L> create(
-        final Folder<L> zenfolioDirectory,
-        final String name,
-        final boolean shouldBeGroup,
-        final boolean doIt) throws ThingsException
-    {
-        final Folder<L> result;
-
-        result = (doIt) ?
-            zenfolioDirectory.createFolder(name, shouldBeGroup, !shouldBeGroup) :
-            zenfolioDirectory.createFakeFolder(name, shouldBeGroup, !shouldBeGroup);
-
-        return result;
-    }
-
-
-    private void syncFromZenfolio(
-        final Folder<L> zenfolioDirectory,
-        final Folder<R> directory,
+    private void syncLeftToRight(
+        final Folder<L> leftFolder,
+        final Folder<R> rightFolder,
         int level) throws ThingsException
     {
-        for (final Folder zenfolioSubDirectory : zenfolioDirectory.getFolders()) {
-            final String name = zenfolioSubDirectory.getName();
-            final Folder<R> subDirectory = directory.getFolder(name);
-            if (subDirectory == null) {
+        for (final Folder<L> leftSubFolder : leftFolder.getFolders()) {
+            final String name = leftSubFolder.getName();
+            final Folder<R> rightSubFolder = rightFolder.getFolder(name);
+            if (rightSubFolder == null) {
                 out.message(level, "No file for the element: " + name);
             }
         }
     }
 
 
-    private void addPhoto(final Folder<L> zenfolioDirectory, final R right, final int level)
+    private void addPhoto(final Folder<L> leftFolder, final R right, final int level)
         throws IOException
     {
         final String name = right.getName();
@@ -159,7 +143,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
 
             if (doIt) {
                 // @todo factor OUT!!!
-                final Gallery gallery = (Gallery) zenfolioDirectory;
+                final Gallery gallery = (Gallery) leftFolder;
                 final String status = gallery.postFile(item.get("jpg"));
                 if (status != null) {
                     out.message(level, status);
@@ -172,8 +156,8 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     }
 
 
-    private boolean isPhoto(final R right) {
-        final Item item = (Item) right;
+    private boolean isPhoto(final R rightThing) {
+        final Item item = (Item) rightThing;
 
         return
             item.exists("jpg") ||
@@ -189,7 +173,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     private final Crate<R> rightCrate;
 
 
-    private final String groupPath;
+    private final String leftPath;
 
 
     private final boolean doIt;
