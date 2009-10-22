@@ -3,6 +3,8 @@ package org.podval.things;
 import java.util.Collection;
 import java.util.List;
 
+import java.io.File;
+
 
 public abstract class Folder<T extends Thing> {
 
@@ -82,6 +84,16 @@ public abstract class Folder<T extends Thing> {
     public abstract boolean canHaveFolders();
 
 
+    private void checkCanHaveThings() {
+        if (!canHaveThings()) {
+            throw new UnsupportedOperationException("This folder can not have things in it");
+        }
+    }
+
+
+    public abstract boolean canHaveThings();
+
+
     protected abstract void checkFolderType(
         final boolean canHaveFolders,
         final boolean canHaveThings);
@@ -97,6 +109,16 @@ public abstract class Folder<T extends Thing> {
         final String name,
         final boolean canHaveFolders,
         final boolean canHaveThings) throws ThingsException;
+
+
+    public final void addFile(final String name, final File file) throws ThingsException {
+        checkCanHaveThings();
+
+        doAddFile(name, file);
+    }
+
+
+    protected abstract void doAddFile(final String name, final File file) throws ThingsException;
 
 
     private boolean isPopulated;

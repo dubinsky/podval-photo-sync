@@ -107,6 +107,12 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
+    public boolean canHaveThings() {
+        return true;
+    }
+
+
+    @Override
     protected void checkFolderType(
         final boolean canHaveDirectories,
         final boolean canHaveItems)
@@ -137,7 +143,20 @@ public final class Gallery extends Folder<Photo> {
     }
 
 
-    public String postFile(final File file) throws FileNotFoundException, IOException {
+    @Override
+    public void doAddFile(final String name, final File file) throws ThingsException {
+        try {
+            final String message = postFile(name, file);
+            if (message != null) {
+                throw new ThingsException(message);
+            }
+        } catch (final IOException e) {
+            throw new ThingsException(e);
+        }
+    }
+
+
+    private String postFile(final String name, final File file) throws FileNotFoundException, IOException {
         final String url = "http://www.zenfolio.com" + photoSet.getUploadUrl();
 
         final PostMethod filePost = new PostMethod(url);
@@ -149,7 +168,7 @@ public final class Gallery extends Folder<Photo> {
         final RequestEntity entity =
 //        makeSimplifiedPost
         makeMultiPartPost
-            (filePost, file, date);
+            (filePost, name, file, date);
 
         filePost.setRequestEntity(entity);
 
@@ -164,13 +183,16 @@ public final class Gallery extends Folder<Photo> {
     }
 
 
-    private RequestEntity makeMultiPartPost(final PostMethod filePost, final File file, final String date)
-        throws IOException
+    private RequestEntity makeMultiPartPost(
+        final PostMethod filePost,
+        final String name,
+        final File file,
+        final String date) throws IOException
     {
 //        filePost.getParams().setBooleanParameter(HttpMethodParams.USE_EXPECT_CONTINUE, true);
 
         final Part[] parts = {
-            new FilePart("file", file.getName(), file, "image/jpeg", "UTF-8"),
+            new FilePart("file", name, file, "image/jpeg", "UTF-8"),
             new StringPart("file_modified", date)
         };
 
@@ -178,9 +200,14 @@ public final class Gallery extends Folder<Photo> {
     }
 
 
-    private RequestEntity makeSimplifiedPost(final PostMethod filePost, final File file, final String date) {
+    private RequestEntity makeSimplifiedPost(
+        final PostMethod filePost,
+        final String name,
+        final File file,
+        final String date)
+    {
         final NameValuePair[] queryParameters = new NameValuePair[2];
-        queryParameters[0] = new NameValuePair("filename", file.getName());
+        queryParameters[0] = new NameValuePair("filename", name);
         queryParameters[1] = new NameValuePair("modified", date);
 
         filePost.setQueryString(queryParameters);

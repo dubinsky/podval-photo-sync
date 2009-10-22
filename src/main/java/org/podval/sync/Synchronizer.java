@@ -1,15 +1,16 @@
 package org.podval.sync;
 
+import org.podval.things.Indenter;
 import org.podval.things.Crate;
 import org.podval.things.Folder;
 import org.podval.things.Thing;
 import org.podval.things.ThingsException;
 
-import org.podval.directory.Item;
-
-import org.podval.zenfolio.Gallery;
-
+import java.io.File;
 import java.io.IOException;
+
+// @todo get rid of this and move the class to the "things" package
+import org.podval.directory.Item;
 
 
 public final class Synchronizer<L extends Thing, R extends Thing> {
@@ -28,7 +29,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     }
 
 
-    protected void run() throws ThingsException {
+    public void run() throws ThingsException {
         leftCrate.open();
         rightCrate.open();
         syncFolder(leftCrate.getFolderByPath(leftPath), rightCrate.getRootFolder(), 0);
@@ -136,17 +137,17 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     {
         final String name = right.getName();
 
-        final Item item = (Item) right;
-        if (item.exists("jpg")) {
+        // @todo distinguish between "exist" and "available as local file"...
+        final File file = rightCrate.toFile(right);
+        if (file != null) {
             final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
             out.message(level, message);
 
             if (doIt) {
-                // @todo factor OUT!!!
-                final Gallery gallery = (Gallery) leftFolder;
-                final String status = gallery.postFile(item.get("jpg"));
-                if (status != null) {
-                    out.message(level, status);
+                try {
+                    leftFolder.addFile(file.getName(), file);
+                } catch (final ThingsException e) {
+                    out.message(level, e.getMessage());
                 }
             }
 

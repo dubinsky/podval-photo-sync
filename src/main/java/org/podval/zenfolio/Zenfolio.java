@@ -18,13 +18,14 @@ import org.podval.things.Folder;
 import org.podval.things.Crate;
 import org.podval.things.ThingsException;
 
+import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
 import java.util.ArrayList;
 
 
-public class Zenfolio extends Crate {
+public class Zenfolio extends Crate<Photo> {
 
     public Zenfolio(final String login, final String password) throws ThingsException {
         this.login = login;
@@ -89,6 +90,12 @@ public class Zenfolio extends Crate {
         } catch (final RemoteException e) {
             throw new ThingsException(e);
         }
+    }
+
+
+    @Override
+    public File toFile(final Photo thing) {
+        return null;
     }
 
 

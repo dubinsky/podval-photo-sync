@@ -16,6 +16,8 @@ import java.rmi.RemoteException;
 import java.util.List;
 import java.util.LinkedList;
 
+import java.io.File;
+
 
 public final class Group extends Folder<Photo> {
 
@@ -141,7 +143,21 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
+    protected void doAddFile(final String name, final File file) {
+        // @todo implement
+        // @todo checks in the base class?
+        throw new UnsupportedOperationException("нот имплементед ыет!!!");
+    }
+
+
+    @Override
     public boolean canHaveFolders() {
+        return true;
+    }
+
+
+    @Override
+    public boolean canHaveThings() {
         return true;
     }
 

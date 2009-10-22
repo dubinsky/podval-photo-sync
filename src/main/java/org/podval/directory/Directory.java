@@ -127,7 +127,13 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    protected Directory doCreateFolder(
+    public boolean canHaveThings() {
+        return true;
+    }
+
+
+    @Override
+    protected Folder<Item> doCreateFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -137,12 +143,19 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    protected Directory doCreateFakeFolder(
+    protected Folder<Item> doCreateFakeFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
     {
         throw new UnsupportedOperationException();
+    }
+
+
+    @Override
+    public void doAddFile(final String name, final File file) {
+        // @todo implement
+        throw new UnsupportedOperationException("Not implemented yet!!!");
     }
 
 
