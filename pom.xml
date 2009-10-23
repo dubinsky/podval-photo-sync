@@ -10,6 +10,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sonar.host.url>http://www.dub.podval.org/sonar/</sonar.host.url>
     </properties>
 
     <build>
@@ -73,7 +74,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <id>make-assembly</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
@@ -81,12 +82,51 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!-- Avoid hanging site generation waiting for
+                 'http://snapshots.maven.codehaus.org/maven2'
+                 see http://jira.codehaus.org/browse/MPIR-137
+            -->
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <configuration>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                </configuration>
+            </plugin>
+            -->
+<!--
+            <plugin>
+                <groupId>org.codehaus.sonar</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+            </plugin>
+-->
         </plugins>
+
     </build>
+
+    <repositories>
+        <repository>
+            <id>podval3</id>
+            <name>Podval 3rd Party</name>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>http://www.dub.podval.org/nexus/content/repositories/thirdparty/</url>
+            <layout>default</layout>
+        </repository>
+    </repositories>
 
     <distributionManagement>
         <snapshotRepository>
-            <id>nexus</id>
+            <id>podval</id>
             <name>snapshots</name>
             <url>http://www.dub.podval.org/nexus/content/repositories/snapshots</url>
         </snapshotRepository>
