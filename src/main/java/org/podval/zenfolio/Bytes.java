@@ -14,6 +14,10 @@ import java.io.IOException;
 
 public final class Bytes {
 
+    private Bytes() {
+    }
+
+
     public static byte[] hash(final byte[] what) throws NoSuchAlgorithmException {
         final MessageDigest digest = MessageDigest.getInstance("SHA-256");
         digest.reset();
@@ -24,13 +28,8 @@ public final class Bytes {
     public static byte[] concatenate(final byte[] first, final byte[] second) {
         final byte[] result = new byte[first.length + second.length];
 
-        for (int i = 0; i<first.length; i++) {
-            result[i] = first[i];
-        }
-
-        for (int i = 0; i<second.length; i++) {
-            result[first.length+i] = second[i];
-        }
+        System.arraycopy(first, 0, result, 0, first.length);
+        System.arraycopy(second, 0, result, first.length, second.length);
 
         return result;
     }

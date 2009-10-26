@@ -128,9 +128,9 @@ public final class Group extends Folder<Photo> {
         final Folder<Photo> result;
 
         if (canHaveDirectories) {
-            final com.zenfolio.www.api._1_1.Group group = new com.zenfolio.www.api._1_1.Group();
-            group.setTitle(name);
-            result = new Group(zenfolio, group);
+            final com.zenfolio.www.api._1_1.Group newGroup = new com.zenfolio.www.api._1_1.Group();
+            newGroup.setTitle(name);
+            result = new Group(zenfolio, newGroup);
         } else {
             final PhotoSet gallery = new PhotoSet();
             gallery.setTitle(name);

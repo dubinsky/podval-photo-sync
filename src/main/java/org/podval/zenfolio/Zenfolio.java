@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-public class Zenfolio extends Crate<Photo> {
+public final class Zenfolio extends Crate<Photo> {
 
     public Zenfolio(final String login, final String password) throws ThingsException {
         this.login = login;

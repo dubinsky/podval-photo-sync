@@ -3,15 +3,48 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.podval</groupId>
     <artifactId>zenfolio</artifactId>
-    <packaging>jar</packaging>
-    <version>1.0-SNAPSHOT</version>
     <name>Photo Sharing Synchronizer</name>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <url>http://kenai.com/projects/podval-photosync</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <sonar.host.url>http://www.dub.podval.org/sonar/</sonar.host.url>
     </properties>
+
+    <repositories>
+        <repository>
+            <id>podval-thirdparty</id>
+            <name>Podval 3rd Party</name>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+            <url>http://www.dub.podval.org/nexus/content/repositories/thirdparty/</url>
+        </repository>
+
+        <repository>
+            <id>podval-snapshots</id>
+            <name>Podval Snapshots</name>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+            <url>http://www.dub.podval.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+
+        <repository>
+            <id>podval-releases</id>
+            <name>Podval Releases</name>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+            <url>http://www.dub.podval.org/nexus/content/repositories/releases/</url>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>podval</id>
+            <name>snapshots</name>
+            <url>http://www.dub.podval.org/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <plugins>
@@ -97,40 +130,9 @@
                 </configuration>
             </plugin>
             -->
-<!--
-            <plugin>
-                <groupId>org.codehaus.sonar</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-            </plugin>
--->
         </plugins>
 
     </build>
-
-    <repositories>
-        <repository>
-            <id>podval3</id>
-            <name>Podval 3rd Party</name>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-                <checksumPolicy>fail</checksumPolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <url>http://www.dub.podval.org/nexus/content/repositories/thirdparty/</url>
-            <layout>default</layout>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>podval</id>
-            <name>snapshots</name>
-            <url>http://www.dub.podval.org/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <dependencies>
         <dependency>

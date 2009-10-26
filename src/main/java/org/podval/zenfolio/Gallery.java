@@ -200,20 +200,20 @@ public final class Gallery extends Folder<Photo> {
     }
 
 
-    private RequestEntity makeSimplifiedPost(
-        final PostMethod filePost,
-        final String name,
-        final File file,
-        final String date)
-    {
-        final NameValuePair[] queryParameters = new NameValuePair[2];
-        queryParameters[0] = new NameValuePair("filename", name);
-        queryParameters[1] = new NameValuePair("modified", date);
-
-        filePost.setQueryString(queryParameters);
-
-        return new FileRequestEntity(file, "image/jpeg");
-    }
+//    private RequestEntity makeSimplifiedPost(
+//        final PostMethod filePost,
+//        final String name,
+//        final File file,
+//        final String date)
+//    {
+//        final NameValuePair[] queryParameters = new NameValuePair[2];
+//        queryParameters[0] = new NameValuePair("filename", name);
+//        queryParameters[1] = new NameValuePair("modified", date);
+//
+//        filePost.setQueryString(queryParameters);
+//
+//        return new FileRequestEntity(file, "image/jpeg");
+//    }
 
 
     private final Zenfolio zenfolio;
