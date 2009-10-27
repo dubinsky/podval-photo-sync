@@ -18,7 +18,6 @@ import org.podval.things.Folder;
 import org.podval.things.Crate;
 import org.podval.things.ThingsException;
 
-import java.io.File;
 import java.io.IOException;
 
 import java.util.List;
@@ -90,12 +89,6 @@ public final class Zenfolio extends Crate<Photo> {
         } catch (final RemoteException e) {
             throw new ThingsException(e);
         }
-    }
-
-
-    @Override
-    public File toFile(final Photo thing) {
-        return null;
     }
 
 

@@ -52,8 +52,9 @@ public final class Directory extends Folder<Item> {
             }
         }
 
-        for (final String name : bunches.keySet()) {
-            final Map<String, File> bunch = bunches.get(name);
+        for (final Map.Entry<String, Map<String, File>> entry : bunches.entrySet()) {
+            final String name = entry.getKey();
+            final Map<String, File> bunch = entry.getValue();
             final Item item = makeItem(name, bunch);
             items.put(name, item);
         }
@@ -172,14 +173,14 @@ public final class Directory extends Folder<Item> {
 
     private String getName(final File file) {
         final String filename = file.getName();
-        final int dot = filename.lastIndexOf(".");
+        final int dot = filename.lastIndexOf('.');
         return (dot == -1) ? filename : filename.substring(0, dot);
     }
 
 
     private String getExtension(final File file) {
         final String filename = file.getName();
-        final int dot = filename.lastIndexOf(".");
+        final int dot = filename.lastIndexOf('.');
         return (dot == -1) ? filename : filename.substring(dot+1);
     }
 

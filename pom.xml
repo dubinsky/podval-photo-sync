@@ -8,6 +8,40 @@
     <packaging>jar</packaging>
     <url>http://kenai.com/projects/podval-photosync</url>
 
+    <licenses>
+        <license>
+            <name>Apache 2</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Podval Group</name>
+        <url>http://www.podval.org</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>dub</id>
+            <name>Leonid Dubinsky</name>
+            <email>dub@podval.org</email>
+            <url>http://dub.podval.org</url>
+            <organization>Podval Group</organization>
+            <organizationUrl>http://www.podval.org</organizationUrl>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>-5</timezone>
+        </developer>
+    </developers>
+
+    <ciManagement>
+        <system>hudson</system>
+        <url>http://www.dub.podval.org/hudson/job/zenfolio/</url>
+    </ciManagement>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -38,6 +72,13 @@
         </repository>
     </repositories>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>onejar-maven-plugin.googlecode.com</id>
+            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+        </pluginRepository>
+    </pluginRepositories>
+
     <distributionManagement>
         <snapshotRepository>
             <id>podval</id>
@@ -51,7 +92,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <!-- <version>2.0.2</version> -->
                 <configuration>
                     <source>1.6</source>
                     <target>1.6</target>
@@ -81,6 +121,22 @@
             </plugin>
 
             <plugin>
+                <groupId>org.dstovall</groupId>
+                <artifactId>onejar-maven-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <mainClass>org.podval.sync.Main</mainClass>
+                        </configuration>
+                        <goals>
+                            <goal>one-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+<!--
+            <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
@@ -100,7 +156,6 @@
                     </descriptors>
                     <archive>
                         <manifest>
-                            <!-- For One Jar executable, mainClass is the One Jar entry point: -->
                             <mainClass>com.simontuffs.onejar.Boot</mainClass>
                         </manifest>
                     </archive>
@@ -115,45 +170,36 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!-- Avoid hanging site generation waiting for
-                 'http://snapshots.maven.codehaus.org/maven2'
-                 see http://jira.codehaus.org/browse/MPIR-137
-            -->
-            <!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-project-info-reports-plugin</artifactId>
-                <configuration>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                    <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                </configuration>
-            </plugin>
-            -->
+-->
         </plugins>
 
     </build>
 
     <dependencies>
+        <!--
+        For explicit One-Jar build.
         <dependency>
             <artifactId>one-jar</artifactId>
             <groupId>com.simontuffs</groupId>
             <version>0.96</version>
             <scope>runtime</scope>
         </dependency>
+        -->
 
+        <!--
+          Plugin declared as a dependency also, to avoid errors.
+          Only direct dependencies are included in the assembly.
+          To exclude the plugin without mentioning it in the assembly
+          descriptor, its scope is et to "provided".
+        -->
+        <!--
         <dependency>
             <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
             <groupId>org.apache.axis2</groupId>
             <version>1.5</version>
-            <!--
-              Plugin declared as a dependency also, to avoid errors.
-              Only direct dependencies are included in the assembly.
-              To exclude the plugin without mentioning it in the assembly
-              descriptor, its scope is et to "provided".
-            -->
             <scope>provided</scope>
         </dependency>
+        -->
 
         <dependency>
             <artifactId>axis2-kernel</artifactId>
@@ -161,6 +207,56 @@
             <type>jar</type>
             <version>1.5</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>axiom-dom</artifactId>
+                    <groupId>org.apache.ws.commons.axiom</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>woden-impl-dom</artifactId>
+                    <groupId>org.apache.woden</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>woden-api</artifactId>
+                    <groupId>org.apache.woden</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mail</artifactId>
+                    <groupId>javax.mail</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-jta_1.1_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-fileupload</artifactId>
+                    <groupId>commons-fileupload</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-ws-metadata_2.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -169,6 +265,36 @@
             <type>jar</type>
             <version>1.5</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>axiom-dom</artifactId>
+                    <groupId>org.apache.ws.commons.axiom</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mail</artifactId>
+                    <groupId>javax.mail</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-activation_1.1_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -177,6 +303,32 @@
             <type>jar</type>
             <version>1.5</version>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>axiom-dom</artifactId>
+                    <groupId>org.apache.ws.commons.axiom</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mail</artifactId>
+                    <groupId>javax.mail</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -185,6 +337,32 @@
             <type>jar</type>
             <version>1.5</version>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>axiom-dom</artifactId>
+                    <groupId>org.apache.ws.commons.axiom</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mail</artifactId>
+                    <groupId>javax.mail</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -193,6 +371,24 @@
             <type>jar</type>
             <version>1.2.8</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jaxen</artifactId>
+                    <groupId>jaxen</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-activation_1.1_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -201,6 +397,20 @@
             <type>jar</type>
             <version>1.2.8</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-activation_1.1_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -217,6 +427,12 @@
             <type>jar</type>
             <version>2.0.4</version>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>wstx-asl</artifactId>
+                    <groupId>org.codehaus.woodstox</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -282,3 +498,5 @@
         </dependency>
     </dependencies>
 </project>
+
+

@@ -1,7 +1,5 @@
 package org.podval.things;
 
-import java.io.File;
-
 
 public abstract class Crate<T extends Thing> {
 
@@ -32,7 +30,4 @@ public abstract class Crate<T extends Thing> {
             throw new IllegalArgumentException("can not have folders: " + element);
         }
     }
-
-
-    public abstract File toFile(final T thing);
 }

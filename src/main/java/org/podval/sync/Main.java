@@ -1,5 +1,6 @@
 package org.podval.sync;
 
+import org.podval.things.Synchronizer;
 import org.podval.things.Lister;
 import org.podval.things.Crate;
 
@@ -40,8 +41,8 @@ public final class Main {
         if (path == null) {
             new Lister(crate, groupPath).run();
         } else {
-            final Crate directory = new Root(path, "jpg");
-            new Synchronizer(crate, directory, groupPath, false).run();
+            final Crate directory = new Root(path);
+            new Synchronizer(crate, directory, new PhotoConverter(), groupPath, false).run();
         }
     }
 

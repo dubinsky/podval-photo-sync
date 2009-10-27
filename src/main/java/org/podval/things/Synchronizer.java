@@ -1,16 +1,7 @@
-package org.podval.sync;
-
-import org.podval.things.Indenter;
-import org.podval.things.Crate;
-import org.podval.things.Folder;
-import org.podval.things.Thing;
-import org.podval.things.ThingsException;
+package org.podval.things;
 
 import java.io.File;
 import java.io.IOException;
-
-// @todo get rid of this and move the class to the "things" package
-import org.podval.directory.Item;
 
 
 public final class Synchronizer<L extends Thing, R extends Thing> {
@@ -18,11 +9,13 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     public Synchronizer(
         final Crate<L> left,
         final Crate<R> right,
+        final Converter<L, R> converter,
         final String leftPath,
         final boolean doIt)
     {
         this.leftCrate = left;
         this.rightCrate = right;
+        this.converter = converter;
         this.leftPath = leftPath;
         this.doIt = doIt;
         this.out = new Indenter(System.out);
@@ -55,7 +48,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
             if (rightFolder.hasFolders()) {
                 out.message(level, "Skipping " + rightThing + " on the folder level");
             } else {
-                if (!isPhoto(rightThing)) {
+                if (!converter.isConvertible(rightThing)) {
                     out.message(level, "Skipping non-photo " + rightThing + " on the gallery level");
 
                 } else {
@@ -138,7 +131,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
         final String name = right.getName();
 
         // @todo distinguish between "exist" and "available as local file"...
-        final File file = rightCrate.toFile(right);
+        final File file = converter.toFile(right);
         if (file != null) {
             final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
             out.message(level, message);
@@ -157,21 +150,13 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     }
 
 
-    private boolean isPhoto(final R rightThing) {
-        final Item item = (Item) rightThing;
-
-        return
-            item.exists("jpg") ||
-            item.exists("crw") ||
-            item.exists("cr2") ||
-            item.exists("thm");
-    }
-
-
     private final Crate<L> leftCrate;
 
 
     private final Crate<R> rightCrate;
+
+
+    private final Converter<L, R> converter;
 
 
     private final String leftPath;
