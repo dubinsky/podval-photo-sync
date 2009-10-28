@@ -5,7 +5,7 @@
     <groupId>org.podval</groupId>
     <artifactId>photo-sync</artifactId>
     <name>Photo Sharing Synchronizer</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <url>http://kenai.com/projects/podval-photosync</url>
@@ -39,6 +39,18 @@
         </developer>
     </developers>
 
+    <scm>
+        <connection>scm:hg:http://www.dub.podval.org/hg/zenfolio/</connection>
+        <developerConnection>scm:hg:https://www.dub.podval.org/hg/zenfolio/</developerConnection>
+        <tag>HEAD</tag>
+        <url>http://www.dub.podval.org/hg/zenfolio/</url>
+    </scm>
+
+    <issueManagement>
+        <system>Jira</system>
+        <url>http://kenai.com/jira/browse/PODVAL_PHOTOSYNC</url>
+    </issueManagement>
+
     <ciManagement>
         <system>hudson</system>
         <url>http://www.dub.podval.org/hudson/job/zenfolio/</url>
@@ -47,47 +59,6 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>podval-thirdparty</id>
-            <name>Podval 3rd Party</name>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
-            <url>http://www.dub.podval.org/nexus/content/repositories/thirdparty/</url>
-        </repository>
-
-        <repository>
-            <id>podval-snapshots</id>
-            <name>Podval Snapshots</name>
-            <releases><enabled>false</enabled></releases>
-            <snapshots><enabled>true</enabled></snapshots>
-            <url>http://www.dub.podval.org/nexus/content/repositories/snapshots/</url>
-        </repository>
-
-        <repository>
-            <id>podval-releases</id>
-            <name>Podval Releases</name>
-            <releases><enabled>true</enabled></releases>
-            <snapshots><enabled>false</enabled></snapshots>
-            <url>http://www.dub.podval.org/nexus/content/repositories/releases/</url>
-        </repository>
-    </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>onejar-maven-plugin.googlecode.com</id>
-            <url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
-        </pluginRepository>
-    </pluginRepositories>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>podval</id>
-            <name>snapshots</name>
-            <url>http://www.dub.podval.org/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 
     <build>
         <!-- pluginManagement? -->
@@ -119,4 +90,12 @@
         <module>zenfolio</module>
         <module>sync</module>
     </modules>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>podval</id>
+            <name>snapshots</name>
+            <url>http://www.dub.podval.org/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
