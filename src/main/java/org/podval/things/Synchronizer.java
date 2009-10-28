@@ -9,7 +9,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     public Synchronizer(
         final Crate<L> left,
         final Crate<R> right,
-        final Converter<L, R> converter,
+        final Converter<R, L> converter,
         final String leftPath,
         final boolean doIt)
     {
@@ -156,7 +156,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     private final Crate<R> rightCrate;
 
 
-    private final Converter<L, R> converter;
+    private final Converter<R, L> converter;
 
 
     private final String leftPath;

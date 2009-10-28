@@ -99,7 +99,7 @@
             </plugin>
 
             <plugin>
-              <groupId>org.apache.axis2</groupId> <!-- .maven2 -->
+              <groupId>org.apache.axis2</groupId>
               <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
               <version>1.5</version>
               <executions>
@@ -183,21 +183,6 @@
             <groupId>com.simontuffs</groupId>
             <version>0.96</version>
             <scope>runtime</scope>
-        </dependency>
-        -->
-
-        <!--
-          Plugin declared as a dependency also, to avoid errors.
-          Only direct dependencies are included in the assembly.
-          To exclude the plugin without mentioning it in the assembly
-          descriptor, its scope is et to "provided".
-        -->
-        <!--
-        <dependency>
-            <artifactId>axis2-wsdl2code-maven-plugin</artifactId>
-            <groupId>org.apache.axis2</groupId>
-            <version>1.5</version>
-            <scope>provided</scope>
         </dependency>
         -->
 

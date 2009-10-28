@@ -7,7 +7,7 @@ import org.podval.zenfolio.Photo;
 import java.io.File;
 
 
-public final class PhotoConverter implements Converter<Photo, Item> {
+public final class PhotoConverter implements Converter<Item, Photo> {
 
     @Override
     public boolean isConvertible(final Item item) {
