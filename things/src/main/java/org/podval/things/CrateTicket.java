@@ -7,11 +7,13 @@ public final class CrateTicket {
         final String scheme,
         final String login,
         final String password,
+        final String host,
         final String path)
     {
         this.scheme = scheme;
         this.login = login;
         this.password = password;
+        this.host= host;
         this.path = path;
     }
 
@@ -26,4 +28,7 @@ public final class CrateTicket {
 
 
     public final String path;
+
+
+    public final String host;
 }
