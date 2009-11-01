@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.io.File;
 
 
-public final class Group extends Folder<Photo> {
+/* package */ final class Group extends Folder<ZenfolioThing> {
 
     public Group(final Zenfolio zenfolio, final com.zenfolio.www.api._1_1.Group group) {
         this.zenfolio = zenfolio;
@@ -38,7 +38,7 @@ public final class Group extends Folder<Photo> {
         for (final ArrayOfChoice1Choice element : getElements()) {
             GroupElement subGroup = element.getGroup();
 
-            final Folder<Photo> subDirectory =
+            final Folder<ZenfolioThing> subDirectory =
                 (subGroup != null) ?
                 new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup) :
                 new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
@@ -56,7 +56,7 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public List<Folder<Photo>> getFolders() throws ThingsException {
+    public List<Folder<ZenfolioThing>> getFolders() throws ThingsException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -65,10 +65,10 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public Folder<Photo> getFolder(final String name) throws ThingsException {
-        Folder<Photo> result = null;
+    public Folder<ZenfolioThing> getFolder(final String name) throws ThingsException {
+        Folder<ZenfolioThing> result = null;
 
-        for (final Folder<Photo> subDirectory : getFolders()) {
+        for (final Folder<ZenfolioThing> subDirectory : getFolders()) {
             if (subDirectory.getName().equals(name)) {
                 result = subDirectory;
                 break;
@@ -80,26 +80,26 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public List<Photo> getThings() {
-        final List<Photo> result = new LinkedList<Photo>();
+    public List<ZenfolioThing> getThings() {
+        final List<ZenfolioThing> result = new LinkedList<ZenfolioThing>();
 
         return result;
     }
 
 
     @Override
-    public Photo getThing(final String name) {
+    public ZenfolioThing getThing(final String name) {
         return null;
     }
 
 
     @Override
-    public Folder<Photo> doCreateFolder(
+    public Folder<ZenfolioThing> doCreateFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
     {
-        final Folder<Photo> result;
+        final Folder<ZenfolioThing> result;
 
         try {
             if (canHaveDirectories) {
@@ -120,12 +120,12 @@ public final class Group extends Folder<Photo> {
 
 
     @Override
-    public Folder<Photo> doCreateFakeFolder(
+    public Folder<ZenfolioThing> doCreateFakeFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems)
     {
-        final Folder<Photo> result;
+        final Folder<ZenfolioThing> result;
 
         if (canHaveDirectories) {
             final com.zenfolio.www.api._1_1.Group newGroup = new com.zenfolio.www.api._1_1.Group();
@@ -180,5 +180,5 @@ public final class Group extends Folder<Photo> {
     private com.zenfolio.www.api._1_1.Group group;
 
 
-    private final List<Folder<Photo>> subFolders = new LinkedList<Folder<Photo>>();
+    private final List<Folder<ZenfolioThing>> subFolders = new LinkedList<Folder<ZenfolioThing>>();
 }

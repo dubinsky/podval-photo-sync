@@ -7,20 +7,18 @@ import org.podval.things.CrateFactory;
 import org.podval.things.CrateTicket;
 import org.podval.things.ThingsException;
 
-import java.net.URISyntaxException;
-
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.ParseException;
 
 
 public final class Main {
 
-    public static void main(final String[] args) throws Exception {
+    public static void main(final String[] args) {
         final Main main = new Main();
-        main.parse(args);
-        main.run();
+        main.run(args);
     }
 
 
@@ -28,13 +26,34 @@ public final class Main {
         this.options = new Options();
 
         options.addOption("s", "suffix", true, "suffix that selects a subtree");
+        options.addOption("d", "dry-run", false, "dry run");
+    }
+
+
+    private void run(final String[] args) {
+        try {
+            parse(args);
+            run();
+        } catch (final ParseException e) {
+            System.err.println("Error: " + e.getMessage());
+            printUsage();
+            // @todo available schemes...
+        } catch (final ThingsException e) {
+            System.err.println("Error: " + e.getMessage());
+        }
+    }
+
+
+    private void printUsage() {
+        // @todo ?  and non-option parameters...
+//        new HelpFormatter().printUsage(new java.io.PrintWriter(System.out), 80, "Podval Photo Sync", options);
     }
 
 
     private void parse(final String[] args) throws ParseException {
         final CommandLine commandLine = new PosixParser().parse(options, args);
 
-        suffix = commandLine.getOptionValue("s");
+        final String suffix = commandLine.getOptionValue("s");
 
         final String[] realArgs = commandLine.getArgs();
 
@@ -42,67 +61,36 @@ public final class Main {
             throw new ParseException("Too many arguments");
         }
 
-        firstTicket = parseTicket(realArgs[0]);
+        firstTicket = UriParser.fromUri(realArgs[0], suffix);
 
         if (realArgs.length > 1) {
-            secondTicket = parseTicket(realArgs[0]);
+            secondTicket = UriParser.fromUri(realArgs[1], suffix);
         }
+
+        isDryRun = commandLine.hasOption("d");
     }
 
 
-    private CrateTicket parseTicket(final String uri) throws ParseException {
-        try {
-            return UriParser.fromUri(uri);
-        } catch (final URISyntaxException e) {
-            throw new ParseException(e.getMessage());
-        }
-    }
+    private void run() throws ThingsException {
+        final Crate firstCrate = CrateFactory.getCrate(firstTicket);
 
-
-    private void run() throws ParseException, ThingsException {
-        final Crate firstCrate = getCrate(firstTicket);
-        final Crate secondCrate = getCrate(secondTicket);
-
-        final String path = firstTicket.path; // @todo !!!
-
-        if (secondCrate == null) {
-            new Lister(firstCrate, path).run();
+        if (secondTicket == null) {
+            new Lister(firstCrate).run();
         } else {
-            new Synchronizer(firstCrate, secondCrate, new PhotoConverter(), path, false).run();
+            final Crate secondCrate = (secondTicket == null) ? null : CrateFactory.getCrate(secondTicket);
+            new Synchronizer(firstCrate, secondCrate, !isDryRun).run();
         }
-    }
-
-
-    private static Crate getCrate(final CrateTicket ticket) throws ParseException, ThingsException {
-        final Crate result;
-
-        if (ticket == null) {
-            result = null;
-        } else {
-            final CrateFactory crateFactory = CrateFactory.get(ticket.scheme);
-            if (crateFactory == null) {
-                throw new ParseException("Unknown scheme: " + ticket.scheme);
-            }
-            result = crateFactory.createCrate(ticket);
-        }
-
-        return result;
-    }
-
-
-    private static String addSuffix(final String what, final String suffix) {
-        return ((what == null) || (suffix == null)) ? what : what + suffix;
     }
 
 
     private final Options options;
 
 
-    private String suffix;
-
-
     private CrateTicket firstTicket;
 
 
     private CrateTicket secondTicket;
+
+
+    private boolean isDryRun;
 }

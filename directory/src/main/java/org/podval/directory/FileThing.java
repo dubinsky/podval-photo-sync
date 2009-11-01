@@ -7,9 +7,9 @@ import java.util.Map;
 import java.io.File;
 
 
-public final class Item extends Thing {
+public final class FileThing extends Thing {
 
-    /* package */ Item(final String name, final Map<String, File> components) {
+    /* package */ FileThing(final String name, final Map<String, File> components) {
         this.name = name;
         this.components = components;
     }

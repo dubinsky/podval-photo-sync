@@ -6,16 +6,19 @@ import org.podval.things.CrateTicket;
 import org.podval.things.ThingsException;
 
 
-public final class ZenfolioFactory extends CrateFactory<Photo> {
+public final class ZenfolioFactory extends CrateFactory<ZenfolioThing> {
+
+    public static final String SCHEME = "zenfolio";
+
 
     @Override
-    public Crate<Photo> createCrate(final CrateTicket ticket) throws ThingsException {
-        return new Zenfolio(ticket.login, ticket.password);
+    public Crate<ZenfolioThing> createCrate(final CrateTicket ticket) throws ThingsException {
+        return new Zenfolio(ticket.login, ticket.password, ticket.path);
     }
 
 
     @Override
     public String getScheme() {
-        return "zenfolio";
+        return SCHEME;
     }
 }

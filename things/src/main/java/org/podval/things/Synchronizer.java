@@ -9,23 +9,22 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     public Synchronizer(
         final Crate<L> left,
         final Crate<R> right,
-        final Converter<R, L> converter,
-        final String leftPath,
         final boolean doIt)
     {
         this.leftCrate = left;
         this.rightCrate = right;
-        this.converter = converter;
-        this.leftPath = leftPath;
         this.doIt = doIt;
+
         this.out = new Indenter(System.out);
     }
 
 
     public void run() throws ThingsException {
+        converter = ThingsConverter.get(rightCrate.getScheme(), leftCrate.getScheme());
+
         leftCrate.open();
         rightCrate.open();
-        syncFolder(leftCrate.getFolderByPath(leftPath), rightCrate.getRootFolder(), 0);
+        syncFolder(leftCrate.getRootFolder(), rightCrate.getRootFolder(), 0);
     }
 
 
@@ -156,10 +155,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     private final Crate<R> rightCrate;
 
 
-    private final Converter<R, L> converter;
-
-
-    private final String leftPath;
+    private ThingsConverter<R, L> converter;
 
 
     private final boolean doIt;

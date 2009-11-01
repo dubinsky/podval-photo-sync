@@ -12,7 +12,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 
-public final class Bytes {
+/* package */ final class Bytes {
 
     private Bytes() {
     }

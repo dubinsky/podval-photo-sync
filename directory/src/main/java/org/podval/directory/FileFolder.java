@@ -14,14 +14,14 @@ import java.util.Collections;
 import java.io.File;
 
 
-public final class Directory extends Folder<Item> {
+/* package */ final class FileFolder extends Folder<FileThing> {
 
-    public Directory(final String directoryPath) {
+    public FileFolder(final String directoryPath) {
         this(new File(directoryPath));
     }
 
 
-    public Directory(final File directory) {
+    public FileFolder(final File directory) {
         if (!directory.exists()) {
             throw new IllegalArgumentException("Does not exist: " + directory);
         }
@@ -55,14 +55,14 @@ public final class Directory extends Folder<Item> {
         for (final Map.Entry<String, Map<String, File>> entry : bunches.entrySet()) {
             final String name = entry.getKey();
             final Map<String, File> bunch = entry.getValue();
-            final Item item = makeItem(name, bunch);
+            final FileThing item = makeItem(name, bunch);
             items.put(name, item);
         }
     }
 
 
     private void loadDirectory(final File subDirectory) {
-        subDirectories.put(subDirectory.getName(), new Directory(subDirectory));
+        subDirectories.put(subDirectory.getName(), new FileFolder(subDirectory));
     }
 
 
@@ -80,34 +80,34 @@ public final class Directory extends Folder<Item> {
     }
 
 
-    private Item makeItem(final String name, final Map<String, File> components) {
-        return new Item(name, components);
+    private FileThing makeItem(final String name, final Map<String, File> components) {
+        return new FileThing(name, components);
     }
 
 
     @Override
-    public Collection<Folder<Item>> getFolders() throws ThingsException {
+    public Collection<Folder<FileThing>> getFolders() throws ThingsException {
         ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
     @Override
-    public Folder<Item> getFolder(final String name) throws ThingsException {
+    public Folder<FileThing> getFolder(final String name) throws ThingsException {
         ensureIsPopulated();
         return subDirectories.get(name);
     }
 
 
     @Override
-    public Item getThing(final String name) throws ThingsException {
+    public FileThing getThing(final String name) throws ThingsException {
         ensureIsPopulated();
         return items.get(name);
     }
 
 
     @Override
-    public List<Item> getThings() throws ThingsException {
+    public List<FileThing> getThings() throws ThingsException {
         ensureIsPopulated();
         return sortedValues(items);
     }
@@ -134,7 +134,7 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    protected Folder<Item> doCreateFolder(
+    protected Folder<FileThing> doCreateFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -144,7 +144,7 @@ public final class Directory extends Folder<Item> {
 
 
     @Override
-    protected Folder<Item> doCreateFakeFolder(
+    protected Folder<FileThing> doCreateFakeFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -188,8 +188,8 @@ public final class Directory extends Folder<Item> {
     private final File directory;
 
 
-    private final Map<String, Folder<Item>> subDirectories = new HashMap<String, Folder<Item>>();
+    private final Map<String, Folder<FileThing>> subDirectories = new HashMap<String, Folder<FileThing>>();
 
 
-    private final Map<String, Item> items = new HashMap<String, Item>();
+    private final Map<String, FileThing> items = new HashMap<String, FileThing>();
 }

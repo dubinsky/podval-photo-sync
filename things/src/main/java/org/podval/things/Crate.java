@@ -3,14 +3,17 @@ package org.podval.things;
 
 public abstract class Crate<T extends Thing> {
 
+    public abstract String getScheme();
+
+
     public abstract void open() throws ThingsException;
 
 
     public abstract Folder<T> getRootFolder() throws ThingsException;
 
 
-    public final Folder<T> getFolderByPath(final String path) throws ThingsException {
-        Folder<T> result = getRootFolder();
+    protected final Folder<T> getSubFolderByPath(final Folder<T> folder, final String path) throws ThingsException {
+        Folder<T> result = folder;
 
         if (path != null) {
             for (final String name : path.split("/")) {

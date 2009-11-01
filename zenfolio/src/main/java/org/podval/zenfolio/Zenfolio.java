@@ -24,16 +24,24 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-public final class Zenfolio extends Crate<Photo> {
+/* package */ final class Zenfolio extends Crate<ZenfolioThing> {
 
-    public Zenfolio(final String login, final String password) throws ThingsException {
+    public Zenfolio(final String login, final String password, String path) throws ThingsException {
         this.login = login;
         this.password = password;
+        this.path = path;
+
         try {
             this.connection = new ZfApiStub();
         } catch (final RemoteException e) {
             throw new ThingsException(e);
         }
+    }
+
+
+    @Override
+    public String getScheme() {
+        return ZenfolioFactory.SCHEME;
     }
 
 
@@ -83,7 +91,12 @@ public final class Zenfolio extends Crate<Photo> {
 
 
     @Override
-    public Folder<Photo> getRootFolder() throws ThingsException {
+    public Folder<ZenfolioThing> getRootFolder() throws ThingsException {
+        return getSubFolderByPath(getRealRootFolder(), path);
+    }
+
+
+    private Folder<ZenfolioThing> getRealRootFolder() throws ThingsException {
         try {
             return new Group(this, connection.loadGroupHierarchy(login));
         } catch (final RemoteException e) {
@@ -92,7 +105,7 @@ public final class Zenfolio extends Crate<Photo> {
     }
 
 
-    /* package */ ZfApi getConnection() {
+    public ZfApi getConnection() {
         return connection;
     }
 
@@ -101,6 +114,9 @@ public final class Zenfolio extends Crate<Photo> {
 
 
     private final String password;
+
+
+    private final String path;
 
 
     private final ZfApi connection;

@@ -5,14 +5,23 @@ import java.util.ServiceLoader;
 
 public abstract class CrateFactory<T extends Thing> {
 
+    public static Crate getCrate(final CrateTicket ticket) throws ThingsException {
+        final String scheme = ticket.scheme;
+
+        final CrateFactory crateFactory = get(scheme);
+
+        if (crateFactory == null) {
+            throw new ThingsException("Unknown scheme: " + scheme);
+        }
+
+        return crateFactory.createCrate(ticket);
+    }
+
+
     public static CrateFactory get(final String scheme) {
         CrateFactory result = null;
 
-        if (loader == null) {
-            loader = ServiceLoader.load(CrateFactory.class);
-        }
-
-        for (final CrateFactory factory : loader) {
+        for (final CrateFactory factory : getLoader()) {
             if (factory.getScheme().equals(scheme)) {
                 result = factory;
                 break;
@@ -20,6 +29,15 @@ public abstract class CrateFactory<T extends Thing> {
         }
 
         return result;
+    }
+
+
+    private static ServiceLoader<CrateFactory> getLoader() {
+        if (loader == null) {
+            loader = ServiceLoader.load(CrateFactory.class);
+        }
+
+        return loader;
     }
 
 

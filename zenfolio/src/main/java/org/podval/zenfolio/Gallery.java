@@ -9,10 +9,8 @@ import java.rmi.RemoteException;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.FileRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
 import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
@@ -27,7 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
-public final class Gallery extends Folder<Photo> {
+/* package */ final class Gallery extends Folder<ZenfolioThing> {
 
     public Gallery(final Zenfolio zenfolio, final PhotoSet photoSet) {
         this.zenfolio = zenfolio;
@@ -56,7 +54,7 @@ public final class Gallery extends Folder<Photo> {
 
             if ((photoSet.getPhotos() != null) && (photoSet.getPhotos().getPhoto() != null)) {
                 for (final com.zenfolio.www.api._1_1.Photo rawPhoto : photoSet.getPhotos().getPhoto()) {
-                    final Photo photo = new Photo(zenfolio, rawPhoto);
+                    final ZenfolioThing photo = new ZenfolioThing(rawPhoto);
                     photos.add(photo);
                 }
             }
@@ -65,22 +63,22 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    public List<Folder<Photo>> getFolders() {
-        return new LinkedList<Folder<Photo>>();
+    public List<Folder<ZenfolioThing>> getFolders() {
+        return new LinkedList<Folder<ZenfolioThing>>();
     }
 
 
     @Override
-    public Folder<Photo> getFolder(final String name) {
+    public Folder<ZenfolioThing> getFolder(final String name) {
         return null;
     }
 
 
     @Override
-    public Photo getThing(final String name) throws ThingsException {
-        Photo result = null;
+    public ZenfolioThing getThing(final String name) throws ThingsException {
+        ZenfolioThing result = null;
 
-        for (final Photo photo : getThings()) {
+        for (final ZenfolioThing photo : getThings()) {
             if (photo.getName().equals(name)) {
                 result = photo;
                 break;
@@ -92,7 +90,7 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    public List<Photo> getThings() throws ThingsException {
+    public List<ZenfolioThing> getThings() throws ThingsException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -122,7 +120,7 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    protected Folder<Photo> doCreateFolder(
+    protected Folder<ZenfolioThing> doCreateFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -133,7 +131,7 @@ public final class Gallery extends Folder<Photo> {
 
 
     @Override
-    protected Folder<Photo> doCreateFakeFolder(
+    protected Folder<ZenfolioThing> doCreateFakeFolder(
         final String name,
         final boolean canHaveDirectories,
         final boolean canHaveItems) throws ThingsException
@@ -173,8 +171,6 @@ public final class Gallery extends Folder<Photo> {
         filePost.setRequestEntity(entity);
 
         final HttpClient client = new HttpClient();
-//        client.getHttpConnectionManager().getParams().setConnectionTimeout(5000);
-
         final int status = client.executeMethod(filePost);
 
         filePost.releaseConnection();
@@ -222,5 +218,5 @@ public final class Gallery extends Folder<Photo> {
     private PhotoSet photoSet;
 
 
-    private final List<Photo> photos = new LinkedList<Photo>();
+    private final List<ZenfolioThing> photos = new LinkedList<ZenfolioThing>();
 }

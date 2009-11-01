@@ -3,16 +3,17 @@ package org.podval.things;
 
 public final class Lister<T extends Thing> {
 
-    public Lister(final Crate crate, final String path) {
+    public Lister(final Crate crate) {
         this.crate = crate;
-        this.path = path;
+
         this.out = new Indenter(System.out);
     }
 
 
     public void run() throws ThingsException {
         crate.open();
-        list(crate.getFolderByPath(path), 0);
+
+        list(crate.getRootFolder(), 0);
     }
 
 
@@ -31,9 +32,6 @@ public final class Lister<T extends Thing> {
 
 
     private final Crate crate;
-
-
-    private final String path;
 
 
     private final Indenter out;
