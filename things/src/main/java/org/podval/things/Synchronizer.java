@@ -33,10 +33,10 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     {
         out.println(level, left.getName());
 
-        level++;
+        int nextLevel = level + 1;
 
-        syncRightToLeft(left, right, level);
-        syncLeftToRight(left, right, level);
+        syncRightToLeft(left, right, nextLevel);
+        syncLeftToRight(left, right, nextLevel);
     }
 
 

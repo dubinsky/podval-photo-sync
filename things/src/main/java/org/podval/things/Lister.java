@@ -26,8 +26,8 @@ public final class Lister<T extends Thing> {
             list(subFolder, level);
         }
 
-        for (final T thing : folder.getThings()) {
-        }
+//        for (final T thing : folder.getThings()) {
+//        }
     }
 
 
