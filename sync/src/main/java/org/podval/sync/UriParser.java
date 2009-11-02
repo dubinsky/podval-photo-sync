@@ -34,7 +34,7 @@ public final class UriParser {
             login = null;
             password = null;
         } else {
-            final int colon = userInfo.indexOf(":");
+            final int colon = userInfo.indexOf(':');
             if (colon == -1) {
                 login = userInfo;
                 password = null;

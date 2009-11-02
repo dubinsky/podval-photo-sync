@@ -77,7 +77,7 @@ public final class Main {
         if (secondTicket == null) {
             new Lister(firstCrate).run();
         } else {
-            final Crate secondCrate = (secondTicket == null) ? null : CrateFactory.getCrate(secondTicket);
+            final Crate secondCrate = CrateFactory.getCrate(secondTicket);
             new Synchronizer(firstCrate, secondCrate, !isDryRun).run();
         }
     }

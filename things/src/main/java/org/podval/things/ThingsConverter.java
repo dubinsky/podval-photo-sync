@@ -22,7 +22,7 @@ public abstract class ThingsConverter<F extends Thing, T extends Thing> {
     }
 
 
-    private static ServiceLoader<ThingsConverter> getLoader() {
+    private static synchronized ServiceLoader<ThingsConverter> getLoader() {
         if (loader == null) {
             loader = ServiceLoader.load(ThingsConverter.class);
         }
