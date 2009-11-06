@@ -9,8 +9,9 @@ import org.podval.things.ThingsException;
 
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.PosixParser;
+import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.ParseException;
 
 
@@ -25,8 +26,21 @@ public final class Main {
     private Main() {
         this.options = new Options();
 
-        options.addOption("s", "suffix", true, "suffix that selects a subtree");
-        options.addOption("d", "dry-run", false, "dry run");
+        options.addOption(OptionBuilder.
+            withLongOpt("help").
+            withDescription("print this help message").
+            create('h'));
+
+        options.addOption(OptionBuilder.
+            withLongOpt("suffix").
+            hasArg().withArgName("suffix").
+            withDescription("suffix that selects a subtree").
+            create('s'));
+
+        options.addOption(OptionBuilder.
+            withLongOpt("dry-run").
+            withDescription("dry run").
+            create('d'));
     }
 
 
@@ -38,6 +52,7 @@ public final class Main {
             System.err.println("Error: " + e.getMessage());
             printUsage();
             // @todo available schemes...
+            // @todo help
         } catch (final ThingsException e) {
             System.err.println("Error: " + e.getMessage());
         }
@@ -45,29 +60,51 @@ public final class Main {
 
 
     private void printUsage() {
-        // @todo ?  and non-option parameters...
-//        new HelpFormatter().printUsage(new java.io.PrintWriter(System.out), 80, "Podval Photo Sync", options);
+        new HelpFormatter().printHelp("photo-sync [ options ] <from-uri> <to-uri>", options);
+
+        System.out.println(
+            "\n" +
+            "uri: scheme://[user:password@][host]/path\n"
+        );
+
+        printSchemes();
+    }
+
+
+    private void printSchemes() {
+        System.out.println("  Available schemes:");
+        for (final CrateFactory crateFactory : CrateFactory.getAll()) {
+            System.out.println("    " + crateFactory.getScheme());
+        }
     }
 
 
     private void parse(final String[] args) throws ParseException {
-        final CommandLine commandLine = new PosixParser().parse(options, args);
+        final CommandLine commandLine = new GnuParser().parse(options, args);
 
         final String suffix = commandLine.getOptionValue("s");
 
         final String[] realArgs = commandLine.getArgs();
 
-        if (realArgs.length > 2) {
-            throw new ParseException("Too many arguments");
+        if (commandLine.hasOption('h')) {
+            printUsage();
+        } else {
+            if (realArgs.length < 2) {
+                throw new ParseException("Too few arguments");
+            }
+
+            if (realArgs.length > 2) {
+                throw new ParseException("Too many arguments");
+            }
+
+            firstTicket = UriParser.fromUri(realArgs[0], suffix);
+
+            if (realArgs.length > 1) {
+                secondTicket = UriParser.fromUri(realArgs[1], suffix);
+            }
+
+            isDryRun = commandLine.hasOption("d");
         }
-
-        firstTicket = UriParser.fromUri(realArgs[0], suffix);
-
-        if (realArgs.length > 1) {
-            secondTicket = UriParser.fromUri(realArgs[1], suffix);
-        }
-
-        isDryRun = commandLine.hasOption("d");
     }
 
 

@@ -48,7 +48,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
                 out.message(level, "Skipping " + rightThing + " on the folder level");
             } else {
                 if (!converter.isConvertible(rightThing)) {
-                    out.message(level, "Skipping non-photo " + rightThing + " on the gallery level");
+                    out.message(level, "Skipping non-convertible " + rightThing + " on the folder level");
 
                 } else {
                     final L leftThing = leftFolder.getThing(rightThing.getName() + ".jpg");
@@ -132,7 +132,7 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
         // @todo distinguish between "exist" and "available as local file"...
         final File file = converter.toFile(right);
         if (file != null) {
-            final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
+            final String message = ((doIt) ? "adding" : "'adding'") + " thing" + " " + name;
             out.message(level, message);
 
             if (doIt) {

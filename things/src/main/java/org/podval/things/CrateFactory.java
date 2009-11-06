@@ -32,6 +32,11 @@ public abstract class CrateFactory<T extends Thing> {
     }
 
 
+    public static Iterable<CrateFactory> getAll() {
+        return getLoader();
+    }
+
+
     private static synchronized ServiceLoader<CrateFactory> getLoader() {
         if (loader == null) {
             loader = ServiceLoader.load(CrateFactory.class);
