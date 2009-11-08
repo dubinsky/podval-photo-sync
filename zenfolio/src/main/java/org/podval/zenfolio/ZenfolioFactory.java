@@ -13,7 +13,7 @@ public final class ZenfolioFactory extends CrateFactory<ZenfolioThing> {
 
     @Override
     public Crate<ZenfolioThing> createCrate(final CrateTicket ticket) throws ThingsException {
-        return new Zenfolio(ticket.login, ticket.password, ticket.path);
+        return new Zenfolio(ticket.getLogin(), ticket.getPassword(), ticket.getPath());
     }
 
 

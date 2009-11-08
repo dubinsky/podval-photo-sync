@@ -154,7 +154,7 @@ import java.io.IOException;
     }
 
 
-    private String postFile(final String name, final File file) throws FileNotFoundException, IOException {
+    private String postFile(final String name, final File file) throws IOException {
         final String url = "http://www.zenfolio.com" + photoSet.getUploadUrl();
 
         final PostMethod filePost = new PostMethod(url);

@@ -6,7 +6,7 @@ import java.util.ServiceLoader;
 public abstract class CrateFactory<T extends Thing> {
 
     public static Crate getCrate(final CrateTicket ticket) throws ThingsException {
-        final String scheme = ticket.scheme;
+        final String scheme = ticket.getScheme();
 
         final CrateFactory crateFactory = get(scheme);
 

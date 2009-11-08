@@ -18,17 +18,42 @@ public final class CrateTicket {
     }
 
 
-    public final String scheme;
+    public String getScheme() {
+        return scheme;
+    }
 
 
-    public final String login;
+    public String getLogin() {
+        return login;
+    }
 
 
-    public final String password;
+    public String getPassword() {
+        return password;
+    }
 
 
-    public final String path;
+    public String getHost() {
+        return host;
+    }
 
 
-    public final String host;
+    public String getPath() {
+        return path;
+    }
+
+
+    private final String scheme;
+
+
+    private final String login;
+
+
+    private final String password;
+
+
+    private final String path;
+
+
+    private final String host;
 }

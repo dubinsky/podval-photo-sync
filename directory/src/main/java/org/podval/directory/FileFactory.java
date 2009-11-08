@@ -12,7 +12,7 @@ public final class FileFactory extends CrateFactory<FileThing> {
 
     @Override
     public Crate<FileThing> createCrate(final CrateTicket ticket) {
-        return new FileCrate(ticket.path);
+        return new FileCrate(ticket.getPath());
     }
 
 

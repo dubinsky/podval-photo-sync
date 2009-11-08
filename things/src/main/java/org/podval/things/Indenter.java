@@ -10,12 +10,12 @@ public final class Indenter {
     }
 
 
-    public final void message(final int level, final String line) {
+    public void message(final int level, final String line) {
         println(level, "*** " + line);
     }
 
 
-    public final void println(final int level, final String line) {
+    public void println(final int level, final String line) {
         indent(level);
         out.println(line);
     }

@@ -39,7 +39,7 @@ public abstract class Folder<T extends Thing> {
     protected abstract void populate() throws ThingsException;
 
 
-    public Folder<T> create(
+    public final Folder<T> create(
         final String name,
         final boolean canHaveFolders,
         final boolean doIt) throws ThingsException

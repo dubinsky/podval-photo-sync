@@ -13,9 +13,9 @@ public class UriParserTest {
     @Test
     public void schemeHostPath() throws ParseException {
         final CrateTicket result = UriParser.fromUri("scheme://host/path", null);
-        Assert.assertEquals("scheme", result.scheme);
-        Assert.assertEquals("host", result.host);
-        Assert.assertEquals("/path", result.path);
+        Assert.assertEquals("scheme", result.getScheme());
+        Assert.assertEquals("host", result.getHost());
+        Assert.assertEquals("/path", result.getPath());
     }
 
 
@@ -33,7 +33,7 @@ public class UriParserTest {
         throws ParseException
     {
         final CrateTicket result = UriParser.fromUri(uri, null);
-        Assert.assertEquals(login, result.login);
-        Assert.assertEquals(password, result.password);
+        Assert.assertEquals(login, result.getLogin());
+        Assert.assertEquals(password, result.getPassword());
     }
 }
