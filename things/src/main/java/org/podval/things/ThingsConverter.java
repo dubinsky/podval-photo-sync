@@ -43,5 +43,8 @@ public abstract class ThingsConverter<F extends Thing, T extends Thing> {
     public abstract boolean isConvertible(final F from);
 
 
+    public abstract String getName(final F from);
+
+
     public abstract File toFile(final F from);
 }

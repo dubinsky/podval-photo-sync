@@ -36,6 +36,12 @@ public final class File2ZenfolioConverter extends ThingsConverter<FileThing, Zen
 
 
     @Override
+    public String getName(final FileThing from) {
+        return from.getName() + ".jpg";
+    }
+
+
+    @Override
     public File toFile(final FileThing item) {
         return item.get("jpg");
     }

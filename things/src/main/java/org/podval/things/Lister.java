@@ -20,10 +20,10 @@ public final class Lister<T extends Thing> {
     private void list(final Folder<T> folder, int level) throws ThingsException {
         out.println(level, folder.getName());
 
-        level++;
+        final int newLevel = level+1;
 
         for (final Folder<T> subFolder : folder.getFolders()) {
-            list(subFolder, level);
+            list(subFolder, newLevel);
         }
 
 //        for (final T thing : folder.getThings()) {

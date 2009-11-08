@@ -4,15 +4,15 @@ import java.io.File;
 import java.io.IOException;
 
 
-public final class Synchronizer<L extends Thing, R extends Thing> {
+public final class Synchronizer<F extends Thing, T extends Thing> {
 
     public Synchronizer(
-        final Crate<L> left,
-        final Crate<R> right,
+        final Crate<F> fromCrate,
+        final Crate<T> toCrate,
         final boolean doIt)
     {
-        this.leftCrate = left;
-        this.rightCrate = right;
+        this.fromCrate = fromCrate;
+        this.toCrate = toCrate;
         this.doIt = doIt;
 
         this.out = new Indenter(System.out);
@@ -20,41 +20,41 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
 
 
     public void run() throws ThingsException {
-        converter = ThingsConverter.get(rightCrate.getScheme(), leftCrate.getScheme());
+        converter = ThingsConverter.get(fromCrate.getScheme(), toCrate.getScheme());
 
-        leftCrate.open();
-        rightCrate.open();
-        syncFolder(leftCrate.getRootFolder(), rightCrate.getRootFolder(), 0);
+        fromCrate.open();
+        toCrate.open();
+
+        syncFolder(fromCrate.getRootFolder(), toCrate.getRootFolder(), 0);
     }
 
 
-    private void syncFolder(final Folder<L> left, final Folder<R> right, int level)
+    private void syncFolder(final Folder<F> from, final Folder<T> to, int level)
         throws ThingsException
     {
-        out.println(level, left.getName());
+        out.println(level, from.getName());
 
         int nextLevel = level + 1;
 
-        syncRightToLeft(left, right, nextLevel);
-        syncLeftToRight(left, right, nextLevel);
+        syncRightToLeft(from, to, nextLevel);
+        syncLeftToRight(from, to, nextLevel);
     }
 
 
-    private void syncRightToLeft(final Folder<L> leftFolder, final Folder<R> rightFolder, int level)
+    private void syncRightToLeft(final Folder<F> fromFolder, final Folder<T> toFolder, int level)
         throws ThingsException
     {
-        for (final R rightThing : rightFolder.getThings()) {
-            if (rightFolder.hasFolders()) {
-                out.message(level, "Skipping " + rightThing + " on the folder level");
+        for (final F fromThing : fromFolder.getThings()) {
+            if (fromFolder.hasFolders()) {
+                out.message(level, "Skipping " + fromThing + " on the folder level");
             } else {
-                if (!converter.isConvertible(rightThing)) {
-                    out.message(level, "Skipping non-convertible " + rightThing + " on the folder level");
+                if (!converter.isConvertible(fromThing)) {
+                    out.message(level, "Skipping non-convertible " + fromThing + " on the folder level");
 
                 } else {
-                    final L leftThing = leftFolder.getThing(rightThing.getName() + ".jpg");
-                    if (leftThing == null) {
+                    if (toFolder.getThing(converter.getName(fromThing)) == null) {
                         try {
-                            addPhoto(leftFolder, rightThing, level);
+                            addPhoto(fromThing, toFolder, level);
                         } catch (final IOException e) {
                             throw new ThingsException(e);
                         }
@@ -65,44 +65,44 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
 
         // @todo skip the collections!
 
-        for (final Folder<R> rightSubFolder : rightFolder.getFolders()) {
-            final Folder<L> element = getElementForSubDirectory(leftFolder, rightSubFolder, level);
+        for (final Folder<F> fromSubFolder : fromFolder.getFolders()) {
+            final Folder<T> toSubFolder = getElementForSubDirectory(fromSubFolder, toFolder, level);
 
-            if (element != null) {
-                syncFolder(element, rightSubFolder, level);
+            if (toSubFolder != null) {
+                syncFolder(fromSubFolder, toSubFolder, level);
             }
         }
     }
 
 
-    private Folder<L> getElementForSubDirectory(
-        final Folder<L> leftFolder,
-        final Folder<R> rightFolder,
+    private Folder<T> getElementForSubDirectory(
+        final Folder<F> fromFolder,
+        final Folder<T> toFolder,
         final int level) throws ThingsException
     {
-        Folder<L> result = null;
+        Folder<T> result = null;
 
-        final String name = rightFolder.getName();
-        final boolean shouldHaveFolders = rightFolder.hasFolders();
+        final String name = fromFolder.getName();
+        final boolean shouldHaveFolders = fromFolder.hasFolders();
 
-        Folder<L> leftSubFolder = leftFolder.getFolder(name);
+        Folder<T> toSubFolder = toFolder.getFolder(name);
 
-        if (leftSubFolder == null) {
+        if (toSubFolder == null) {
             final String message =
                 ((doIt) ? "creating" : "'creating'") + " " +
                 ((shouldHaveFolders) ? "group" : "gallery") + " " + name;
 
             out.message(level, message);
 
-            leftSubFolder = leftFolder.create(name, shouldHaveFolders, doIt);
+            toSubFolder = toFolder.create(name, shouldHaveFolders, doIt);
         }
 
-        if (leftSubFolder.canHaveFolders() && !shouldHaveFolders) {
+        if (toSubFolder.canHaveFolders() && !shouldHaveFolders) {
             out.message(level, "Can have sub-folders, but should't: " + name);
-        } if (!leftSubFolder.canHaveFolders() && shouldHaveFolders) {
+        } if (!toSubFolder.canHaveFolders() && shouldHaveFolders) {
             out.message(level, "Can't have sub-folders, but should: " + name);
         } else {
-            result = leftSubFolder;
+            result = toSubFolder;
         }
 
         return result;
@@ -110,34 +110,34 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
 
 
     private void syncLeftToRight(
-        final Folder<L> leftFolder,
-        final Folder<R> rightFolder,
+        final Folder<F> fromFolder,
+        final Folder<T> toFolder,
         int level) throws ThingsException
     {
-        for (final Folder<L> leftSubFolder : leftFolder.getFolders()) {
-            final String name = leftSubFolder.getName();
-            final Folder<R> rightSubFolder = rightFolder.getFolder(name);
-            if (rightSubFolder == null) {
+        for (final Folder<T> toSubFolder : toFolder.getFolders()) {
+            final String name = toSubFolder.getName();
+            final Folder<F> fromSubFolder = fromFolder.getFolder(name);
+            if (fromSubFolder == null) {
                 out.message(level, "No file for the element: " + name);
             }
         }
     }
 
 
-    private void addPhoto(final Folder<L> leftFolder, final R right, final int level)
+    private void addPhoto(final F fromThing, final Folder<T> toFolder, final int level)
         throws IOException
     {
-        final String name = right.getName();
+        final String name = fromThing.getName();
 
         // @todo distinguish between "exist" and "available as local file"...
-        final File file = converter.toFile(right);
+        final File file = converter.toFile(fromThing);
         if (file != null) {
             final String message = ((doIt) ? "adding" : "'adding'") + " thing" + " " + name;
             out.message(level, message);
 
             if (doIt) {
                 try {
-                    leftFolder.addFile(file.getName(), file);
+                    toFolder.addFile(file.getName(), file);
                 } catch (final ThingsException e) {
                     out.message(level, e.getMessage());
                 }
@@ -149,13 +149,13 @@ public final class Synchronizer<L extends Thing, R extends Thing> {
     }
 
 
-    private final Crate<L> leftCrate;
+    private final Crate<F> fromCrate;
 
 
-    private final Crate<R> rightCrate;
+    private final Crate<T> toCrate;
 
 
-    private ThingsConverter<R, L> converter;
+    private ThingsConverter<F, T> converter;
 
 
     private final boolean doIt;
