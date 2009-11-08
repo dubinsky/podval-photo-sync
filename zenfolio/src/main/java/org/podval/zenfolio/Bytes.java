@@ -44,31 +44,39 @@ import java.io.IOException;
     }
 
 
+    private static class BytesDataSource implements DataSource {
+
+        public BytesDataSource(final byte[] bytes) {
+            this.bytes = bytes;
+        }
+
+
+        @Override
+        public InputStream getInputStream() throws IOException {
+            return new ByteArrayInputStream(bytes);
+        }
+
+        @Override
+        public OutputStream getOutputStream() throws IOException {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public String getContentType() {
+            return "application/octet-stream";
+        }
+
+        @Override
+        public String getName() {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+
+        private final byte[] bytes;
+    }
+
+
     public static DataHandler wrapBytes(final byte[] bytes) {
-        return new DataHandler(new DataSource() {
-
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return new ByteArrayInputStream(bytes);
-            }
-
-
-            @Override
-            public OutputStream getOutputStream() throws IOException {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-
-
-            @Override
-            public String getContentType() {
-                return "application/octet-stream";
-            }
-
-
-            @Override
-            public String getName() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        });
+        return new DataHandler(new BytesDataSource(bytes));
     }
 }
