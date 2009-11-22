@@ -35,23 +35,18 @@ import java.io.File;
 
     @Override
     protected void populate() {
-        for (final ArrayOfChoice1Choice element : getElements()) {
-            GroupElement subGroup = element.getGroup();
+        if ((group.getElements() != null) && (group.getElements().getArrayOfChoice1Choice() != null)) {
+            for (final ArrayOfChoice1Choice element : group.getElements().getArrayOfChoice1Choice()) {
+                GroupElement subGroup = element.getGroup();
 
-            final Folder<ZenfolioThing> subDirectory =
-                (subGroup != null) ?
-                new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup) :
-                new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
+                final Folder<ZenfolioThing> subDirectory =
+                        (subGroup != null)
+                        ? new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup)
+                        : new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
 
-            subFolders.add(subDirectory);
+                subFolders.add(subDirectory);
+            }
         }
-    }
-
-
-    private ArrayOfChoice1Choice[] getElements() {
-        final ArrayOfChoice1 array = group.getElements();
-
-        return (array == null) ? new ArrayOfChoice1Choice[0] : array.getArrayOfChoice1Choice();
     }
 
 

@@ -53,7 +53,7 @@
 
     <ciManagement>
         <system>hudson</system>
-        <url>http://www.dub.podval.org/hudson/job/zenfolio/</url>
+        <url>http://www.dub.podval.org/hudson/job/photo-sync/</url>
     </ciManagement>
 
     <properties>
