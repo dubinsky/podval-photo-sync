@@ -5,10 +5,10 @@
     <groupId>org.podval</groupId>
     <artifactId>photo-sync</artifactId>
     <name>Photo Sharing Synchronizer</name>
-    <version>0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <version>0.2-SNAPSHOT</version>
 
-    <url>http://kenai.com/projects/podval-photosync</url>
+    <url>http://code.google.com/p/podval-photo-sync/</url>
 
     <licenses>
         <license>
@@ -48,7 +48,7 @@
 
     <issueManagement>
         <system>Jira</system>
-        <url>http://kenai.com/jira/browse/PODVAL_PHOTOSYNC</url>
+        <url>http://code.google.com/p/podval-photo-sync/issues/list</url>
     </issueManagement>
 
     <ciManagement>
@@ -61,7 +61,6 @@
     </properties>
 
     <build>
-        <!-- pluginManagement? -->
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
