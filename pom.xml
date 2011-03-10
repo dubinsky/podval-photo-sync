@@ -77,7 +77,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.7</version>
+            <version>4.8.2</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -85,16 +85,9 @@
     <modules>
         <module>things</module>
         <module>directory</module>
+        <module>picasa</module>
         <module>zenfolio-api</module>
         <module>zenfolio</module>
         <module>sync</module>
     </modules>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>podval</id>
-            <name>snapshots</name>
-            <url>http://www.dub.podval.org/nexus/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
 </project>
