@@ -18,7 +18,7 @@ import org.podval.things.ThingsException;
     }
 
 
-     @Override
+    @Override
     public void open() throws ThingsException {
     }
 

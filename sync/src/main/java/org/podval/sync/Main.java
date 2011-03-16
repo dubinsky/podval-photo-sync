@@ -89,7 +89,7 @@ public final class Main {
         if (commandLine.hasOption('h')) {
             printUsage();
         } else {
-            if (realArgs.length < 2) {
+            if (realArgs.length < 1) {
                 throw new ParseException("Too few arguments");
             }
 

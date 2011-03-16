@@ -1,6 +1,7 @@
 package org.podval.directory;
 
 import org.podval.things.Thing;
+import org.podval.things.Indenter;
 
 import java.util.Map;
 
@@ -29,6 +30,9 @@ public final class FileThing extends Thing {
     public boolean exists(final String extension) {
         return get(extension) != null;
     }
+
+
+    public void list(final Indenter out, final int level) {}
 
 
     private final String name;

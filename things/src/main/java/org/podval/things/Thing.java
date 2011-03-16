@@ -10,4 +10,7 @@ public abstract class Thing {
     public final String toString() {
         return getName();
     }
+
+
+    public abstract void list(final Indenter out, final int level); // TODO: temporary; for Zenfolio dump...
 }

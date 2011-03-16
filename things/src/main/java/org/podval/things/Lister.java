@@ -18,7 +18,8 @@ public final class Lister<T extends Thing> {
 
 
     private void list(final Folder<T> folder, int level) throws ThingsException {
-        out.println(level, folder.getName());
+        out.println(level, "<folder>");
+        out.println(level+1, "<name>" + folder.getName() + "</name>");
 
         final int newLevel = level+1;
 
@@ -26,8 +27,11 @@ public final class Lister<T extends Thing> {
             list(subFolder, newLevel);
         }
 
-//        for (final T thing : folder.getThings()) {
-//        }
+        for (final T thing : folder.getThings()) {
+            thing.list(out, newLevel);
+        }
+
+        out.println(level, "</folder>");
     }
 
 

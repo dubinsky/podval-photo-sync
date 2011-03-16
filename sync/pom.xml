@@ -57,6 +57,14 @@
         </dependency>
 
         <dependency>
+            <artifactId>picasa</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <type>jar</type>
+            <version>${project.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <artifactId>commons-cli</artifactId>
             <groupId>commons-cli</groupId>
             <type>jar</type>

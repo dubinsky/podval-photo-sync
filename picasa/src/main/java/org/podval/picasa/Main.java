@@ -21,14 +21,8 @@ import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.CmdLineException;
 
-import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.googleapis.GoogleTransport;
-import com.google.api.client.googleapis.auth.clientlogin.ClientLogin;
 import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.xml.atom.AtomParser;
-
-import org.podval.picasa.model.Util;
 
 import java.io.IOException;
 
@@ -74,12 +68,8 @@ public class Main {
         }
 
         try {
-            final HttpTransport transport = Transport.create("Podval-PicasaSync/1.0");
+            final HttpTransport transport = Transport.create();
             Transport.authenticate(main.userName, main.password, transport);
-
-            final Lister lister = new Lister(transport);
-
-            lister.showAlbums();
 
 //            AlbumEntry album = postAlbum(transport, feed);
 //            postPhoto(transport, album);

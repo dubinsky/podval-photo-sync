@@ -33,7 +33,13 @@ import org.podval.picasa.model.Util;
  *
  * @author dub
  */
+// TODO fold into the Picasa class!
 public final class Transport {
+
+    public static HttpTransport create() {
+        return create("Podval-PicasaSync/1.0");
+    }
+
 
     public static HttpTransport create(final String applicationName) {
         final HttpTransport result = GoogleTransport.create();

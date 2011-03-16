@@ -33,7 +33,7 @@ public class AlbumFeed extends Feed {
   public static AlbumFeed executeGet(HttpTransport transport, PicasaUrl url)
       throws IOException {
     url.kinds = "photo";
-    url.maxResults = 5;
+    url.maxResults = 100;
     return (AlbumFeed) Feed.executeGet(transport, url, AlbumFeed.class);
   }
 }
