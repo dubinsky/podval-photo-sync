@@ -22,6 +22,8 @@ import org.podval.things.Thing;
 
 import org.podval.picasa.model.PhotoEntry;
 
+import java.util.Date;
+
 
 /**
  *
@@ -46,9 +48,9 @@ public final class PicasaThing extends Thing {
         out.println(level,
             "<photo name=\"" + getName() +
             // TODO !!!
-//            "\" date=\"" + getTakenOn() +
-//            "\" size=\"" + getSize() +
-//            "\" rotation=\"" + getRotation() + "\"" +
+            "\" date=\"" + new Date(photo.timestamp) +
+            "\" size=\"" + photo.size +
+            "\" rotation=\"" + photo.rotation + "\"" +
             "/>");
     }
 

@@ -109,6 +109,8 @@ public final class Main {
 
 
     private void run() throws ThingsException {
+/////        org.podval.picasa.model.Util.enableLogging();
+
         final Crate firstCrate = CrateFactory.getCrate(firstTicket);
 
         if (secondTicket == null) {

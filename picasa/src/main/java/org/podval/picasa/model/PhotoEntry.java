@@ -37,6 +37,19 @@ public class PhotoEntry extends Entry {
   @Key("media:group")
   public MediaGroup mediaGroup;
 
+
+  @Key("gphoto:timestamp")
+  public long timestamp;
+
+
+  @Key("gphoto:size")
+  public int size;
+
+
+  @Key("gphoto:rotation")
+  public int rotation;
+
+
   public static PhotoEntry executeInsert(HttpTransport transport,
       String albumFeedLink, InputStreamContent content, String fileName)
       throws IOException {
