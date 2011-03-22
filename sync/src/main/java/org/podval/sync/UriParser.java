@@ -3,7 +3,7 @@ package org.podval.sync;
 import org.podval.things.CrateTicket;
 import org.podval.directory.FileFactory;
 
-import org.apache.commons.cli.ParseException;
+import org.kohsuke.args4j.CmdLineException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,13 +16,13 @@ public final class UriParser {
 
 
     public static CrateTicket fromUri(final String uriStr, final String suffix)
-        throws ParseException
+        throws CmdLineException
     {
         final URI uri;
         try {
             uri = new URI(uriStr);
         } catch (final URISyntaxException e) {
-            throw new ParseException(e.getMessage());
+            throw new CmdLineException(e.getMessage());
         }
 
         final String userInfo = getUserInfo(uri);

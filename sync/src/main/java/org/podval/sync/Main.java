@@ -7,12 +7,10 @@ import org.podval.things.CrateFactory;
 import org.podval.things.CrateTicket;
 import org.podval.things.ThingsException;
 
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.OptionBuilder;
-import org.apache.commons.cli.ParseException;
+import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.CmdLineException;
 
 
 public final class Main {
@@ -23,51 +21,38 @@ public final class Main {
     }
 
 
-    private Main() {
-        this.options = new Options();
+    @Option(name="-h", aliases="--help", usage="display help message")
+    private boolean help = false;
 
-        options.addOption(OptionBuilder.
-            withLongOpt("help").
-            withDescription("print this help message").
-            create('h'));
 
-        options.addOption(OptionBuilder.
-            withLongOpt("suffix").
-            hasArg().withArgName("suffix").
-            withDescription("suffix that selects a subtree").
-            create('s'));
+    @Option(name="-d", aliases="--dry-run", usage="dry run")
+    private boolean isDryRun = false;
 
-        options.addOption(OptionBuilder.
-            withLongOpt("dry-run").
-            withDescription("dry run").
-            create('d'));
+
+    @Option(name="-s", aliases="--suffux", usage="suffix that selects a subtree")
+    private String suffix;
+
+
+    @Argument(index=0, required=true)
+    private void setFirstUri(final String value) throws CmdLineException {
+        firstTicket = UriParser.fromUri(value, suffix);
+    }
+
+
+    @Argument(index=1, required=false)
+    private void setSecondUri(final String value) throws CmdLineException {
+        secondTicket = UriParser.fromUri(value, suffix);
     }
 
 
     private void run(final String[] args) {
+        parse(args);
+
         try {
-            parse(args);
             run();
-        } catch (final ParseException e) {
-            System.err.println("Error: " + e.getMessage());
-            printUsage();
-            // @todo available schemes...
-            // @todo help
         } catch (final ThingsException e) {
             System.err.println("Error: " + e.getMessage());
         }
-    }
-
-
-    private void printUsage() {
-        new HelpFormatter().printHelp("photo-sync [ options ] <from-uri> <to-uri>", options);
-
-        System.out.println(
-            "\n" +
-            "uri: scheme://[user:password@][host]/path\n"
-        );
-
-        printSchemes();
     }
 
 
@@ -79,36 +64,44 @@ public final class Main {
     }
 
 
-    private void parse(final String[] args) throws ParseException {
-        final CommandLine commandLine = new GnuParser().parse(options, args);
-
-        final String suffix = commandLine.getOptionValue("s");
-
-        final String[] realArgs = commandLine.getArgs();
-
-        if (commandLine.hasOption('h')) {
-            printUsage();
-        } else {
-            if (realArgs.length < 1) {
-                throw new ParseException("Too few arguments");
-            }
-
-            if (realArgs.length > 2) {
-                throw new ParseException("Too many arguments");
-            }
-
-            firstTicket = UriParser.fromUri(realArgs[0], suffix);
-
-            if (realArgs.length > 1) {
-                secondTicket = UriParser.fromUri(realArgs[1], suffix);
-            }
-
-            isDryRun = commandLine.hasOption("d");
+    private void parse(final String[] args) {
+        final CmdLineParser parser = new CmdLineParser(this);
+        try {
+            parser.parseArgument(args);
+            // TODO: ?
+//            if (realArgs.length > 2) {
+//                throw new ParseException("Too many arguments");
+//            }
+        } catch (final CmdLineException e) {
+            System.err.println("Error: " + e.getMessage());
+            printUsage(parser);
+            System.exit(1);
+        }
+        if (help) {
+            printUsage(parser);
+            System.exit(0);
         }
     }
 
 
+    private void printUsage(final CmdLineParser parser) {
+        System.err.println("photo-sync [ options ] <from-uri> <to-uri>");
+
+        parser.setUsageWidth(80);
+        parser.printUsage(System.err);
+        System.err.println();
+
+        System.err.println(
+            "\n" +
+            "uri: scheme://[user:password@][host]/path\n"
+        );
+
+        printSchemes();
+    }
+
+
     private void run() throws ThingsException {
+        // TODO: Provide universal way to enable logging...
 /////        org.podval.picasa.model.Util.enableLogging();
 
         final Crate firstCrate = CrateFactory.getCrate(firstTicket);
@@ -122,14 +115,8 @@ public final class Main {
     }
 
 
-    private final Options options;
-
-
     private CrateTicket firstTicket;
 
 
     private CrateTicket secondTicket;
-
-
-    private boolean isDryRun;
 }
