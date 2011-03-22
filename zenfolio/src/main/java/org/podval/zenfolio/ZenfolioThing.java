@@ -2,7 +2,6 @@ package org.podval.zenfolio;
 
 import org.podval.things.Thing;
 import org.podval.things.Rotation;
-import org.podval.things.Indenter;
 
 import com.zenfolio.www.api._1_1.Photo;
 import com.zenfolio.www.api._1_1.PhotoRotation;
@@ -25,11 +24,13 @@ public final class ZenfolioThing extends Thing {
     }
 
 
-    public Date getTakenOn() {
+    @Override
+    public Date getTimestamp() {
         return photo.getTakenOn().getTime();
     }
 
 
+    @Override
     public int getSize() {
         return photo.getSize();
     }
@@ -39,28 +40,21 @@ public final class ZenfolioThing extends Thing {
 
     static {
         rotations.put(PhotoRotation.None, Rotation.None);
-        rotations.put(PhotoRotation.Flip, Rotation.Flip);
-        rotations.put(PhotoRotation.Rotate180, Rotation.Rotate180);
-        rotations.put(PhotoRotation.Rotate180Flip, Rotation.Rotate180Flip);
-        rotations.put(PhotoRotation.Rotate270, Rotation.Rotate270);
-        rotations.put(PhotoRotation.Rotate270Flip, Rotation.Rotate270);
-        rotations.put(PhotoRotation.Rotate90, Rotation.Rotate90);
-        rotations.put(PhotoRotation.Rotate90Flip, Rotation.Rotate90Flip);
-    }
-
-
-    public Rotation getRotation() {
-        return rotations.get(photo.getRotation());
+//        rotations.put(PhotoRotation.Flip, Rotation.Flip);
+        rotations.put(PhotoRotation.Rotate180, Rotation.R180);
+//        rotations.put(PhotoRotation.Rotate180Flip, Rotation.Rotate180Flip);
+        rotations.put(PhotoRotation.Rotate270, Rotation.Left);
+//        rotations.put(PhotoRotation.Rotate270Flip, Rotation.Rotate270);
+        rotations.put(PhotoRotation.Rotate90, Rotation.Right);
+//        rotations.put(PhotoRotation.Rotate90Flip, Rotation.Rotate90Flip);
     }
 
 
     @Override
-    public void list(final Indenter out, final int level) {
-        out.println(level,
-            "<photo name=\"" + getName() +
-            "\" date=\"" + getTakenOn() +
-            "\" size=\"" + getSize() +
-            "\" rotation=\"" + getRotation() + "\"/>");
+    public Rotation getRotation() {
+        final Rotation result = rotations.get(photo.getRotation());
+        // TODO: deal with null...
+        return result;
     }
 
 

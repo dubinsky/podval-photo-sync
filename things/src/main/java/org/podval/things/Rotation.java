@@ -24,11 +24,12 @@ package org.podval.things;
  */
 public enum Rotation {
     None,
-    Rotate90,
-    Rotate180,
-    Rotate270,
-    Flip,
-    Rotate90Flip,
-    Rotate180Flip,
-    Rotate270Flip
+    Right,
+    R180,
+    Left
+//        ,
+//    Flip,
+//    Rotate90Flip,
+//    Rotate180Flip,
+//    Rotate270Flip
 }

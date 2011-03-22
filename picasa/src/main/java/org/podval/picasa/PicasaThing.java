@@ -17,7 +17,7 @@
 
 package org.podval.picasa;
 
-import org.podval.things.Indenter;
+import org.podval.things.Rotation;
 import org.podval.things.Thing;
 
 import org.podval.picasa.model.PhotoEntry;
@@ -31,7 +31,7 @@ import java.util.Date;
  */
 public final class PicasaThing extends Thing {
 
-    public PicasaThing(final Picasa picasa, final PhotoEntry photo) {
+    /* package */ PicasaThing(final Picasa picasa, final PhotoEntry photo) {
         this.picasa = picasa;
         this.photo = photo;
     }
@@ -44,14 +44,35 @@ public final class PicasaThing extends Thing {
 
 
     @Override
-    public void list(final Indenter out, final int level) {
-        out.println(level,
-            "<photo name=\"" + getName() +
-            // TODO !!!
-            "\" date=\"" + new Date(photo.timestamp) +
-            "\" size=\"" + photo.size +
-            "\" rotation=\"" + photo.rotation + "\"" +
-            "/>");
+    public Date getTimestamp() {
+        return new Date(photo.timestamp);
+    }
+
+
+    @Override
+    public int getSize() {
+        return photo.size;
+    }
+
+
+    @Override
+    public Rotation getRotation() {
+        final Rotation result;
+        final int value = photo.rotation;
+        if (value == 0) {
+            result = Rotation.None;
+        } else if(value == 90) {
+            result = Rotation.Right;
+        } else if (value == 180) {
+            result = Rotation.R180;
+        } else if (value == 270) {
+            result = Rotation.Left;
+        } else {
+            result = null;
+            // TODO deal with null...
+        }
+
+        return result;
     }
 
 

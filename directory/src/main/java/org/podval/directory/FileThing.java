@@ -1,7 +1,8 @@
 package org.podval.directory;
 
+import java.util.Date;
+import org.podval.things.Rotation;
 import org.podval.things.Thing;
-import org.podval.things.Indenter;
 
 import java.util.Map;
 
@@ -22,6 +23,27 @@ public final class FileThing extends Thing {
     }
 
 
+    @Override
+    public Date getTimestamp() {
+        // TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
+    @Override
+    public int getSize() {
+        // TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
+    @Override
+    public Rotation getRotation() {
+        // TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
     public File get(final String extension) {
         return components.get(extension);
     }
@@ -30,9 +52,6 @@ public final class FileThing extends Thing {
     public boolean exists(final String extension) {
         return get(extension) != null;
     }
-
-
-    public void list(final Indenter out, final int level) {}
 
 
     private final String name;

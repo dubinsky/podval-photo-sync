@@ -28,10 +28,20 @@ public final class Lister<T extends Thing> {
         }
 
         for (final T thing : folder.getThings()) {
-            thing.list(out, newLevel);
+            list(thing, newLevel);
         }
 
         out.println(level, "</folder>");
+    }
+
+
+    private void list(final Thing thing, final int level) {
+        out.println(level,
+            "<photo name=\"" + thing.getName() +
+            "\" date=\"" + thing.getTimestamp() +
+            "\" size=\"" + thing.getSize() +
+            "\" rotation=\"" + thing.getRotation() + "\"" +
+            "/>");
     }
 
 
