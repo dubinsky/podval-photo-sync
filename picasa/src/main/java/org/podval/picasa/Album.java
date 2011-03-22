@@ -42,13 +42,25 @@ public final class Album extends Folder<PicasaThing> {
 
     public Album(final Picasa picasa, final AlbumEntry album) {
         this.picasa = picasa;
-        this.album = album;
+        this.albumEntry = album;
+    }
+
+
+    public Album(final Picasa picasa, final String name) {
+        this.picasa = picasa;
+        this.albumEntry = new AlbumEntry();
+        this.albumEntry.title = name;
+    }
+
+
+    /* package */ AlbumEntry getAlbumEntry() {
+        return albumEntry;
     }
 
 
     @Override
     public String getName() {
-        return album.title;
+        return albumEntry.title;
     }
 
 
@@ -92,8 +104,8 @@ public final class Album extends Folder<PicasaThing> {
     @Override
     protected void populate() throws ThingsException {
         try {
-            if (album.numPhotos != 0) {
-                final PicasaUrl url = new PicasaUrl(album.getFeedLink());
+            if ((albumEntry != null) && (albumEntry.numPhotos != 0)) {
+                final PicasaUrl url = new PicasaUrl(albumEntry.getFeedLink());
                 PicasaUrl nextUrl = url;
 
                 while (nextUrl != null) {
@@ -126,7 +138,7 @@ public final class Album extends Folder<PicasaThing> {
 
     @Override
     protected void checkFolderType(boolean canHaveFolders, boolean canHaveThings) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // RODO?
     }
 
 
@@ -151,7 +163,7 @@ public final class Album extends Folder<PicasaThing> {
     private final Picasa picasa;
 
 
-    private final AlbumEntry album;
+    private final AlbumEntry albumEntry;
 
 
     private final List<PicasaThing> things = new LinkedList<PicasaThing>();

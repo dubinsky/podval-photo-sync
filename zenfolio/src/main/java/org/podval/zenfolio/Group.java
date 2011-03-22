@@ -141,7 +141,7 @@ import java.io.File;
     protected void doAddFile(final String name, final File file) {
         // @todo implement
         // @todo checks in the base class?
-        throw new UnsupportedOperationException("нот имплементед ыет!!!");
+        throw new UnsupportedOperationException("Not implemented yet!!!");
     }
 
 

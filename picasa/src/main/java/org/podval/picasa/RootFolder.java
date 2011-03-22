@@ -27,10 +27,10 @@ import org.podval.picasa.model.UserFeed;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.LinkedList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
 
 
 /**
@@ -93,13 +93,18 @@ public final class RootFolder extends Folder<PicasaThing> {
             final PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/" + picasa.getLogin());
 
             PicasaUrl nextUrl = url;
-            while (nextUrl != null) {
+            do {
                 final UserFeed chunk = UserFeed.executeGet(picasa.getTransport(), nextUrl);
+
+                if (feed == null) {
+                    feed = chunk;
+                }
+
                 populate(chunk.albums);
 
                 final String next = Link.find(chunk.links, "next");
                 nextUrl = (next == null) ? null : new PicasaUrl(next);
-            }
+            } while (nextUrl != null);
         } catch (final IOException e) {
             throw new ThingsException(e);
         }
@@ -129,19 +134,32 @@ public final class RootFolder extends Folder<PicasaThing> {
 
     @Override
     protected void checkFolderType(boolean canHaveFolders, boolean canHaveThings) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // TODO?
     }
 
 
     @Override
-    protected Folder<PicasaThing> doCreateFolder(String name, boolean canHaveFolders, boolean canHaveThings) throws ThingsException {
-        throw new UnsupportedOperationException("Not supported yet.");
+    protected Folder<PicasaThing> doCreateFolder(
+        final String name,
+        final boolean canHaveFolders,
+        final boolean canHaveThings) throws ThingsException
+    {
+        final Album result;
+        ensureIsPopulated();
+        try {
+            result = new Album(picasa, name);
+            feed.insertAlbum(picasa.getTransport(), result.getAlbumEntry());
+        } catch (final IOException e) {
+            throw new ThingsException(e);
+        }
+
+        return result;
     }
 
 
     @Override
     protected Folder<PicasaThing> doCreateFakeFolder(String name, boolean canHaveFolders, boolean canHaveThings) throws ThingsException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Album(picasa, name);
     }
 
 
@@ -152,6 +170,9 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     private final Picasa picasa;
+
+
+    private UserFeed feed;
 
 
     private final List<Folder<PicasaThing>> folders = new LinkedList<Folder<PicasaThing>>();

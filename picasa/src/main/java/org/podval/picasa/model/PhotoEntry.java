@@ -26,54 +26,62 @@ import com.google.api.client.xml.atom.AtomContent;
 
 import java.io.IOException;
 
+
 /**
  * @author Yaniv Inbar
  */
 public class PhotoEntry extends Entry {
 
-  @Key
-  public Category category = Category.newKind("photo");
-
-  @Key("media:group")
-  public MediaGroup mediaGroup;
+    @Key
+    public Category category = Category.newKind("photo");
 
 
-  @Key("gphoto:timestamp")
-  public long timestamp;
+    @Key("media:group")
+    public MediaGroup mediaGroup;
 
 
-  @Key("gphoto:size")
-  public int size;
+    @Key("gphoto:timestamp")
+    public long timestamp;
 
 
-  @Key("gphoto:rotation")
-  public int rotation;
+    @Key("gphoto:size")
+    public int size;
 
 
-  public static PhotoEntry executeInsert(HttpTransport transport,
-      String albumFeedLink, InputStreamContent content, String fileName)
-      throws IOException {
-    HttpRequest request = transport.buildPostRequest();
-    request.setUrl(albumFeedLink);
-    GoogleHeaders headers = (GoogleHeaders) request.headers;
-    headers.setSlugFromFileName(fileName);
-    request.content = content;
-    return request.execute().parseAs(PhotoEntry.class);
-  }
+    @Key("gphoto:rotation")
+    public int rotation;
 
-  public PhotoEntry executeInsertWithMetadata(
-      HttpTransport transport, String albumFeedLink, InputStreamContent content)
-      throws IOException {
-    HttpRequest request = transport.buildPostRequest();
-    request.setUrl(albumFeedLink);
-    AtomContent atomContent = new AtomContent();
-    atomContent.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
-    atomContent.entry = this;
-    MultipartRelatedContent multiPartContent =
-        MultipartRelatedContent.forRequest(request);
-    multiPartContent.parts.add(atomContent);
-    multiPartContent.parts.add(content);
-    request.content = multiPartContent;
-    return request.execute().parseAs(PhotoEntry.class);
-  }
+
+    public static PhotoEntry executeInsert(
+        final HttpTransport transport,
+        final String albumFeedLink,
+        final InputStreamContent content,
+        final String fileName) throws IOException
+    {
+        final HttpRequest request = transport.buildPostRequest();
+        request.setUrl(albumFeedLink);
+        final GoogleHeaders headers = (GoogleHeaders) request.headers;
+        headers.setSlugFromFileName(fileName);
+        request.content = content;
+        return request.execute().parseAs(PhotoEntry.class);
+    }
+
+
+    public PhotoEntry executeInsertWithMetadata(
+        final HttpTransport transport,
+        final String albumFeedLink,
+        final InputStreamContent content) throws IOException
+    {
+        final HttpRequest request = transport.buildPostRequest();
+        request.setUrl(albumFeedLink);
+        final AtomContent atomContent = new AtomContent();
+        atomContent.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
+        atomContent.entry = this;
+        final MultipartRelatedContent multiPartContent =
+            MultipartRelatedContent.forRequest(request);
+        multiPartContent.parts.add(atomContent);
+        multiPartContent.parts.add(content);
+        request.content = multiPartContent;
+        return request.execute().parseAs(PhotoEntry.class);
+    }
 }
