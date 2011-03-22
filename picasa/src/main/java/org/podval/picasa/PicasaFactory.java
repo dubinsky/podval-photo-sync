@@ -17,22 +17,22 @@
 
 package org.podval.picasa;
 
-import org.podval.things.Crate;
-import org.podval.things.CrateFactory;
-import org.podval.things.CrateTicket;
+import org.podval.things.Connection;
+import org.podval.things.ConnectionFactory;
+import org.podval.things.ConnectionDescriptor;
 import org.podval.things.ThingsException;
 
 /**
  *
  * @author dub
  */
-public class PicasaFactory extends CrateFactory<PicasaThing> {
+public class PicasaFactory extends ConnectionFactory<PicasaThing> {
 
     public static final String SCHEME = "picasa";
 
 
     @Override
-    public Crate<PicasaThing> createCrate(final CrateTicket ticket) throws ThingsException {
+    public Connection<PicasaThing> createConnection(final ConnectionDescriptor ticket) throws ThingsException {
         // TODO: check that ticket.getPath() is empty
         return new Picasa(ticket.getLogin(), ticket.getPassword());
     }

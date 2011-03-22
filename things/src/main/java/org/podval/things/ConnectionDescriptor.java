@@ -1,9 +1,9 @@
 package org.podval.things;
 
 
-public final class CrateTicket {
+public final class ConnectionDescriptor {
 
-    public CrateTicket(
+    public ConnectionDescriptor(
         final String scheme,
         final String login,
         final String password,

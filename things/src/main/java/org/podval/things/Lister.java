@@ -3,17 +3,17 @@ package org.podval.things;
 
 public final class Lister<T extends Thing> {
 
-    public Lister(final Crate crate) {
-        this.crate = crate;
+    public Lister(final Connection connection) {
+        this.connection = connection;
 
         this.out = new Indenter(System.out);
     }
 
 
     public void run() throws ThingsException {
-        crate.open();
+        connection.open();
 
-        list(crate.getRootFolder(), 0);
+        list(connection.getRootFolder(), 0);
     }
 
 
@@ -45,7 +45,7 @@ public final class Lister<T extends Thing> {
     }
 
 
-    private final Crate crate;
+    private final Connection connection;
 
 
     private final Indenter out;

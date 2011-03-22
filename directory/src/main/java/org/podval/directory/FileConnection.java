@@ -1,13 +1,13 @@
 package org.podval.directory;
 
-import org.podval.things.Crate;
+import org.podval.things.Connection;
 import org.podval.things.Folder;
 import org.podval.things.ThingsException;
 
 
-/* package */ final class FileCrate extends Crate<FileThing> {
+/* package */ final class FileConnection extends Connection<FileThing> {
 
-    public FileCrate(final String rootPath) {
+    public FileConnection(final String rootPath) {
         rootFolder = new FileFolder(rootPath);
     }
 

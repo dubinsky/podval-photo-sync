@@ -2,9 +2,9 @@ package org.podval.sync;
 
 import org.podval.things.Synchronizer;
 import org.podval.things.Lister;
-import org.podval.things.Crate;
-import org.podval.things.CrateFactory;
-import org.podval.things.CrateTicket;
+import org.podval.things.Connection;
+import org.podval.things.ConnectionFactory;
+import org.podval.things.ConnectionDescriptor;
 import org.podval.things.ThingsException;
 
 import org.kohsuke.args4j.Option;
@@ -58,8 +58,8 @@ public final class Main {
 
     private void printSchemes() {
         System.out.println("  Available schemes:");
-        for (final CrateFactory crateFactory : CrateFactory.getAll()) {
-            System.out.println("    " + crateFactory.getScheme());
+        for (final ConnectionFactory connectionFactory : ConnectionFactory.getAll()) {
+            System.out.println("    " + connectionFactory.getScheme());
         }
     }
 
@@ -104,19 +104,19 @@ public final class Main {
         // TODO: Provide universal way to enable logging...
 /////        org.podval.picasa.model.Util.enableLogging();
 
-        final Crate firstCrate = CrateFactory.getCrate(firstTicket);
+        final Connection firstConnection = ConnectionFactory.getConnection(firstTicket);
 
         if (secondTicket == null) {
-            new Lister(firstCrate).run();
+            new Lister(firstConnection).run();
         } else {
-            final Crate secondCrate = CrateFactory.getCrate(secondTicket);
-            new Synchronizer(firstCrate, secondCrate, !isDryRun).run();
+            final Connection secondConnection = ConnectionFactory.getConnection(secondTicket);
+            new Synchronizer(firstConnection, secondConnection, !isDryRun).run();
         }
     }
 
 
-    private CrateTicket firstTicket;
+    private ConnectionDescriptor firstTicket;
 
 
-    private CrateTicket secondTicket;
+    private ConnectionDescriptor secondTicket;
 }

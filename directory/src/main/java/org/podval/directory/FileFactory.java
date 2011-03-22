@@ -1,18 +1,18 @@
 package org.podval.directory;
 
-import org.podval.things.Crate;
-import org.podval.things.CrateFactory;
-import org.podval.things.CrateTicket;
+import org.podval.things.Connection;
+import org.podval.things.ConnectionFactory;
+import org.podval.things.ConnectionDescriptor;
 
 
-public final class FileFactory extends CrateFactory<FileThing> {
+public final class FileFactory extends ConnectionFactory<FileThing> {
 
     public static final String SCHEME = "file";
 
 
     @Override
-    public Crate<FileThing> createCrate(final CrateTicket ticket) {
-        return new FileCrate(ticket.getPath());
+    public Connection<FileThing> createConnection(final ConnectionDescriptor ticket) {
+        return new FileConnection(ticket.getPath());
     }
 
 

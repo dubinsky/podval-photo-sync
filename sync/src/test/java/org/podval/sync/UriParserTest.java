@@ -1,6 +1,6 @@
 package org.podval.sync;
 
-import org.podval.things.CrateTicket;
+import org.podval.things.ConnectionDescriptor;
 import org.kohsuke.args4j.CmdLineException;
 
 import org.junit.Assert;
@@ -11,7 +11,7 @@ public class UriParserTest {
 
     @Test
     public void schemeHostPath() throws CmdLineException {
-        final CrateTicket result = UriParser.fromUri("scheme://host/path", null);
+        final ConnectionDescriptor result = UriParser.fromUri("scheme://host/path", null);
         Assert.assertEquals("scheme", result.getScheme());
         Assert.assertEquals("host", result.getHost());
         Assert.assertEquals("/path", result.getPath());
@@ -31,7 +31,7 @@ public class UriParserTest {
     private void loginPassword(final String uri, final String login, final String password)
         throws CmdLineException
     {
-        final CrateTicket result = UriParser.fromUri(uri, null);
+        final ConnectionDescriptor result = UriParser.fromUri(uri, null);
         Assert.assertEquals(login, result.getLogin());
         Assert.assertEquals(password, result.getPassword());
     }

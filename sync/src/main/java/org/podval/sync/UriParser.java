@@ -1,6 +1,6 @@
 package org.podval.sync;
 
-import org.podval.things.CrateTicket;
+import org.podval.things.ConnectionDescriptor;
 import org.podval.directory.FileFactory;
 
 import org.kohsuke.args4j.CmdLineException;
@@ -15,7 +15,7 @@ public final class UriParser {
     }
 
 
-    public static CrateTicket fromUri(final String uriStr, final String suffix)
+    public static ConnectionDescriptor fromUri(final String uriStr, final String suffix)
         throws CmdLineException
     {
         final URI uri;
@@ -44,7 +44,7 @@ public final class UriParser {
             }
         }
 
-        return new CrateTicket(
+        return new ConnectionDescriptor(
             defaultScheme(uri.getScheme()),
             login,
             password,

@@ -17,7 +17,7 @@
 
 package org.podval.picasa;
 
-import org.podval.things.Crate;
+import org.podval.things.Connection;
 import org.podval.things.Folder;
 import org.podval.things.ThingsException;
 
@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author dub
  */
-public class Picasa extends Crate<PicasaThing> {
+public class Picasa extends Connection<PicasaThing> {
 
     public Picasa(final String login, final String password) throws ThingsException {
         this.login = login;

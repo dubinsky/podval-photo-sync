@@ -7,12 +7,12 @@ import java.io.IOException;
 public final class Synchronizer<F extends Thing, T extends Thing> {
 
     public Synchronizer(
-        final Crate<F> fromCrate,
-        final Crate<T> toCrate,
+        final Connection<F> fromConnection,
+        final Connection<T> toConnection,
         final boolean doIt)
     {
-        this.fromCrate = fromCrate;
-        this.toCrate = toCrate;
+        this.fromConnection = fromConnection;
+        this.toConnection = toConnection;
         this.doIt = doIt;
 
         this.out = new Indenter(System.out);
@@ -20,12 +20,12 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
 
 
     public void run() throws ThingsException {
-        converter = ThingsConverter.get(fromCrate.getScheme(), toCrate.getScheme());
+        converter = ThingsConverter.get(fromConnection.getScheme(), toConnection.getScheme());
 
-        fromCrate.open();
-        toCrate.open();
+        fromConnection.open();
+        toConnection.open();
 
-        syncFolder(fromCrate.getRootFolder(), toCrate.getRootFolder(), 0);
+        syncFolder(fromConnection.getRootFolder(), toConnection.getRootFolder(), 0);
     }
 
 
@@ -149,10 +149,10 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
     }
 
 
-    private final Crate<F> fromCrate;
+    private final Connection<F> fromConnection;
 
 
-    private final Crate<T> toCrate;
+    private final Connection<T> toConnection;
 
 
     private ThingsConverter<F, T> converter;

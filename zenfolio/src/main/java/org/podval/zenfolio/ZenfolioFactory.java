@@ -1,18 +1,18 @@
 package org.podval.zenfolio;
 
-import org.podval.things.Crate;
-import org.podval.things.CrateFactory;
-import org.podval.things.CrateTicket;
+import org.podval.things.Connection;
+import org.podval.things.ConnectionFactory;
+import org.podval.things.ConnectionDescriptor;
 import org.podval.things.ThingsException;
 
 
-public final class ZenfolioFactory extends CrateFactory<ZenfolioThing> {
+public final class ZenfolioFactory extends ConnectionFactory<ZenfolioThing> {
 
     public static final String SCHEME = "zenfolio";
 
 
     @Override
-    public Crate<ZenfolioThing> createCrate(final CrateTicket ticket) throws ThingsException {
+    public Connection<ZenfolioThing> createConnection(final ConnectionDescriptor ticket) throws ThingsException {
         return new Zenfolio(ticket.getLogin(), ticket.getPassword(), ticket.getPath());
     }
 

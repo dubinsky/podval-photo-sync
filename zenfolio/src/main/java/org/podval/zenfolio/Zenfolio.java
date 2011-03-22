@@ -15,7 +15,7 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.httpclient.Header;
 
 import org.podval.things.Folder;
-import org.podval.things.Crate;
+import org.podval.things.Connection;
 import org.podval.things.ThingsException;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-/* package */ final class Zenfolio extends Crate<ZenfolioThing> {
+/* package */ final class Zenfolio extends Connection<ZenfolioThing> {
 
     public Zenfolio(final String login, final String password, String path) throws ThingsException {
         this.login = login;

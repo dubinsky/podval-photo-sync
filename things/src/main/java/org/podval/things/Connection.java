@@ -1,7 +1,7 @@
 package org.podval.things;
 
 
-public abstract class Crate<T extends Thing> {
+public abstract class Connection<T extends Thing> {
 
     public abstract String getScheme();
 
