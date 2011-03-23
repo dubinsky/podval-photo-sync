@@ -51,6 +51,18 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
+    public boolean isPublic() {
+        return true;
+    }
+
+
+    @Override
+    public void setPublic(final boolean value) {
+        // TODO block setting root folder to private
+    }
+
+
+    @Override
     public Collection<Folder<PicasaThing>> getFolders() throws ThingsException {
         ensureIsPopulated();
         return folders;

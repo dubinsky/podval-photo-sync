@@ -3,13 +3,13 @@ package org.podval.zenfolio;
 import org.podval.things.Folder;
 import org.podval.things.ThingsException;
 
-import com.zenfolio.www.api._1_1.ArrayOfChoice1;
 import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
 import com.zenfolio.www.api._1_1.GroupElement;
 import com.zenfolio.www.api._1_1.GroupUpdater;
 import com.zenfolio.www.api._1_1.PhotoSet;
 import com.zenfolio.www.api._1_1.PhotoSetType;
 import com.zenfolio.www.api._1_1.PhotoSetUpdater;
+import com.zenfolio.www.api._1_1.AccessType;
 
 import java.rmi.RemoteException;
 
@@ -30,6 +30,18 @@ import java.io.File;
     @Override
     public String getName() {
         return group.getTitle();
+    }
+
+
+    @Override
+    public boolean isPublic() {
+        return group.getAccessDescriptor().getAccessType() == AccessType.Public;
+    }
+
+
+    @Override
+    public void setPublic(final boolean value) {
+        group.getAccessDescriptor().setAccessType((value) ? AccessType.Public : AccessType.Private );
     }
 
 

@@ -11,6 +11,12 @@ public abstract class Folder<T extends Thing> {
     public abstract String getName();
 
 
+    public abstract boolean isPublic();
+
+
+    public abstract void setPublic(final boolean value);
+
+
     public final boolean hasFolders() throws ThingsException {
         return !getFolders().isEmpty();
     }

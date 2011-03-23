@@ -64,6 +64,24 @@ public final class Album extends Folder<PicasaThing> {
     }
 
 
+    private static final String PUBLIC_ACCESS = "public";
+
+
+    private static final String PRIVATE_ACCESS = "private";
+
+
+    @Override
+    public boolean isPublic() {
+        return albumEntry.access.equals(this);
+    }
+
+
+    @Override
+    public void setPublic(final boolean value) {
+        albumEntry.access = (value) ? PUBLIC_ACCESS : PRIVATE_ACCESS;
+    }
+
+
     private static List<Folder<PicasaThing>> EMPTY = new LinkedList<Folder<PicasaThing>>();
 
 

@@ -4,6 +4,7 @@ import org.podval.things.Folder;
 import org.podval.things.ThingsException;
 
 import com.zenfolio.www.api._1_1.PhotoSet;
+import com.zenfolio.www.api._1_1.AccessType;
 
 import java.rmi.RemoteException;
 
@@ -35,6 +36,18 @@ import java.io.IOException;
     @Override
     public String getName() {
         return photoSet.getTitle();
+    }
+
+
+    @Override
+    public boolean isPublic() {
+        return photoSet.getAccessDescriptor().getAccessType() == AccessType.Public;
+    }
+
+
+    @Override
+    public void setPublic(final boolean value) {
+        photoSet.getAccessDescriptor().setAccessType((value) ? AccessType.Public : AccessType.Private );
     }
 
 

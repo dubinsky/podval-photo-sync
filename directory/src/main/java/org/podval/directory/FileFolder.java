@@ -41,6 +41,18 @@ import java.io.File;
 
 
     @Override
+    public boolean isPublic() {
+        return true;
+    }
+
+
+    @Override
+    public void setPublic(final boolean value) {
+        // TODO ...
+    }
+
+
+    @Override
     protected void populate() {
         final Map<String, Map<String, File>> bunches = new HashMap<String, Map<String, File>>();
 
