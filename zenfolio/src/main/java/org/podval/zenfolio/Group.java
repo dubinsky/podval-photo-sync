@@ -1,6 +1,7 @@
 package org.podval.zenfolio;
 
 import org.podval.things.Folder;
+import org.podval.things.FolderType;
 import org.podval.things.ThingsException;
 
 import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
@@ -30,6 +31,12 @@ import java.io.File;
     @Override
     public String getName() {
         return group.getTitle();
+    }
+
+
+    @Override
+    public FolderType getFolderType() {
+        return FolderType.Mix;
     }
 
 
@@ -103,13 +110,12 @@ import java.io.File;
     @Override
     public Folder<ZenfolioThing> doCreateFolder(
         final String name,
-        final boolean canHaveDirectories,
-        final boolean canHaveItems) throws ThingsException
+        final FolderType folderType) throws ThingsException
     {
         final Folder<ZenfolioThing> result;
 
         try {
-            if (canHaveDirectories) {
+            if (folderType.canHaveFolders()) {
                 final GroupUpdater updater = new GroupUpdater();
                 updater.setTitle(name);
                 result = new Group(zenfolio, zenfolio.getConnection().createGroup(group.getId(), updater));
@@ -129,12 +135,11 @@ import java.io.File;
     @Override
     public Folder<ZenfolioThing> doCreateFakeFolder(
         final String name,
-        final boolean canHaveDirectories,
-        final boolean canHaveItems)
+        final FolderType folderType)
     {
         final Folder<ZenfolioThing> result;
 
-        if (canHaveDirectories) {
+        if (folderType.canHaveFolders()) {
             final com.zenfolio.www.api._1_1.Group newGroup = new com.zenfolio.www.api._1_1.Group();
             newGroup.setTitle(name);
             result = new Group(zenfolio, newGroup);
@@ -158,26 +163,8 @@ import java.io.File;
 
 
     @Override
-    public boolean canHaveFolders() {
-        return true;
-    }
-
-
-    @Override
-    public boolean canHaveThings() {
-        return true;
-    }
-
-
-    @Override
-    protected void checkFolderType(final boolean canHaveDirectories, final boolean canHaveItems) {
-        if (canHaveDirectories && canHaveItems) {
-            throw new IllegalArgumentException("Mixed directories not supported!");
-        }
-
-        if (!canHaveDirectories && !canHaveItems) {
-            throw new IllegalArgumentException("No elements allowed for the directory!");
-        }
+    protected void checkFolderType(final FolderType folderType) {
+        folderType.checkNotMixed();
     }
 
 

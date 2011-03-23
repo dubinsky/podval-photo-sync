@@ -18,6 +18,7 @@
 package org.podval.picasa;
 
 import org.podval.things.Folder;
+import org.podval.things.FolderType;
 import org.podval.things.ThingsException;
 
 import org.podval.picasa.model.AlbumEntry;
@@ -47,6 +48,12 @@ public final class RootFolder extends Folder<PicasaThing> {
     @Override
     public String getName() {
         return "/";
+    }
+
+
+    @Override
+    public FolderType getFolderType() {
+        return FolderType.Folders;
     }
 
 
@@ -133,19 +140,7 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
-    public boolean canHaveFolders() {
-        return true;
-    }
-
-
-    @Override
-    public boolean canHaveThings() {
-        return false;
-    }
-
-
-    @Override
-    protected void checkFolderType(boolean canHaveFolders, boolean canHaveThings) {
+    protected void checkFolderType(final FolderType folderType) {
         // TODO?
     }
 
@@ -153,8 +148,7 @@ public final class RootFolder extends Folder<PicasaThing> {
     @Override
     protected Folder<PicasaThing> doCreateFolder(
         final String name,
-        final boolean canHaveFolders,
-        final boolean canHaveThings) throws ThingsException
+        final FolderType folderType) throws ThingsException
     {
         final Album result;
         ensureIsPopulated();
@@ -170,13 +164,16 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
-    protected Folder<PicasaThing> doCreateFakeFolder(String name, boolean canHaveFolders, boolean canHaveThings) throws ThingsException {
+    protected Folder<PicasaThing> doCreateFakeFolder(
+        final String name,
+        final FolderType folderType) throws ThingsException
+    {
         return new Album(picasa, name);
     }
 
 
     @Override
-    protected void doAddFile(String name, File file) throws ThingsException {
+    protected void doAddFile(final String name, final File file) throws ThingsException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

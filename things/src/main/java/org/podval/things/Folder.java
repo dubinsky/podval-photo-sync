@@ -11,6 +11,9 @@ public abstract class Folder<T extends Thing> {
     public abstract String getName();
 
 
+    public abstract FolderType getFolderType();
+
+
     public abstract boolean isPublic();
 
 
@@ -45,80 +48,48 @@ public abstract class Folder<T extends Thing> {
     protected abstract void populate() throws ThingsException;
 
 
-    public final Folder<T> create(
-        final String name,
-        final boolean canHaveFolders,
-        final boolean doIt) throws ThingsException
-    {
-        return (doIt) ?
-            createFolder(name, canHaveFolders, !canHaveFolders) :
-            createFakeFolder(name, canHaveFolders, !canHaveFolders);
-    }
-
-
     public final Folder<T> createFolder(
         final String name,
-        final boolean canHaveFolders,
-        final boolean canHaveThings) throws ThingsException
+        final FolderType folderType) throws ThingsException
     {
-        checkCanHaveFolders();
-        checkFolderType(canHaveFolders, canHaveThings);
+        checkFolderCreation(folderType);
 
-        return doCreateFolder(name, canHaveFolders, canHaveThings);
+        return doCreateFolder(name, folderType);
     }
 
 
     public final Folder<T> createFakeFolder(
         final String name,
-        final boolean canHaveFolders,
-        final boolean canHaveThings) throws ThingsException
+        final FolderType folderType) throws ThingsException
     {
-        checkCanHaveFolders();
-        checkFolderType(canHaveFolders, canHaveThings);
+        checkFolderCreation(folderType);
 
-        return doCreateFakeFolder(name, canHaveFolders, canHaveThings);
+        return doCreateFakeFolder(name, folderType);
     }
 
 
-    private void checkCanHaveFolders() {
-        if (!canHaveFolders()) {
-            throw new UnsupportedOperationException("This folder can not have subfolders");
-        }
+    private void checkFolderCreation(final FolderType folderType) {
+        getFolderType().checkCanHaveFolders(this);
+
+        checkFolderType(folderType);
     }
 
 
-    public abstract boolean canHaveFolders();
-
-
-    private void checkCanHaveThings() {
-        if (!canHaveThings()) {
-            throw new UnsupportedOperationException("This folder can not have things in it");
-        }
-    }
-
-
-    public abstract boolean canHaveThings();
-
-
-    protected abstract void checkFolderType(
-        final boolean canHaveFolders,
-        final boolean canHaveThings);
+    protected abstract void checkFolderType(final FolderType folderType);
 
 
     protected abstract Folder<T> doCreateFolder(
         final String name,
-        final boolean canHaveFolders,
-        final boolean canHaveThings) throws ThingsException;
+        final FolderType folderType) throws ThingsException;
 
 
     protected abstract Folder<T> doCreateFakeFolder(
         final String name,
-        final boolean canHaveFolders,
-        final boolean canHaveThings) throws ThingsException;
+        final FolderType folderType) throws ThingsException;
 
 
     public final void addFile(final String name, final File file) throws ThingsException {
-        checkCanHaveThings();
+        getFolderType().checkCanHaveFolders(this);
 
         doAddFile(name, file);
     }

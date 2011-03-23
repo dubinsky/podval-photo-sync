@@ -1,6 +1,7 @@
 package org.podval.zenfolio;
 
 import org.podval.things.Folder;
+import org.podval.things.FolderType;
 import org.podval.things.ThingsException;
 
 import com.zenfolio.www.api._1_1.PhotoSet;
@@ -36,6 +37,12 @@ import java.io.IOException;
     @Override
     public String getName() {
         return photoSet.getTitle();
+    }
+
+
+    @Override
+    public FolderType getFolderType() {
+        return FolderType.Things;
     }
 
 
@@ -111,22 +118,7 @@ import java.io.IOException;
 
 
     @Override
-    public boolean canHaveFolders() {
-        return false;
-    }
-
-
-    @Override
-    public boolean canHaveThings() {
-        return true;
-    }
-
-
-    @Override
-    protected void checkFolderType(
-        final boolean canHaveDirectories,
-        final boolean canHaveItems)
-    {
+    protected void checkFolderType(final FolderType folderType) {
         // will not be called - checked in the base class
     }
 
@@ -134,8 +126,7 @@ import java.io.IOException;
     @Override
     protected Folder<ZenfolioThing> doCreateFolder(
         final String name,
-        final boolean canHaveDirectories,
-        final boolean canHaveItems) throws ThingsException
+        final FolderType folderType) throws ThingsException
     {
         // will not be called - checked in the base class
         throw new UnsupportedOperationException("Gallery can not have subdirectories");
@@ -145,8 +136,7 @@ import java.io.IOException;
     @Override
     protected Folder<ZenfolioThing> doCreateFakeFolder(
         final String name,
-        final boolean canHaveDirectories,
-        final boolean canHaveItems) throws ThingsException
+        final FolderType folderType) throws ThingsException
     {
         // will not be called - checked in the base class
         throw new UnsupportedOperationException("Gallery can not have subdirectories");

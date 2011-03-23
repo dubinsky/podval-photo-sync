@@ -1,6 +1,7 @@
 package org.podval.directory;
 
 import org.podval.things.Folder;
+import org.podval.things.FolderType;
 import org.podval.things.ThingsException;
 
 import java.util.Collection;
@@ -37,6 +38,12 @@ import java.io.File;
     @Override
     public String getName() {
         return directory.getName();
+    }
+
+
+    @Override
+    public FolderType getFolderType() {
+        return FolderType.Mix;
     }
 
 
@@ -126,30 +133,13 @@ import java.io.File;
 
 
     @Override
-    protected void checkFolderType(
-        final boolean canHaveDirectories,
-        final boolean canHaveItems)
-    {
-    }
-
-
-    @Override
-    public boolean canHaveFolders() {
-        return true;
-    }
-
-
-    @Override
-    public boolean canHaveThings() {
-        return true;
+    protected void checkFolderType(final FolderType folderType) {
     }
 
 
     @Override
     protected Folder<FileThing> doCreateFolder(
-        final String name,
-        final boolean canHaveDirectories,
-        final boolean canHaveItems) throws ThingsException
+        final String name, final FolderType folderType) throws ThingsException
     {
         throw new UnsupportedOperationException();
     }
@@ -157,9 +147,7 @@ import java.io.File;
 
     @Override
     protected Folder<FileThing> doCreateFakeFolder(
-        final String name,
-        final boolean canHaveDirectories,
-        final boolean canHaveItems) throws ThingsException
+        final String name, final FolderType folderType) throws ThingsException
     {
         throw new UnsupportedOperationException();
     }

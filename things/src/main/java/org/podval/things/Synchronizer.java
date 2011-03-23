@@ -83,23 +83,32 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
         Folder<T> result = null;
 
         final String name = fromFolder.getName();
+
         final boolean shouldHaveFolders = fromFolder.hasFolders();
+
+        final FolderType folderType = (shouldHaveFolders) ?
+            FolderType.Folders :
+            FolderType.Things;
 
         Folder<T> toSubFolder = toFolder.getFolder(name);
 
         if (toSubFolder == null) {
             final String message =
                 ((doIt) ? "creating" : "'creating'") + " " +
-                ((shouldHaveFolders) ? "group" : "gallery") + " " + name;
+                folderType + " " + name;
 
             out.message(level, message);
 
-            toSubFolder = toFolder.create(name, shouldHaveFolders, doIt);
+            toSubFolder = (doIt) ?
+                toFolder.createFolder(name, folderType) :
+                toFolder.createFakeFolder(name, folderType);
         }
 
-        if (toSubFolder.canHaveFolders() && !shouldHaveFolders) {
+        final boolean canHaveFolders = toSubFolder.getFolderType().canHaveFolders();
+
+        if (canHaveFolders && !shouldHaveFolders) {
             out.message(level, "Can have sub-folders, but should't: " + name);
-        } if (!toSubFolder.canHaveFolders() && shouldHaveFolders) {
+        } if (!canHaveFolders && shouldHaveFolders) {
             out.message(level, "Can't have sub-folders, but should: " + name);
         } else {
             result = toSubFolder;

@@ -18,19 +18,12 @@ public abstract class Connection<T extends Thing> {
         if (path != null) {
             for (final String name : path.split("/")) {
                 if (!name.isEmpty()) {
+                    result.getFolderType().checkCanHaveFolders(result);
                     result = result.getFolder(name);
-                    checkCanHaveFolders(result);
                 }
             }
         }
 
         return result;
-    }
-
-
-    private void checkCanHaveFolders(final Folder<T> element) {
-        if (!element.canHaveFolders()) {
-            throw new IllegalArgumentException("can not have folders: " + element);
-        }
     }
 }
