@@ -25,36 +25,46 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
         fromConnection.open();
         toConnection.open();
 
-        syncFolder(fromConnection.getRootFolder(), toConnection.getRootFolder(), 0);
+        syncFolder(fromConnection.getRootFolder(), toConnection.getRootFolder());
     }
 
 
-    private void syncFolder(final Folder<F> from, final Folder<T> to, int level)
+    private void syncFolder(final Folder<F> from, final Folder<T> to)
         throws ThingsException
     {
-        out.println(level, from.getName());
+        out.println(from.getName());
 
-        int nextLevel = level + 1;
+        syncProperties(from, to);
+//        syncThings(from, to);
+        syncFolders(from, to);
 
-        syncRightToLeft(from, to, nextLevel);
-        syncLeftToRight(from, to, nextLevel);
+//        syncBackwards(from, to);
     }
 
 
-    private void syncRightToLeft(final Folder<F> fromFolder, final Folder<T> toFolder, int level)
+    private void syncProperties(final Folder<F> fromFolder, final Folder<T> toFolder)
         throws ThingsException
     {
+        // TODO
+    }
+
+
+    private void syncThings(final Folder<F> fromFolder, final Folder<T> toFolder)
+        throws ThingsException
+    {
+        out.push();
+
         for (final F fromThing : fromFolder.getThings()) {
             if (fromFolder.hasFolders()) {
-                out.message(level, "Skipping " + fromThing + " on the folder level");
+                out.message("Skipping " + fromThing + " on the folder level");
             } else {
                 if (!converter.isConvertible(fromThing)) {
-                    out.message(level, "Skipping non-convertible " + fromThing + " on the folder level");
+                    out.message("Skipping non-convertible " + fromThing + " on the folder level");
 
                 } else {
                     if (toFolder.getThing(converter.getName(fromThing)) == null) {
                         try {
-                            addPhoto(fromThing, toFolder, level);
+                            addPhoto(fromThing, toFolder);
                         } catch (final IOException e) {
                             throw new ThingsException(e);
                         }
@@ -63,13 +73,22 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
             }
         }
 
+        out.pop();
+    }
+
+
+    private void syncFolders(final Folder<F> fromFolder, final Folder<T> toFolder)
+        throws ThingsException
+    {
         // @todo skip the collections!
 
         for (final Folder<F> fromSubFolder : fromFolder.getFolders()) {
-            final Folder<T> toSubFolder = getElementForSubDirectory(fromSubFolder, toFolder, level);
+            final Folder<T> toSubFolder = getElementForSubDirectory(fromSubFolder, toFolder);
 
             if (toSubFolder != null) {
-                syncFolder(fromSubFolder, toSubFolder, level);
+                out.push();
+                syncFolder(fromSubFolder, toSubFolder);
+                out.pop();
             }
         }
     }
@@ -77,8 +96,7 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
 
     private Folder<T> getElementForSubDirectory(
         final Folder<F> fromFolder,
-        final Folder<T> toFolder,
-        final int level) throws ThingsException
+        final Folder<T> toFolder) throws ThingsException
     {
         Folder<T> result = null;
 
@@ -97,8 +115,9 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
                 ((doIt) ? "creating" : "'creating'") + " " +
                 folderType + " " + name;
 
-            out.message(level, message);
+            out.message(message);
 
+            // TODO: set properties when creating, so that we do not have to update it immediately!
             toSubFolder = (doIt) ?
                 toFolder.createFolder(name, folderType) :
                 toFolder.createFakeFolder(name, folderType);
@@ -107,9 +126,9 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
         final boolean canHaveFolders = toSubFolder.getFolderType().canHaveFolders();
 
         if (canHaveFolders && !shouldHaveFolders) {
-            out.message(level, "Can have sub-folders, but should't: " + name);
+            out.message("Can have sub-folders, but should't: " + name);
         } if (!canHaveFolders && shouldHaveFolders) {
-            out.message(level, "Can't have sub-folders, but should: " + name);
+            out.message("Can't have sub-folders, but should: " + name);
         } else {
             result = toSubFolder;
         }
@@ -118,22 +137,25 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
     }
 
 
-    private void syncLeftToRight(
+    private void syncBackwards(
         final Folder<F> fromFolder,
-        final Folder<T> toFolder,
-        int level) throws ThingsException
+        final Folder<T> toFolder) throws ThingsException
     {
+        out.push();
+
         for (final Folder<T> toSubFolder : toFolder.getFolders()) {
             final String name = toSubFolder.getName();
             final Folder<F> fromSubFolder = fromFolder.getFolder(name);
             if (fromSubFolder == null) {
-                out.message(level, "No file for the element: " + name);
+                out.message("No file for the element: " + name);
             }
         }
+
+        out.pop();
     }
 
 
-    private void addPhoto(final F fromThing, final Folder<T> toFolder, final int level)
+    private void addPhoto(final F fromThing, final Folder<T> toFolder)
         throws IOException
     {
         final String name = fromThing.getName();
@@ -142,18 +164,18 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
         final File file = converter.toFile(fromThing);
         if (file != null) {
             final String message = ((doIt) ? "adding" : "'adding'") + " thing" + " " + name;
-            out.message(level, message);
+            out.message(message);
 
             if (doIt) {
                 try {
                     toFolder.addFile(file.getName(), file);
                 } catch (final ThingsException e) {
-                    out.message(level, e.getMessage());
+                    out.message(e.getMessage());
                 }
             }
 
         } else {
-            out.message(level, "Raw conversions are not yet implemented. Can not add " + name);
+            out.message("Raw conversions are not yet implemented. Can not add " + name);
         }
     }
 

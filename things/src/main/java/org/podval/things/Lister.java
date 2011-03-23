@@ -13,30 +13,31 @@ public final class Lister<T extends Thing> {
     public void run() throws ThingsException {
         connection.open();
 
-        list(connection.getRootFolder(), 0);
+        list(connection.getRootFolder());
     }
 
 
-    private void list(final Folder<T> folder, int level) throws ThingsException {
-        out.println(level, "<folder>");
-        out.println(level+1, "<name>" + folder.getName() + "</name>");
+    private void list(final Folder<T> folder) throws ThingsException {
+        out.println("<folder>");
+        out.push();
 
-        final int newLevel = level+1;
+        out.println("<name>" + folder.getName() + "</name>");
 
         for (final Folder<T> subFolder : folder.getFolders()) {
-            list(subFolder, newLevel);
+            list(subFolder);
         }
 
         for (final T thing : folder.getThings()) {
-            list(thing, newLevel);
+            list(thing);
         }
 
-        out.println(level, "</folder>");
+        out.pop();
+        out.println("</folder>");
     }
 
 
-    private void list(final Thing thing, final int level) {
-        out.println(level,
+    private void list(final Thing thing) {
+        out.println(
             "<photo name=\"" + thing.getName() +
             "\" date=\"" + thing.getTimestamp() +
             "\" size=\"" + thing.getSize() +

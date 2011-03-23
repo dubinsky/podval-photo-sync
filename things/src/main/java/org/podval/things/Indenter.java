@@ -10,18 +10,28 @@ public final class Indenter {
     }
 
 
-    public void message(final int level, final String line) {
-        println(level, "*** " + line);
+    public void push() {
+        level++;
     }
 
 
-    public void println(final int level, final String line) {
-        indent(level);
+    public void pop() {
+        level--;
+    }
+
+
+    public void message(final String line) {
+        println("*** " + line);
+    }
+
+
+    public void println(final String line) {
+        indent();
         out.println(line);
     }
 
 
-    private void indent(final int level) {
+    private void indent() {
         for (int i = 0; i < level; i++) {
             out.print("  ");
         }
@@ -29,4 +39,7 @@ public final class Indenter {
 
 
     private final PrintStream out;
+
+
+    private int level;
 }
