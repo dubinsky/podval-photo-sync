@@ -26,69 +26,86 @@ import com.google.api.client.util.Key;
 import java.io.IOException;
 import java.util.List;
 
+
 /**
  * @author Yaniv Inbar
  */
 public class Entry implements Cloneable {
 
-  @Key("@gd:etag")
-  public String etag;
+    @Key("@gd:etag")
+    public String etag;
 
-  @Key("link")
-  public List<Link> links;
 
-  @Key
-  public String summary;
+    @Key("link")
+    public List<Link> links;
 
-  @Key
-  public String title;
 
-  @Key
-  public String updated;
+    @Key
+    public String summary;
 
-  public String getFeedLink() {
-    return Link.find(links, "http://schemas.google.com/g/2005#feed");
-  }
 
-  public String getSelfLink() {
-    return Link.find(links, "self");
-  }
+    @Key
+    public String title;
 
-  @Override
-  protected Entry clone() {
-    return DataUtil.clone(this);
-  }
 
-  public void executeDelete(HttpTransport transport) throws IOException {
-    HttpRequest request = transport.buildDeleteRequest();
-    request.setUrl(getEditLink());
-    request.headers.ifMatch = etag;
-    request.execute().ignore();
-  }
+    @Key
+    public String updated;
 
-  static Entry executeGet(HttpTransport transport, PicasaUrl url,
-      Class<? extends Entry> entryClass) throws IOException {
-    url.fields = GData.getFieldsFor(entryClass);
-    HttpRequest request = transport.buildGetRequest();
-    request.url = url;
-    return request.execute().parseAs(entryClass);
-  }
 
-  Entry executePatchRelativeToOriginal(HttpTransport transport, Entry original)
-      throws IOException {
-    HttpRequest request = transport.buildPatchRequest();
-    request.setUrl(getEditLink());
-    request.headers.ifMatch = etag;
-    AtomPatchRelativeToOriginalContent content =
-        new AtomPatchRelativeToOriginalContent();
-    content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
-    content.originalEntry = original;
-    content.patchedEntry = this;
-    request.content = content;
-    return request.execute().parseAs(getClass());
-  }
+    public String getFeedLink() {
+        return Link.find(links, "http://schemas.google.com/g/2005#feed");
+    }
 
-  private String getEditLink() {
-    return Link.find(links, "edit");
-  }
+
+    public String getSelfLink() {
+        return Link.find(links, "self");
+    }
+
+
+    @Override
+    protected Entry clone() {
+        return DataUtil.clone(this);
+    }
+
+
+    public void executeDelete(final HttpTransport transport) throws IOException {
+        final HttpRequest request = transport.buildDeleteRequest();
+        request.setUrl(getEditLink());
+        request.headers.ifMatch = etag;
+        request.execute().ignore();
+    }
+
+
+    static Entry executeGet(
+        final HttpTransport transport,
+        final PicasaUrl url,
+        final Class<? extends Entry> entryClass) throws IOException
+    {
+        url.fields = GData.getFieldsFor(entryClass);
+        final HttpRequest request = transport.buildGetRequest();
+        request.url = url;
+        return request.execute().parseAs(entryClass);
+    }
+
+
+    Entry executePatchRelativeToOriginal(
+        final HttpTransport transport,
+        final Entry original) throws IOException
+    {
+        final HttpRequest request = transport.buildPatchRequest();
+        request.setUrl(getEditLink());
+        request.headers.ifMatch = etag;
+        final AtomPatchRelativeToOriginalContent content =
+            new AtomPatchRelativeToOriginalContent();
+        content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
+        content.originalEntry = original;
+        content.patchedEntry = this;
+        request.content = content;
+        return request.execute().parseAs(getClass());
+    }
+
+
+    private String getEditLink() {
+        return Link.find(links, "edit");
+    }
 }

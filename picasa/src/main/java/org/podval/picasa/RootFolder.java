@@ -178,6 +178,12 @@ public final class RootFolder extends Folder<PicasaThing> {
     }
 
 
+    @Override
+    public void updateIfChanged() throws ThingsException {
+        // TODO
+    }
+
+
     private final Picasa picasa;
 
 

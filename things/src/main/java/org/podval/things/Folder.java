@@ -98,5 +98,8 @@ public abstract class Folder<T extends Thing> {
     protected abstract void doAddFile(final String name, final File file) throws ThingsException;
 
 
+    public abstract void updateIfChanged() throws ThingsException;
+
+
     private boolean isPopulated;
 }

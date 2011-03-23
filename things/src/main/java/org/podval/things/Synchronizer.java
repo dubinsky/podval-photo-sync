@@ -45,7 +45,9 @@ public final class Synchronizer<F extends Thing, T extends Thing> {
     private void syncProperties(final Folder<F> fromFolder, final Folder<T> toFolder)
         throws ThingsException
     {
-        // TODO
+        toFolder.setPublic(fromFolder.isPublic());
+
+        toFolder.updateIfChanged();
     }
 
 

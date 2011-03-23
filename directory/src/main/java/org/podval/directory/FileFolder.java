@@ -185,6 +185,13 @@ import java.io.File;
     }
 
 
+    @Override
+    public void updateIfChanged() throws ThingsException {
+        // TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
     private final File directory;
 
 

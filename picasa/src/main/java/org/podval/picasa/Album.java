@@ -79,13 +79,16 @@ public final class Album extends Folder<PicasaThing> {
 
     @Override
     public boolean isPublic() {
-        return albumEntry.access.equals(this);
+        return albumEntry.access.equals(PUBLIC_ACCESS);
     }
 
 
     @Override
     public void setPublic(final boolean value) {
-        albumEntry.access = (value) ? PUBLIC_ACCESS : PRIVATE_ACCESS;
+        if (isPublic() != value) {
+            ensureOriginalSaved();
+            albumEntry.access = (value) ? PUBLIC_ACCESS : PRIVATE_ACCESS;
+        }
     }
 
 
@@ -179,10 +182,32 @@ public final class Album extends Folder<PicasaThing> {
     }
 
 
+    private void ensureOriginalSaved() {
+        if (originalAlbumEntry == null) {
+            originalAlbumEntry = albumEntry.clone();
+        }
+    }
+
+
+    @Override
+    public void updateIfChanged() throws ThingsException {
+        if (originalAlbumEntry != null) {
+            try {
+                albumEntry.executePatchRelativeToOriginal(picasa.getTransport(), originalAlbumEntry);
+            } catch (final IOException e) {
+                throw new ThingsException(e);
+            }
+        }
+    }
+
+
     private final Picasa picasa;
 
 
     private final AlbumEntry albumEntry;
+
+
+    private AlbumEntry originalAlbumEntry;
 
 
     private final List<PicasaThing> things = new LinkedList<PicasaThing>();
