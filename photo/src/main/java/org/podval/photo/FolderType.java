@@ -25,17 +25,17 @@ package org.podval.photo;
 public enum FolderType {
 
     Folders(true, false, "pile"),
-    Things(false, true, "gallery"),
+    Photos(false, true, "gallery"),
     Mix(true, true, "group");
 
 
     private FolderType(
         final boolean canHaveFodlers,
-        final boolean canHaveThings,
+        final boolean canHavePhotos,
         final String name)
     {
         this.canHaveFolders = canHaveFodlers;
-        this.canHaveThings = canHaveThings;
+        this.canHavePhotos = canHavePhotos;
         this.name = name;
     }
 
@@ -45,8 +45,8 @@ public enum FolderType {
     }
 
 
-    public final boolean canHaveThings() {
-        return canHaveThings;
+    public final boolean canHavePhotos() {
+        return canHavePhotos;
     }
 
 
@@ -57,9 +57,9 @@ public enum FolderType {
     }
 
 
-    public void checkCanHaveThings(final Folder<?> folder) {
-        if (!canHaveThings()) {
-            throw new IllegalArgumentException("Folder can not have things in it: " + folder);
+    public void checkCanHavePhotos(final Folder<?> folder) {
+        if (!canHavePhotos()) {
+            throw new IllegalArgumentException("Folder can not have photos in it: " + folder);
         }
     }
 
@@ -83,5 +83,5 @@ public enum FolderType {
     private final boolean canHaveFolders;
 
 
-    private final boolean canHaveThings;
+    private final boolean canHavePhotos;
 }

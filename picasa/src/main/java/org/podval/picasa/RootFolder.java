@@ -95,13 +95,13 @@ public final class RootFolder extends Folder<PicasaPhoto> {
 
 
     @Override
-    public List<PicasaPhoto> getThings() throws PhotoException {
+    public List<PicasaPhoto> getPhotos() throws PhotoException {
         return EMPTY;
     }
 
 
     @Override
-    public PicasaPhoto getThing(final String name) throws PhotoException {
+    public PicasaPhoto getPhoto(final String name) throws PhotoException {
         return null;
     }
 

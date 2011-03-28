@@ -32,10 +32,10 @@ public abstract class Folder<T extends Photo> {
     public abstract Folder<T> getFolder(final String name) throws PhotoException;
 
 
-    public abstract List<T> getThings() throws PhotoException;
+    public abstract List<T> getPhotos() throws PhotoException;
 
 
-    public abstract T getThing(final String name) throws PhotoException;
+    public abstract T getPhoto(final String name) throws PhotoException;
 
 
     public void list(final Indenter out) throws PhotoException {
@@ -48,8 +48,8 @@ public abstract class Folder<T extends Photo> {
             subFolder.list(out);
         }
 
-        for (final T thing : getThings()) {
-            thing.list(out);
+        for (final T photo : getPhotos()) {
+            photo.list(out);
         }
 
         out.pop();
@@ -105,13 +105,13 @@ public abstract class Folder<T extends Photo> {
     {
         out.push();
 
-        for (final T thing : getThings()) {
+        for (final T photo : getPhotos()) {
             if (hasFolders()) {
-                out.message("Skipping " + thing + " on the folder level");
+                out.message("Skipping " + photo + " on the folder level");
             } else {
-                if (toFolder.getThing(thing.getName()) == null) {
+                if (toFolder.getPhoto(photo.getName()) == null) {
                     try {
-                        toFolder.addPhoto(thing, doIt, out);
+                        toFolder.addPhoto(photo, doIt, out);
                     } catch (final IOException e) {
                         throw new PhotoException(e);
                     }
@@ -124,16 +124,16 @@ public abstract class Folder<T extends Photo> {
 
 
     private <O extends Photo> void addPhoto(
-        final O thing,
+        final O photo,
         final boolean doIt,
         final Indenter out) throws IOException
     {
-        final String name = thing.getName();
+        final String name = photo.getName();
 
         // @todo distinguish between "exist" and "available as local file"...
-        final File file = thing.getOriginalFile();
+        final File file = photo.getOriginalFile();
         if (file != null) {
-            final String message = ((doIt) ? "adding" : "'adding'") + " thing" + " " + name;
+            final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
             out.message(message);
 
             if (doIt) {
@@ -182,7 +182,7 @@ public abstract class Folder<T extends Photo> {
 
         final FolderType folderType = (shouldHaveFolders) ?
             FolderType.Folders :
-            FolderType.Things;
+            FolderType.Photos;
 
         Folder<T> toSubFolder = getFolder(name);
 

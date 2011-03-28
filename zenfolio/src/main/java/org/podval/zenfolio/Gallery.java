@@ -42,7 +42,7 @@ import java.io.IOException;
 
     @Override
     public FolderType getFolderType() {
-        return FolderType.Things;
+        return FolderType.Photos;
     }
 
 
@@ -94,10 +94,10 @@ import java.io.IOException;
 
 
     @Override
-    public ZenfolioPhoto getThing(final String name) throws PhotoException {
+    public ZenfolioPhoto getPhoto(final String name) throws PhotoException {
         ZenfolioPhoto result = null;
 
-        for (final ZenfolioPhoto photo : getThings()) {
+        for (final ZenfolioPhoto photo : getPhotos()) {
             if (photo.getName().equals(name)) {
                 result = photo;
                 break;
@@ -109,7 +109,7 @@ import java.io.IOException;
 
 
     @Override
-    public List<ZenfolioPhoto> getThings() throws PhotoException {
+    public List<ZenfolioPhoto> getPhotos() throws PhotoException {
         ensureIsPopulated();
 
         // @todo sort and immute?

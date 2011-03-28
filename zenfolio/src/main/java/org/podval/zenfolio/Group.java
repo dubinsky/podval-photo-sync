@@ -94,7 +94,7 @@ import java.io.File;
 
 
     @Override
-    public List<ZenfolioPhoto> getThings() {
+    public List<ZenfolioPhoto> getPhotos() {
         final List<ZenfolioPhoto> result = new LinkedList<ZenfolioPhoto>();
 
         return result;
@@ -102,7 +102,7 @@ import java.io.File;
 
 
     @Override
-    public ZenfolioPhoto getThing(final String name) {
+    public ZenfolioPhoto getPhoto(final String name) {
         return null;
     }
 

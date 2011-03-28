@@ -119,14 +119,14 @@ import java.io.File;
 
 
     @Override
-    public FilePhoto getThing(final String name) throws PhotoException {
+    public FilePhoto getPhoto(final String name) throws PhotoException {
         ensureIsPopulated();
         return items.get(name);
     }
 
 
     @Override
-    public List<FilePhoto> getThings() throws PhotoException {
+    public List<FilePhoto> getPhotos() throws PhotoException {
         ensureIsPopulated();
         return sortedValues(items);
     }

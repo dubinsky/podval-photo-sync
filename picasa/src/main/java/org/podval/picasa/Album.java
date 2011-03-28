@@ -67,7 +67,7 @@ public final class Album extends Folder<PicasaPhoto> {
 
     @Override
     public FolderType getFolderType() {
-        return FolderType.Things;
+        return FolderType.Photos;
     }
 
 
@@ -108,19 +108,19 @@ public final class Album extends Folder<PicasaPhoto> {
 
 
     @Override
-    public List<PicasaPhoto> getThings() throws PhotoException {
+    public List<PicasaPhoto> getPhotos() throws PhotoException {
         ensureIsPopulated();
-        return things;
+        return photos;
     }
 
 
     @Override
-    public PicasaPhoto getThing(final String name) throws PhotoException {
+    public PicasaPhoto getPhoto(final String name) throws PhotoException {
         PicasaPhoto result = null;
 
-        for (final PicasaPhoto thing : getThings()) {
-            if (thing.getName().equals(name)) {
-                result = thing;
+        for (final PicasaPhoto photo : getPhotos()) {
+            if (photo.getName().equals(name)) {
+                result = photo;
                 break;
             }
         }
@@ -139,7 +139,7 @@ public final class Album extends Folder<PicasaPhoto> {
                 while (nextUrl != null) {
                     final AlbumFeed feed = AlbumFeed.executeGet(picasa.getTransport(), nextUrl);
                     for (final PhotoEntry photo : feed.photos) {
-                        things.add(new PicasaPhoto(picasa, photo));
+                        photos.add(new PicasaPhoto(picasa, photo));
                     }
 
                     final String next = Link.find(feed.links, "next");
@@ -210,5 +210,5 @@ public final class Album extends Folder<PicasaPhoto> {
     private AlbumEntry originalAlbumEntry;
 
 
-    private final List<PicasaPhoto> things = new LinkedList<PicasaPhoto>();
+    private final List<PicasaPhoto> photos = new LinkedList<PicasaPhoto>();
 }
