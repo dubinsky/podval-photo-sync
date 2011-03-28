@@ -3,10 +3,9 @@ package org.podval.sync;
 import org.podval.things.Connection;
 import org.podval.things.ConnectionFactory;
 import org.podval.things.ConnectionDescriptor;
-import org.podval.things.Thing;
-import org.podval.things.ThingsConverter;
+import org.podval.things.Photo;
 import org.podval.things.Indenter;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.Argument;
@@ -51,7 +50,7 @@ public final class Main {
 
         try {
             run();
-        } catch (final ThingsException e) {
+        } catch (final PhotoException e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
@@ -101,7 +100,7 @@ public final class Main {
     }
 
 
-    private void run() throws ThingsException {
+    private void run() throws PhotoException {
         // TODO: Provide universal way to enable logging...
 /////        org.podval.picasa.model.Util.enableLogging();
 
@@ -116,29 +115,25 @@ public final class Main {
     }
 
 
-    private void list(final Connection<?> connection) throws ThingsException {
+    private void list(final Connection<?> connection) throws PhotoException {
         connection.open();
         connection.getRootFolder().list(new Indenter(System.out));
     }
 
 
 
-    private <F extends Thing, T extends Thing> void synchronize(
+    private <F extends Photo, T extends Photo> void synchronize(
         final Connection<F> fromConnection,
         final Connection<T> toConnection,
-        final boolean doIt) throws ThingsException
+        final boolean doIt) throws PhotoException
     {
         final Indenter out = new Indenter(System.out);
-
-        final ThingsConverter<F, T> converter =
-            ThingsConverter.get(fromConnection.getScheme(), toConnection.getScheme());
 
         fromConnection.open();
         toConnection.open();
 
         fromConnection.getRootFolder().syncFolderTo(
             toConnection.getRootFolder(),
-            converter,
             doIt,
             out);
     }
