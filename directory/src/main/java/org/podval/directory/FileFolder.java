@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.io.File;
 
 
-/* package */ final class FileFolder extends Folder<FilePhoto> {
+/* package */ final class FileFolder extends Folder<FileConnection, FilePhoto> {
 
     public FileFolder(final String directoryPath) {
         this(new File(directoryPath));
@@ -105,14 +105,14 @@ import java.io.File;
 
 
     @Override
-    public Collection<Folder<FilePhoto>> getFolders() throws PhotoException {
+    public Collection<Folder<FileConnection, FilePhoto>> getFolders() throws PhotoException {
         ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
     @Override
-    public Folder<FilePhoto> getFolder(final String name) throws PhotoException {
+    public Folder<FileConnection, FilePhoto> getFolder(final String name) throws PhotoException {
         ensureIsPopulated();
         return subDirectories.get(name);
     }
@@ -138,7 +138,7 @@ import java.io.File;
 
 
     @Override
-    protected Folder<FilePhoto> doCreateFolder(
+    protected Folder<FileConnection, FilePhoto> doCreateFolder(
         final String name, final FolderType folderType) throws PhotoException
     {
         throw new UnsupportedOperationException();
@@ -146,7 +146,7 @@ import java.io.File;
 
 
     @Override
-    protected Folder<FilePhoto> doCreateFakeFolder(
+    protected Folder<FileConnection, FilePhoto> doCreateFakeFolder(
         final String name, final FolderType folderType) throws PhotoException
     {
         throw new UnsupportedOperationException();
@@ -195,7 +195,7 @@ import java.io.File;
     private final File directory;
 
 
-    private final Map<String, Folder<FilePhoto>> subDirectories = new HashMap<String, Folder<FilePhoto>>();
+    private final Map<String, Folder<FileConnection, FilePhoto>> subDirectories = new HashMap<String, Folder<FileConnection, FilePhoto>>();
 
 
     private final Map<String, FilePhoto> items = new HashMap<String, FilePhoto>();

@@ -38,7 +38,7 @@ import java.io.IOException;
  *
  * @author dub
  */
-public final class RootFolder extends Folder<PicasaPhoto> {
+public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
     public RootFolder(final Picasa picasa) {
         this.picasa = picasa;
@@ -70,17 +70,17 @@ public final class RootFolder extends Folder<PicasaPhoto> {
 
 
     @Override
-    public Collection<Folder<PicasaPhoto>> getFolders() throws PhotoException {
+    public Collection<Folder<Picasa, PicasaPhoto>> getFolders() throws PhotoException {
         ensureIsPopulated();
         return folders;
     }
 
 
     @Override
-    public Folder<PicasaPhoto> getFolder(final String name) throws PhotoException {
-        Folder<PicasaPhoto> result = null;
+    public Folder<Picasa, PicasaPhoto> getFolder(final String name) throws PhotoException {
+        Folder<Picasa, PicasaPhoto> result = null;
 
-        for (final Folder<PicasaPhoto> folder : getFolders()) {
+        for (final Folder<Picasa, PicasaPhoto> folder : getFolders()) {
             if (folder.getName().equals(name)) {
                 result = folder;
                 break;
@@ -146,7 +146,7 @@ public final class RootFolder extends Folder<PicasaPhoto> {
 
 
     @Override
-    protected Folder<PicasaPhoto> doCreateFolder(
+    protected Folder<Picasa, PicasaPhoto> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -164,7 +164,7 @@ public final class RootFolder extends Folder<PicasaPhoto> {
 
 
     @Override
-    protected Folder<PicasaPhoto> doCreateFakeFolder(
+    protected Folder<Picasa, PicasaPhoto> doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -190,5 +190,5 @@ public final class RootFolder extends Folder<PicasaPhoto> {
     private UserFeed feed;
 
 
-    private final List<Folder<PicasaPhoto>> folders = new LinkedList<Folder<PicasaPhoto>>();
+    private final List<Folder<Picasa, PicasaPhoto>> folders = new LinkedList<Folder<Picasa, PicasaPhoto>>();
 }

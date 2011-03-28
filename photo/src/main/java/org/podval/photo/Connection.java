@@ -1,7 +1,7 @@
 package org.podval.photo;
 
 
-public abstract class Connection<T extends Photo> {
+public abstract class Connection<P extends Photo> {
 
     public abstract String getScheme();
 
@@ -9,11 +9,11 @@ public abstract class Connection<T extends Photo> {
     public abstract void open() throws PhotoException;
 
 
-    public abstract Folder<T> getRootFolder() throws PhotoException;
+    public abstract <C extends Connection<P>> Folder<C, P> getRootFolder() throws PhotoException;
 
 
-    protected final Folder<T> getSubFolderByPath(final Folder<T> folder, final String path) throws PhotoException {
-        Folder<T> result = folder;
+    protected final <C extends Connection<P>> Folder<C, P> getSubFolderByPath(final Folder<C, P> folder, final String path) throws PhotoException {
+        Folder<C, P> result = folder;
 
         if (path != null) {
             for (final String name : path.split("/")) {

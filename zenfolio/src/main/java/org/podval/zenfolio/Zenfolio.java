@@ -91,12 +91,12 @@ import java.util.ArrayList;
 
 
     @Override
-    public Folder<ZenfolioPhoto> getRootFolder() throws PhotoException {
+    public Folder<Zenfolio, ZenfolioPhoto> getRootFolder() throws PhotoException {
         return getSubFolderByPath(getRealRootFolder(), path);
     }
 
 
-    private Folder<ZenfolioPhoto> getRealRootFolder() throws PhotoException {
+    private Folder<Zenfolio, ZenfolioPhoto> getRealRootFolder() throws PhotoException {
         try {
             return new Group(this, connection.loadGroupHierarchy(login));
         } catch (final RemoteException e) {

@@ -72,7 +72,7 @@ public class Picasa extends Connection<PicasaPhoto> {
 
 
     @Override
-    public Folder<PicasaPhoto> getRootFolder() throws PhotoException {
+    public Folder<Picasa, PicasaPhoto> getRootFolder() throws PhotoException {
         return new RootFolder(this);
     }
 

@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-/* package */ final class Gallery extends Folder<ZenfolioPhoto> {
+/* package */ final class Gallery extends Folder<Zenfolio, ZenfolioPhoto> {
 
     public Gallery(final Zenfolio zenfolio, final PhotoSet photoSet) {
         this.zenfolio = zenfolio;
@@ -82,13 +82,13 @@ import java.io.IOException;
 
 
     @Override
-    public List<Folder<ZenfolioPhoto>> getFolders() {
-        return new LinkedList<Folder<ZenfolioPhoto>>();
+    public List<Folder<Zenfolio, ZenfolioPhoto>> getFolders() {
+        return new LinkedList<Folder<Zenfolio, ZenfolioPhoto>>();
     }
 
 
     @Override
-    public Folder<ZenfolioPhoto> getFolder(final String name) {
+    public Folder<Zenfolio, ZenfolioPhoto> getFolder(final String name) {
         return null;
     }
 
@@ -124,7 +124,7 @@ import java.io.IOException;
 
 
     @Override
-    protected Folder<ZenfolioPhoto> doCreateFolder(
+    protected Folder<Zenfolio, ZenfolioPhoto> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -134,7 +134,7 @@ import java.io.IOException;
 
 
     @Override
-    protected Folder<ZenfolioPhoto> doCreateFakeFolder(
+    protected Folder<Zenfolio, ZenfolioPhoto> doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {

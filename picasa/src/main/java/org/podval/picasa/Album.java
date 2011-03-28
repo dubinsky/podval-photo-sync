@@ -39,7 +39,7 @@ import java.io.IOException;
  *
  * @author dub
  */
-public final class Album extends Folder<PicasaPhoto> {
+public final class Album extends Folder<Picasa, PicasaPhoto> {
 
     public Album(final Picasa picasa, final AlbumEntry album) {
         this.picasa = picasa;
@@ -92,17 +92,17 @@ public final class Album extends Folder<PicasaPhoto> {
     }
 
 
-    private static List<Folder<PicasaPhoto>> EMPTY = new LinkedList<Folder<PicasaPhoto>>();
+    private static List<Folder<Picasa, PicasaPhoto>> EMPTY = new LinkedList<Folder<Picasa, PicasaPhoto>>();
 
 
     @Override
-    public Collection<Folder<PicasaPhoto>> getFolders() throws PhotoException {
+    public Collection<Folder<Picasa, PicasaPhoto>> getFolders() throws PhotoException {
         return EMPTY;
     }
 
 
     @Override
-    public Folder<PicasaPhoto> getFolder(final String name) throws PhotoException {
+    public Folder<Picasa, PicasaPhoto> getFolder(final String name) throws PhotoException {
         return null;
     }
 
@@ -159,7 +159,7 @@ public final class Album extends Folder<PicasaPhoto> {
 
 
     @Override
-    protected Folder<PicasaPhoto> doCreateFolder(
+    protected Folder<Picasa, PicasaPhoto> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -168,7 +168,7 @@ public final class Album extends Folder<PicasaPhoto> {
 
 
     @Override
-    protected Folder<PicasaPhoto> doCreateFakeFolder(
+    protected Folder<Picasa, PicasaPhoto> doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {

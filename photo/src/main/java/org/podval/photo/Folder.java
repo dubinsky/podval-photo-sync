@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public abstract class Folder<T extends Photo> {
+public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
     public abstract String getName();
 
@@ -26,16 +26,16 @@ public abstract class Folder<T extends Photo> {
     }
 
 
-    public abstract Collection<Folder<T>> getFolders() throws PhotoException;
+    public abstract Collection<Folder<C, P>> getFolders() throws PhotoException;
 
 
-    public abstract Folder<T> getFolder(final String name) throws PhotoException;
+    public abstract Folder<C, P> getFolder(final String name) throws PhotoException;
 
 
-    public abstract List<T> getPhotos() throws PhotoException;
+    public abstract List<P> getPhotos() throws PhotoException;
 
 
-    public abstract T getPhoto(final String name) throws PhotoException;
+    public abstract P getPhoto(final String name) throws PhotoException;
 
 
     public void list(final Indenter out) throws PhotoException {
@@ -44,11 +44,11 @@ public abstract class Folder<T extends Photo> {
 
         out.println("<name>" + getName() + "</name>");
 
-        for (final Folder<T> subFolder : getFolders()) {
+        for (final Folder<C, P> subFolder : getFolders()) {
             subFolder.list(out);
         }
 
-        for (final T photo : getPhotos()) {
+        for (final P photo : getPhotos()) {
             photo.list(out);
         }
 
@@ -57,8 +57,8 @@ public abstract class Folder<T extends Photo> {
     }
 
 
-    public <O extends Photo> void syncFolderTo(
-        final Folder<O> toFolder,
+    public <D extends Connection<O>, O extends Photo> void syncFolderTo(
+        final Folder<D, O> toFolder,
         final boolean doIt,
         final Indenter out)
         throws PhotoException
@@ -73,22 +73,22 @@ public abstract class Folder<T extends Photo> {
     }
 
 
-    private <O extends Photo> void syncProperties(final Folder<O> toFolder) throws PhotoException {
+    private <D extends Connection<O>, O extends Photo> void syncProperties(final Folder<D, O> toFolder) throws PhotoException {
         toFolder.setPublic(isPublic());
 
         toFolder.updateIfChanged();
     }
 
 
-    private <O extends Photo> void syncBackwards(
-        final Folder<O> toFolder,
+    private <D extends Connection<O>, O extends Photo> void syncBackwards(
+        final Folder<D, O> toFolder,
         final Indenter out) throws PhotoException
     {
         out.push();
 
-        for (final Folder<O> toSubFolder : toFolder.getFolders()) {
+        for (final Folder<D, O> toSubFolder : toFolder.getFolders()) {
             final String name = toSubFolder.getName();
-            final Folder<T> fromSubFolder = getFolder(name);
+            final Folder<C, P> fromSubFolder = getFolder(name);
             if (fromSubFolder == null) {
                 out.message("No file for the element: " + name);
             }
@@ -98,14 +98,14 @@ public abstract class Folder<T extends Photo> {
     }
 
 
-    private <O extends Photo> void syncContentTo(
-        final Folder<O> toFolder,
+    private <D extends Connection<O>, O extends Photo> void syncContentTo(
+        final Folder<D, O> toFolder,
         final boolean doIt,
         final Indenter out) throws PhotoException
     {
         out.push();
 
-        for (final T photo : getPhotos()) {
+        for (final P photo : getPhotos()) {
             if (hasFolders()) {
                 out.message("Skipping " + photo + " on the folder level");
             } else {
@@ -150,15 +150,15 @@ public abstract class Folder<T extends Photo> {
     }
 
 
-    private <O extends Photo> void syncFoldersTo(
-        final Folder<O> toFolder,
+    private <D extends Connection<O>, O extends Photo> void syncFoldersTo(
+        final Folder<D, O> toFolder,
         final boolean doIt,
         final Indenter out) throws PhotoException
     {
         // @todo skip the collections!
 
-        for (final Folder<T> fromSubFolder : getFolders()) {
-            final Folder<O> toSubFolder = toFolder.getElementForSubDirectory(fromSubFolder, doIt, out);
+        for (final Folder<C, P> fromSubFolder : getFolders()) {
+            final Folder<D, O> toSubFolder = toFolder.getElementForSubDirectory(fromSubFolder, doIt, out);
 
             if (toSubFolder != null) {
                 out.push();
@@ -169,12 +169,12 @@ public abstract class Folder<T extends Photo> {
     }
 
 
-    private <O extends Photo> Folder<T> getElementForSubDirectory(
-        final Folder<O> toFolder,
+    private <D extends Connection<O>, O extends Photo> Folder<C, P> getElementForSubDirectory(
+        final Folder<D, O> toFolder,
         final boolean doIt,
         final Indenter out) throws PhotoException
     {
-        Folder<T> result = null;
+        Folder<C, P> result = null;
 
         final String name = getName();
 
@@ -184,7 +184,7 @@ public abstract class Folder<T extends Photo> {
             FolderType.Folders :
             FolderType.Photos;
 
-        Folder<T> toSubFolder = getFolder(name);
+        Folder<C, P> toSubFolder = getFolder(name);
 
         if (toSubFolder == null) {
             final String message =
@@ -224,7 +224,7 @@ public abstract class Folder<T extends Photo> {
     protected abstract void populate() throws PhotoException;
 
 
-    public final Folder<T> createFolder(
+    public final Folder<C, P> createFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -234,7 +234,7 @@ public abstract class Folder<T extends Photo> {
     }
 
 
-    public final Folder<T> createFakeFolder(
+    public final Folder<C, P> createFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -254,12 +254,12 @@ public abstract class Folder<T extends Photo> {
     protected abstract void checkFolderType(final FolderType folderType);
 
 
-    protected abstract Folder<T> doCreateFolder(
+    protected abstract Folder<C, P> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException;
 
 
-    protected abstract Folder<T> doCreateFakeFolder(
+    protected abstract Folder<C, P> doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException;
 

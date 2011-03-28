@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.io.File;
 
 
-/* package */ final class Group extends Folder<ZenfolioPhoto> {
+/* package */ final class Group extends Folder<Zenfolio, ZenfolioPhoto> {
 
     public Group(final Zenfolio zenfolio, final com.zenfolio.www.api._1_1.Group group) {
         this.zenfolio = zenfolio;
@@ -58,7 +58,7 @@ import java.io.File;
             for (final ArrayOfChoice1Choice element : group.getElements().getArrayOfChoice1Choice()) {
                 GroupElement subGroup = element.getGroup();
 
-                final Folder<ZenfolioPhoto> subDirectory =
+                final Folder<Zenfolio, ZenfolioPhoto> subDirectory =
                         (subGroup != null)
                         ? new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup)
                         : new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
@@ -70,7 +70,7 @@ import java.io.File;
 
 
     @Override
-    public List<Folder<ZenfolioPhoto>> getFolders() throws PhotoException {
+    public List<Folder<Zenfolio, ZenfolioPhoto>> getFolders() throws PhotoException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -79,10 +79,10 @@ import java.io.File;
 
 
     @Override
-    public Folder<ZenfolioPhoto> getFolder(final String name) throws PhotoException {
-        Folder<ZenfolioPhoto> result = null;
+    public Folder<Zenfolio, ZenfolioPhoto> getFolder(final String name) throws PhotoException {
+        Folder<Zenfolio, ZenfolioPhoto> result = null;
 
-        for (final Folder<ZenfolioPhoto> subDirectory : getFolders()) {
+        for (final Folder<Zenfolio, ZenfolioPhoto> subDirectory : getFolders()) {
             if (subDirectory.getName().equals(name)) {
                 result = subDirectory;
                 break;
@@ -108,11 +108,11 @@ import java.io.File;
 
 
     @Override
-    public Folder<ZenfolioPhoto> doCreateFolder(
+    public Folder<Zenfolio, ZenfolioPhoto> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
-        final Folder<ZenfolioPhoto> result;
+        final Folder<Zenfolio, ZenfolioPhoto> result;
 
         try {
             if (folderType.canHaveFolders()) {
@@ -133,11 +133,11 @@ import java.io.File;
 
 
     @Override
-    public Folder<ZenfolioPhoto> doCreateFakeFolder(
+    public Folder<Zenfolio, ZenfolioPhoto> doCreateFakeFolder(
         final String name,
         final FolderType folderType)
     {
-        final Folder<ZenfolioPhoto> result;
+        final Folder<Zenfolio, ZenfolioPhoto> result;
 
         if (folderType.canHaveFolders()) {
             final com.zenfolio.www.api._1_1.Group newGroup = new com.zenfolio.www.api._1_1.Group();
@@ -181,5 +181,5 @@ import java.io.File;
     private com.zenfolio.www.api._1_1.Group group;
 
 
-    private final List<Folder<ZenfolioPhoto>> subFolders = new LinkedList<Folder<ZenfolioPhoto>>();
+    private final List<Folder<Zenfolio, ZenfolioPhoto>> subFolders = new LinkedList<Folder<Zenfolio, ZenfolioPhoto>>();
 }

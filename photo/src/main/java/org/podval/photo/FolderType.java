@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011 dub.
+ *  Copyright 2011 Leonid Dubinsky (dub@podval.org).
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -50,14 +50,14 @@ public enum FolderType {
     }
 
 
-    public void checkCanHaveFolders(final Folder<?> folder) {
+    public void checkCanHaveFolders(final Folder<?, ?> folder) {
         if (!canHaveFolders()) {
             throw new IllegalArgumentException("This folder can not have subfolders: " + folder);
         }
     }
 
 
-    public void checkCanHavePhotos(final Folder<?> folder) {
+    public void checkCanHavePhotos(final Folder<?, ?> folder) {
         if (!canHavePhotos()) {
             throw new IllegalArgumentException("Folder can not have photos in it: " + folder);
         }

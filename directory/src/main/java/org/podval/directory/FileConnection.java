@@ -24,10 +24,10 @@ import org.podval.photo.PhotoException;
 
 
     @Override
-    public Folder<FilePhoto> getRootFolder() throws PhotoException {
+    public Folder<FileConnection, FilePhoto> getRootFolder() throws PhotoException {
         return rootFolder;
     }
 
 
-    private final Folder<FilePhoto> rootFolder;
+    private final Folder<FileConnection, FilePhoto> rootFolder;
 }
