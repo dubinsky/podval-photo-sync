@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>picasa</artifactId>
-    <name>Picasa Web Albums Things</name>
+    <name>Picasa Web Albums</name>
     <packaging>jar</packaging>
 
     <dependencies>

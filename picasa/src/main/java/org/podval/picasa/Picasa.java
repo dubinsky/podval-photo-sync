@@ -19,7 +19,7 @@ package org.podval.picasa;
 
 import org.podval.things.Connection;
 import org.podval.things.Folder;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.HttpResponseException;
@@ -33,7 +33,7 @@ import java.io.IOException;
  */
 public class Picasa extends Connection<PicasaThing> {
 
-    public Picasa(final String login, final String password) throws ThingsException {
+    public Picasa(final String login, final String password) throws PhotoException {
         this.login = login;
         this.password = password;
         this.transport = Transport.create();
@@ -52,27 +52,27 @@ public class Picasa extends Connection<PicasaThing> {
 
 
     @Override
-    public void open() throws ThingsException {
+    public void open() throws PhotoException {
         if (password != null) {
             login();
         }
     }
 
 
-    private void login() throws ThingsException {
+    private void login() throws PhotoException {
         try {
             Transport.authenticate(login, password, transport);
 
         } catch (final HttpResponseException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         } catch (final IOException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
     }
 
 
     @Override
-    public Folder<PicasaThing> getRootFolder() throws ThingsException {
+    public Folder<PicasaThing> getRootFolder() throws PhotoException {
         return new RootFolder(this);
     }
 

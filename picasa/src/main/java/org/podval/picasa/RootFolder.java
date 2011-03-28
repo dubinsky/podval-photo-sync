@@ -19,7 +19,7 @@ package org.podval.picasa;
 
 import org.podval.things.Folder;
 import org.podval.things.FolderType;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 import org.podval.picasa.model.AlbumEntry;
 import org.podval.picasa.model.Link;
@@ -70,14 +70,14 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
-    public Collection<Folder<PicasaThing>> getFolders() throws ThingsException {
+    public Collection<Folder<PicasaThing>> getFolders() throws PhotoException {
         ensureIsPopulated();
         return folders;
     }
 
 
     @Override
-    public Folder<PicasaThing> getFolder(final String name) throws ThingsException {
+    public Folder<PicasaThing> getFolder(final String name) throws PhotoException {
         Folder<PicasaThing> result = null;
 
         for (final Folder<PicasaThing> folder : getFolders()) {
@@ -95,19 +95,19 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
-    public List<PicasaThing> getThings() throws ThingsException {
+    public List<PicasaThing> getThings() throws PhotoException {
         return EMPTY;
     }
 
 
     @Override
-    public PicasaThing getThing(final String name) throws ThingsException {
+    public PicasaThing getThing(final String name) throws PhotoException {
         return null;
     }
 
 
     @Override
-    protected void populate() throws ThingsException {
+    protected void populate() throws PhotoException {
         try {
             final PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/" + picasa.getLogin());
 
@@ -125,7 +125,7 @@ public final class RootFolder extends Folder<PicasaThing> {
                 nextUrl = (next == null) ? null : new PicasaUrl(next);
             } while (nextUrl != null);
         } catch (final IOException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
     }
 
@@ -148,7 +148,7 @@ public final class RootFolder extends Folder<PicasaThing> {
     @Override
     protected Folder<PicasaThing> doCreateFolder(
         final String name,
-        final FolderType folderType) throws ThingsException
+        final FolderType folderType) throws PhotoException
     {
         final Album result;
         ensureIsPopulated();
@@ -156,7 +156,7 @@ public final class RootFolder extends Folder<PicasaThing> {
             result = new Album(picasa, name);
             feed.insertAlbum(picasa.getTransport(), result.getAlbumEntry());
         } catch (final IOException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
 
         return result;
@@ -166,20 +166,20 @@ public final class RootFolder extends Folder<PicasaThing> {
     @Override
     protected Folder<PicasaThing> doCreateFakeFolder(
         final String name,
-        final FolderType folderType) throws ThingsException
+        final FolderType folderType) throws PhotoException
     {
         return new Album(picasa, name);
     }
 
 
     @Override
-    protected void doAddFile(final String name, final File file) throws ThingsException {
+    protected void doAddFile(final String name, final File file) throws PhotoException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
 
     @Override
-    public void updateIfChanged() throws ThingsException {
+    public void updateIfChanged() throws PhotoException {
         // TODO
     }
 

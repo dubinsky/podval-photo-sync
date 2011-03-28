@@ -2,7 +2,7 @@ package org.podval.directory;
 
 import org.podval.things.Folder;
 import org.podval.things.FolderType;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.Collections;
 import java.io.File;
 
 
-/* package */ final class FileFolder extends Folder<FileThing> {
+/* package */ final class FileFolder extends Folder<FilePhoto> {
 
     public FileFolder(final String directoryPath) {
         this(new File(directoryPath));
@@ -74,7 +74,7 @@ import java.io.File;
         for (final Map.Entry<String, Map<String, File>> entry : bunches.entrySet()) {
             final String name = entry.getKey();
             final Map<String, File> bunch = entry.getValue();
-            final FileThing item = makeItem(name, bunch);
+            final FilePhoto item = makeItem(name, bunch);
             items.put(name, item);
         }
     }
@@ -99,34 +99,34 @@ import java.io.File;
     }
 
 
-    private FileThing makeItem(final String name, final Map<String, File> components) {
-        return new FileThing(name, components);
+    private FilePhoto makeItem(final String name, final Map<String, File> components) {
+        return new FilePhoto(name, components);
     }
 
 
     @Override
-    public Collection<Folder<FileThing>> getFolders() throws ThingsException {
+    public Collection<Folder<FilePhoto>> getFolders() throws PhotoException {
         ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
     @Override
-    public Folder<FileThing> getFolder(final String name) throws ThingsException {
+    public Folder<FilePhoto> getFolder(final String name) throws PhotoException {
         ensureIsPopulated();
         return subDirectories.get(name);
     }
 
 
     @Override
-    public FileThing getThing(final String name) throws ThingsException {
+    public FilePhoto getThing(final String name) throws PhotoException {
         ensureIsPopulated();
         return items.get(name);
     }
 
 
     @Override
-    public List<FileThing> getThings() throws ThingsException {
+    public List<FilePhoto> getThings() throws PhotoException {
         ensureIsPopulated();
         return sortedValues(items);
     }
@@ -138,16 +138,16 @@ import java.io.File;
 
 
     @Override
-    protected Folder<FileThing> doCreateFolder(
-        final String name, final FolderType folderType) throws ThingsException
+    protected Folder<FilePhoto> doCreateFolder(
+        final String name, final FolderType folderType) throws PhotoException
     {
         throw new UnsupportedOperationException();
     }
 
 
     @Override
-    protected Folder<FileThing> doCreateFakeFolder(
-        final String name, final FolderType folderType) throws ThingsException
+    protected Folder<FilePhoto> doCreateFakeFolder(
+        final String name, final FolderType folderType) throws PhotoException
     {
         throw new UnsupportedOperationException();
     }
@@ -186,7 +186,7 @@ import java.io.File;
 
 
     @Override
-    public void updateIfChanged() throws ThingsException {
+    public void updateIfChanged() throws PhotoException {
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -195,8 +195,8 @@ import java.io.File;
     private final File directory;
 
 
-    private final Map<String, Folder<FileThing>> subDirectories = new HashMap<String, Folder<FileThing>>();
+    private final Map<String, Folder<FilePhoto>> subDirectories = new HashMap<String, Folder<FilePhoto>>();
 
 
-    private final Map<String, FileThing> items = new HashMap<String, FileThing>();
+    private final Map<String, FilePhoto> items = new HashMap<String, FilePhoto>();
 }

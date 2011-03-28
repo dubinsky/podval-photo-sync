@@ -1,19 +1,20 @@
 package org.podval.zenfolio;
 
-import org.podval.things.Thing;
+import org.podval.things.Photo;
 import org.podval.things.Rotation;
 
-import com.zenfolio.www.api._1_1.Photo;
 import com.zenfolio.www.api._1_1.PhotoRotation;
+
+import java.io.File;
 
 import java.util.Date;
 import java.util.Map;
 import java.util.HashMap;
 
 
-public final class ZenfolioThing extends Thing {
+public final class ZenfolioPhoto extends Photo {
 
-    /* package */ ZenfolioThing(final Photo photo) {
+    /* package */ ZenfolioPhoto(final com.zenfolio.www.api._1_1.Photo photo) {
         this.photo = photo;
     }
 
@@ -55,6 +56,13 @@ public final class ZenfolioThing extends Thing {
         final Rotation result = rotations.get(photo.getRotation());
         // TODO: deal with null...
         return result;
+    }
+
+
+    @Override
+    public File getOriginalFile() {
+        // TODO: download
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 

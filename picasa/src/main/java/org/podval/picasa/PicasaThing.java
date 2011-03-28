@@ -18,18 +18,20 @@
 package org.podval.picasa;
 
 import org.podval.things.Rotation;
-import org.podval.things.Thing;
+import org.podval.things.Photo;
 
 import org.podval.picasa.model.PhotoEntry;
 
 import java.util.Date;
+
+import java.io.File;
 
 
 /**
  *
  * @author dub
  */
-public final class PicasaThing extends Thing {
+public final class PicasaThing extends Photo {
 
     /* package */ PicasaThing(final Picasa picasa, final PhotoEntry photo) {
         this.picasa = picasa;
@@ -73,6 +75,13 @@ public final class PicasaThing extends Thing {
         }
 
         return result;
+    }
+
+
+    @Override
+    public File getOriginalFile() {
+        // TODO: download!!!
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
 

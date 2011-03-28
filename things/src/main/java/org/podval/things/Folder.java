@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-public abstract class Folder<T extends Thing> {
+public abstract class Folder<T extends Photo> {
 
     public abstract String getName();
 
@@ -21,24 +21,24 @@ public abstract class Folder<T extends Thing> {
     public abstract void setPublic(final boolean value);
 
 
-    public final boolean hasFolders() throws ThingsException {
+    public final boolean hasFolders() throws PhotoException {
         return !getFolders().isEmpty();
     }
 
 
-    public abstract Collection<Folder<T>> getFolders() throws ThingsException;
+    public abstract Collection<Folder<T>> getFolders() throws PhotoException;
 
 
-    public abstract Folder<T> getFolder(final String name) throws ThingsException;
+    public abstract Folder<T> getFolder(final String name) throws PhotoException;
 
 
-    public abstract List<T> getThings() throws ThingsException;
+    public abstract List<T> getThings() throws PhotoException;
 
 
-    public abstract T getThing(final String name) throws ThingsException;
+    public abstract T getThing(final String name) throws PhotoException;
 
 
-    public void list(final Indenter out) throws ThingsException {
+    public void list(final Indenter out) throws PhotoException {
         out.println("<folder>");
         out.push();
 
@@ -57,33 +57,32 @@ public abstract class Folder<T extends Thing> {
     }
 
 
-    public <O extends Thing> void syncFolderTo(
+    public <O extends Photo> void syncFolderTo(
         final Folder<O> toFolder,
-        final ThingsConverter<T, O> converter,
         final boolean doIt,
         final Indenter out)
-        throws ThingsException
+        throws PhotoException
     {
         out.println(getName());
 
         syncProperties(toFolder);
-        syncContentTo(toFolder, converter, doIt, out);
-        syncFoldersTo(toFolder, converter, doIt, out);
+        syncContentTo(toFolder, doIt, out);
+        syncFoldersTo(toFolder, doIt, out);
 
 //        syncBackwards(from, to);
     }
 
 
-    private <O extends Thing> void syncProperties(final Folder<O> toFolder) throws ThingsException {
+    private <O extends Photo> void syncProperties(final Folder<O> toFolder) throws PhotoException {
         toFolder.setPublic(isPublic());
 
         toFolder.updateIfChanged();
     }
 
 
-    private <O extends Thing> void syncBackwards(
+    private <O extends Photo> void syncBackwards(
         final Folder<O> toFolder,
-        final Indenter out) throws ThingsException
+        final Indenter out) throws PhotoException
     {
         out.push();
 
@@ -99,28 +98,22 @@ public abstract class Folder<T extends Thing> {
     }
 
 
-    private <O extends Thing> void syncContentTo(
+    private <O extends Photo> void syncContentTo(
         final Folder<O> toFolder,
-        final ThingsConverter<T, O> converter,
         final boolean doIt,
-        final Indenter out) throws ThingsException
+        final Indenter out) throws PhotoException
     {
         out.push();
 
-        for (final T fromThing : getThings()) {
+        for (final T thing : getThings()) {
             if (hasFolders()) {
-                out.message("Skipping " + fromThing + " on the folder level");
+                out.message("Skipping " + thing + " on the folder level");
             } else {
-                if (!converter.isConvertible(fromThing)) {
-                    out.message("Skipping non-convertible " + fromThing + " on the folder level");
-
-                } else {
-                    if (toFolder.getThing(converter.getName(fromThing)) == null) {
-                        try {
-                            fromThing.addPhoto(toFolder, converter, doIt, out);
-                        } catch (final IOException e) {
-                            throw new ThingsException(e);
-                        }
+                if (toFolder.getThing(thing.getName()) == null) {
+                    try {
+                        toFolder.addPhoto(thing, doIt, out);
+                    } catch (final IOException e) {
+                        throw new PhotoException(e);
                     }
                 }
             }
@@ -130,11 +123,37 @@ public abstract class Folder<T extends Thing> {
     }
 
 
-    private <O extends Thing> void syncFoldersTo(
-        final Folder<O> toFolder,
-        final ThingsConverter<T, O> converter,
+    private <O extends Photo> void addPhoto(
+        final O thing,
         final boolean doIt,
-        final Indenter out) throws ThingsException
+        final Indenter out) throws IOException
+    {
+        final String name = thing.getName();
+
+        // @todo distinguish between "exist" and "available as local file"...
+        final File file = thing.getOriginalFile();
+        if (file != null) {
+            final String message = ((doIt) ? "adding" : "'adding'") + " thing" + " " + name;
+            out.message(message);
+
+            if (doIt) {
+                try {
+                    addFile(file.getName(), file);
+                } catch (final PhotoException e) {
+                    out.message(e.getMessage());
+                }
+            }
+
+        } else {
+            out.message("Raw conversions are not yet implemented. Can not add " + name);
+        }
+    }
+
+
+    private <O extends Photo> void syncFoldersTo(
+        final Folder<O> toFolder,
+        final boolean doIt,
+        final Indenter out) throws PhotoException
     {
         // @todo skip the collections!
 
@@ -143,17 +162,17 @@ public abstract class Folder<T extends Thing> {
 
             if (toSubFolder != null) {
                 out.push();
-                fromSubFolder.syncFolderTo(toSubFolder, converter, doIt, out);
+                fromSubFolder.syncFolderTo(toSubFolder, doIt, out);
                 out.pop();
             }
         }
     }
 
 
-    private <O extends Thing> Folder<T> getElementForSubDirectory(
+    private <O extends Photo> Folder<T> getElementForSubDirectory(
         final Folder<O> toFolder,
         final boolean doIt,
-        final Indenter out) throws ThingsException
+        final Indenter out) throws PhotoException
     {
         Folder<T> result = null;
 
@@ -194,7 +213,7 @@ public abstract class Folder<T extends Thing> {
     }
 
 
-    protected final void ensureIsPopulated() throws ThingsException {
+    protected final void ensureIsPopulated() throws PhotoException {
         if (!isPopulated) {
             populate();
             isPopulated = true;
@@ -202,12 +221,12 @@ public abstract class Folder<T extends Thing> {
     }
 
 
-    protected abstract void populate() throws ThingsException;
+    protected abstract void populate() throws PhotoException;
 
 
     public final Folder<T> createFolder(
         final String name,
-        final FolderType folderType) throws ThingsException
+        final FolderType folderType) throws PhotoException
     {
         checkFolderCreation(folderType);
 
@@ -217,7 +236,7 @@ public abstract class Folder<T extends Thing> {
 
     public final Folder<T> createFakeFolder(
         final String name,
-        final FolderType folderType) throws ThingsException
+        final FolderType folderType) throws PhotoException
     {
         checkFolderCreation(folderType);
 
@@ -237,25 +256,25 @@ public abstract class Folder<T extends Thing> {
 
     protected abstract Folder<T> doCreateFolder(
         final String name,
-        final FolderType folderType) throws ThingsException;
+        final FolderType folderType) throws PhotoException;
 
 
     protected abstract Folder<T> doCreateFakeFolder(
         final String name,
-        final FolderType folderType) throws ThingsException;
+        final FolderType folderType) throws PhotoException;
 
 
-    public final void addFile(final String name, final File file) throws ThingsException {
+    public final void addFile(final String name, final File file) throws PhotoException {
         getFolderType().checkCanHaveFolders(this);
 
         doAddFile(name, file);
     }
 
 
-    protected abstract void doAddFile(final String name, final File file) throws ThingsException;
+    protected abstract void doAddFile(final String name, final File file) throws PhotoException;
 
 
-    public abstract void updateIfChanged() throws ThingsException;
+    public abstract void updateIfChanged() throws PhotoException;
 
 
     private boolean isPopulated;

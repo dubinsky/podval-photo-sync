@@ -2,7 +2,7 @@ package org.podval.zenfolio;
 
 import org.podval.things.Folder;
 import org.podval.things.FolderType;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 import com.zenfolio.www.api._1_1.ArrayOfChoice1Choice;
 import com.zenfolio.www.api._1_1.GroupElement;
@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import java.io.File;
 
 
-/* package */ final class Group extends Folder<ZenfolioThing> {
+/* package */ final class Group extends Folder<ZenfolioPhoto> {
 
     public Group(final Zenfolio zenfolio, final com.zenfolio.www.api._1_1.Group group) {
         this.zenfolio = zenfolio;
@@ -58,7 +58,7 @@ import java.io.File;
             for (final ArrayOfChoice1Choice element : group.getElements().getArrayOfChoice1Choice()) {
                 GroupElement subGroup = element.getGroup();
 
-                final Folder<ZenfolioThing> subDirectory =
+                final Folder<ZenfolioPhoto> subDirectory =
                         (subGroup != null)
                         ? new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup)
                         : new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
@@ -70,7 +70,7 @@ import java.io.File;
 
 
     @Override
-    public List<Folder<ZenfolioThing>> getFolders() throws ThingsException {
+    public List<Folder<ZenfolioPhoto>> getFolders() throws PhotoException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -79,10 +79,10 @@ import java.io.File;
 
 
     @Override
-    public Folder<ZenfolioThing> getFolder(final String name) throws ThingsException {
-        Folder<ZenfolioThing> result = null;
+    public Folder<ZenfolioPhoto> getFolder(final String name) throws PhotoException {
+        Folder<ZenfolioPhoto> result = null;
 
-        for (final Folder<ZenfolioThing> subDirectory : getFolders()) {
+        for (final Folder<ZenfolioPhoto> subDirectory : getFolders()) {
             if (subDirectory.getName().equals(name)) {
                 result = subDirectory;
                 break;
@@ -94,25 +94,25 @@ import java.io.File;
 
 
     @Override
-    public List<ZenfolioThing> getThings() {
-        final List<ZenfolioThing> result = new LinkedList<ZenfolioThing>();
+    public List<ZenfolioPhoto> getThings() {
+        final List<ZenfolioPhoto> result = new LinkedList<ZenfolioPhoto>();
 
         return result;
     }
 
 
     @Override
-    public ZenfolioThing getThing(final String name) {
+    public ZenfolioPhoto getThing(final String name) {
         return null;
     }
 
 
     @Override
-    public Folder<ZenfolioThing> doCreateFolder(
+    public Folder<ZenfolioPhoto> doCreateFolder(
         final String name,
-        final FolderType folderType) throws ThingsException
+        final FolderType folderType) throws PhotoException
     {
-        final Folder<ZenfolioThing> result;
+        final Folder<ZenfolioPhoto> result;
 
         try {
             if (folderType.canHaveFolders()) {
@@ -125,7 +125,7 @@ import java.io.File;
                 return new Gallery(zenfolio, zenfolio.getConnection().createPhotoSet(group.getId(), PhotoSetType.Gallery, updater));
             }
         } catch (final RemoteException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
 
         return result;
@@ -133,11 +133,11 @@ import java.io.File;
 
 
     @Override
-    public Folder<ZenfolioThing> doCreateFakeFolder(
+    public Folder<ZenfolioPhoto> doCreateFakeFolder(
         final String name,
         final FolderType folderType)
     {
-        final Folder<ZenfolioThing> result;
+        final Folder<ZenfolioPhoto> result;
 
         if (folderType.canHaveFolders()) {
             final com.zenfolio.www.api._1_1.Group newGroup = new com.zenfolio.www.api._1_1.Group();
@@ -169,7 +169,7 @@ import java.io.File;
 
 
     @Override
-    public void updateIfChanged() throws ThingsException {
+    public void updateIfChanged() throws PhotoException {
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -181,5 +181,5 @@ import java.io.File;
     private com.zenfolio.www.api._1_1.Group group;
 
 
-    private final List<Folder<ZenfolioThing>> subFolders = new LinkedList<Folder<ZenfolioThing>>();
+    private final List<Folder<ZenfolioPhoto>> subFolders = new LinkedList<Folder<ZenfolioPhoto>>();
 }

@@ -3,15 +3,15 @@ package org.podval.things;
 import java.util.ServiceLoader;
 
 
-public abstract class ConnectionFactory<T extends Thing> {
+public abstract class ConnectionFactory<T extends Photo> {
 
-    public static Connection getConnection(final ConnectionDescriptor ticket) throws ThingsException {
+    public static Connection getConnection(final ConnectionDescriptor ticket) throws PhotoException {
         final String scheme = ticket.getScheme();
 
         final ConnectionFactory connectionFactory = get(scheme);
 
         if (connectionFactory == null) {
-            throw new ThingsException("Unknown scheme: " + scheme);
+            throw new PhotoException("Unknown scheme: " + scheme);
         }
 
         return connectionFactory.createConnection(ticket);
@@ -49,7 +49,7 @@ public abstract class ConnectionFactory<T extends Thing> {
     private static ServiceLoader<ConnectionFactory> loader;
 
 
-    public abstract Connection<T> createConnection(final ConnectionDescriptor ticket) throws ThingsException;
+    public abstract Connection<T> createConnection(final ConnectionDescriptor ticket) throws PhotoException;
 
 
     public abstract String getScheme();

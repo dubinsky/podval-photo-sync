@@ -2,7 +2,7 @@ package org.podval.zenfolio;
 
 import org.podval.things.Folder;
 import org.podval.things.FolderType;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 import com.zenfolio.www.api._1_1.PhotoSet;
 import com.zenfolio.www.api._1_1.AccessType;
@@ -26,7 +26,7 @@ import java.io.File;
 import java.io.IOException;
 
 
-/* package */ final class Gallery extends Folder<ZenfolioThing> {
+/* package */ final class Gallery extends Folder<ZenfolioPhoto> {
 
     public Gallery(final Zenfolio zenfolio, final PhotoSet photoSet) {
         this.zenfolio = zenfolio;
@@ -59,7 +59,7 @@ import java.io.IOException;
 
 
     @Override
-    protected void populate() throws ThingsException {
+    protected void populate() throws PhotoException {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
 
         final int id = photoSet.getId();
@@ -68,12 +68,12 @@ import java.io.IOException;
             try {
                 photoSet = zenfolio.getConnection().loadPhotoSet(id);
             } catch (final RemoteException e) {
-                throw new ThingsException(e);
+                throw new PhotoException(e);
             }
 
             if ((photoSet.getPhotos() != null) && (photoSet.getPhotos().getPhoto() != null)) {
                 for (final com.zenfolio.www.api._1_1.Photo rawPhoto : photoSet.getPhotos().getPhoto()) {
-                    final ZenfolioThing photo = new ZenfolioThing(rawPhoto);
+                    final ZenfolioPhoto photo = new ZenfolioPhoto(rawPhoto);
                     photos.add(photo);
                 }
             }
@@ -82,22 +82,22 @@ import java.io.IOException;
 
 
     @Override
-    public List<Folder<ZenfolioThing>> getFolders() {
-        return new LinkedList<Folder<ZenfolioThing>>();
+    public List<Folder<ZenfolioPhoto>> getFolders() {
+        return new LinkedList<Folder<ZenfolioPhoto>>();
     }
 
 
     @Override
-    public Folder<ZenfolioThing> getFolder(final String name) {
+    public Folder<ZenfolioPhoto> getFolder(final String name) {
         return null;
     }
 
 
     @Override
-    public ZenfolioThing getThing(final String name) throws ThingsException {
-        ZenfolioThing result = null;
+    public ZenfolioPhoto getThing(final String name) throws PhotoException {
+        ZenfolioPhoto result = null;
 
-        for (final ZenfolioThing photo : getThings()) {
+        for (final ZenfolioPhoto photo : getThings()) {
             if (photo.getName().equals(name)) {
                 result = photo;
                 break;
@@ -109,7 +109,7 @@ import java.io.IOException;
 
 
     @Override
-    public List<ZenfolioThing> getThings() throws ThingsException {
+    public List<ZenfolioPhoto> getThings() throws PhotoException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -124,9 +124,9 @@ import java.io.IOException;
 
 
     @Override
-    protected Folder<ZenfolioThing> doCreateFolder(
+    protected Folder<ZenfolioPhoto> doCreateFolder(
         final String name,
-        final FolderType folderType) throws ThingsException
+        final FolderType folderType) throws PhotoException
     {
         // will not be called - checked in the base class
         throw new UnsupportedOperationException("Gallery can not have subdirectories");
@@ -134,9 +134,9 @@ import java.io.IOException;
 
 
     @Override
-    protected Folder<ZenfolioThing> doCreateFakeFolder(
+    protected Folder<ZenfolioPhoto> doCreateFakeFolder(
         final String name,
-        final FolderType folderType) throws ThingsException
+        final FolderType folderType) throws PhotoException
     {
         // will not be called - checked in the base class
         throw new UnsupportedOperationException("Gallery can not have subdirectories");
@@ -144,14 +144,14 @@ import java.io.IOException;
 
 
     @Override
-    public void doAddFile(final String name, final File file) throws ThingsException {
+    public void doAddFile(final String name, final File file) throws PhotoException {
         try {
             final String message = postFile(name, file);
             if (message != null) {
-                throw new ThingsException(message);
+                throw new PhotoException(message);
             }
         } catch (final IOException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
     }
 
@@ -215,7 +215,7 @@ import java.io.IOException;
 
 
     @Override
-    public void updateIfChanged() throws ThingsException {
+    public void updateIfChanged() throws PhotoException {
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -227,5 +227,5 @@ import java.io.IOException;
     private PhotoSet photoSet;
 
 
-    private final List<ZenfolioThing> photos = new LinkedList<ZenfolioThing>();
+    private final List<ZenfolioPhoto> photos = new LinkedList<ZenfolioPhoto>();
 }

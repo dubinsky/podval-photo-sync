@@ -9,6 +9,6 @@
     </parent>
 
     <artifactId>things</artifactId>
-    <name>Hierarchy of Things</name>
+    <name>Hierarchy of Photos</name>
     <packaging>jar</packaging>
 </project>

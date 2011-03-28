@@ -2,10 +2,10 @@ package org.podval.directory;
 
 import org.podval.things.Connection;
 import org.podval.things.Folder;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 
-/* package */ final class FileConnection extends Connection<FileThing> {
+/* package */ final class FileConnection extends Connection<FilePhoto> {
 
     public FileConnection(final String rootPath) {
         rootFolder = new FileFolder(rootPath);
@@ -19,15 +19,15 @@ import org.podval.things.ThingsException;
 
 
     @Override
-    public void open() throws ThingsException {
+    public void open() throws PhotoException {
     }
 
 
     @Override
-    public Folder<FileThing> getRootFolder() throws ThingsException {
+    public Folder<FilePhoto> getRootFolder() throws PhotoException {
         return rootFolder;
     }
 
 
-    private final Folder<FileThing> rootFolder;
+    private final Folder<FilePhoto> rootFolder;
 }

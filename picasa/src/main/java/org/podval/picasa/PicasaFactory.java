@@ -20,7 +20,7 @@ package org.podval.picasa;
 import org.podval.things.Connection;
 import org.podval.things.ConnectionFactory;
 import org.podval.things.ConnectionDescriptor;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 /**
  *
@@ -32,7 +32,7 @@ public class PicasaFactory extends ConnectionFactory<PicasaThing> {
 
 
     @Override
-    public Connection<PicasaThing> createConnection(final ConnectionDescriptor ticket) throws ThingsException {
+    public Connection<PicasaThing> createConnection(final ConnectionDescriptor ticket) throws PhotoException {
         // TODO: check that ticket.getPath() is empty
         return new Picasa(ticket.getLogin(), ticket.getPassword());
     }

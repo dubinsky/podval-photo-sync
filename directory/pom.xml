@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>directory</artifactId>
-    <name>File System Things</name>
+    <name>File System Photos</name>
     <packaging>jar</packaging>
 
     <dependencies>

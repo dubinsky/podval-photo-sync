@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>zenfolio</artifactId>
-    <name>Zenfolio Things</name>
+    <name>Zenfolio</name>
     <packaging>jar</packaging>
 
     <dependencies>

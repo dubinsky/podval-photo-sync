@@ -16,7 +16,7 @@ import org.apache.commons.httpclient.Header;
 
 import org.podval.things.Folder;
 import org.podval.things.Connection;
-import org.podval.things.ThingsException;
+import org.podval.things.PhotoException;
 
 import java.io.IOException;
 
@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.ArrayList;
 
 
-/* package */ final class Zenfolio extends Connection<ZenfolioThing> {
+/* package */ final class Zenfolio extends Connection<ZenfolioPhoto> {
 
-    public Zenfolio(final String login, final String password, String path) throws ThingsException {
+    public Zenfolio(final String login, final String password, String path) throws PhotoException {
         this.login = login;
         this.password = password;
         this.path = path;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
         try {
             this.connection = new ZfApiStub();
         } catch (final RemoteException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
     }
 
@@ -46,14 +46,14 @@ import java.util.ArrayList;
 
 
     @Override
-    public void open() throws ThingsException {
+    public void open() throws PhotoException {
         if (password != null) {
             login();
         }
     }
 
 
-    private void login() throws ThingsException {
+    private void login() throws PhotoException {
         try {
             final AuthChallenge authChallenge = connection.getChallenge(login);
 
@@ -68,11 +68,11 @@ import java.util.ArrayList;
                     Bytes.wrapBytes(proof));
 
         } catch (final RemoteException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         } catch (final IOException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         } catch (final NoSuchAlgorithmException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
 
         final Options options = ((Stub) connection)._getServiceClient().getOptions();
@@ -91,16 +91,16 @@ import java.util.ArrayList;
 
 
     @Override
-    public Folder<ZenfolioThing> getRootFolder() throws ThingsException {
+    public Folder<ZenfolioPhoto> getRootFolder() throws PhotoException {
         return getSubFolderByPath(getRealRootFolder(), path);
     }
 
 
-    private Folder<ZenfolioThing> getRealRootFolder() throws ThingsException {
+    private Folder<ZenfolioPhoto> getRealRootFolder() throws PhotoException {
         try {
             return new Group(this, connection.loadGroupHierarchy(login));
         } catch (final RemoteException e) {
-            throw new ThingsException(e);
+            throw new PhotoException(e);
         }
     }
 

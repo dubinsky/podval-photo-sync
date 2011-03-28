@@ -2,16 +2,16 @@ package org.podval.directory;
 
 import java.util.Date;
 import org.podval.things.Rotation;
-import org.podval.things.Thing;
+import org.podval.things.Photo;
 
 import java.util.Map;
 
 import java.io.File;
 
 
-public final class FileThing extends Thing {
+public final class FilePhoto extends Photo {
 
-    /* package */ FileThing(final String name, final Map<String, File> components) {
+    /* package */ FilePhoto(final String name, final Map<String, File> components) {
         this.name = name;
         this.components = components;
     }
@@ -46,6 +46,12 @@ public final class FileThing extends Thing {
 
     public File get(final String extension) {
         return components.get(extension);
+    }
+
+
+    @Override
+    public File getOriginalFile() {
+        return get("jpg");
     }
 
 
