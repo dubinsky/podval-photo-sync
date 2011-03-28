@@ -1,10 +1,11 @@
 package org.podval.sync;
 
-import org.podval.things.Synchronizer;
-import org.podval.things.Lister;
 import org.podval.things.Connection;
 import org.podval.things.ConnectionFactory;
 import org.podval.things.ConnectionDescriptor;
+import org.podval.things.Thing;
+import org.podval.things.ThingsConverter;
+import org.podval.things.Indenter;
 import org.podval.things.ThingsException;
 
 import org.kohsuke.args4j.Option;
@@ -107,11 +108,39 @@ public final class Main {
         final Connection firstConnection = ConnectionFactory.getConnection(firstTicket);
 
         if (secondTicket == null) {
-            new Lister(firstConnection).run();
+            list(firstConnection);
         } else {
             final Connection secondConnection = ConnectionFactory.getConnection(secondTicket);
-            new Synchronizer(firstConnection, secondConnection, !isDryRun).run();
+            synchronize(firstConnection, secondConnection, !isDryRun);
         }
+    }
+
+
+    private void list(final Connection<?> connection) throws ThingsException {
+        connection.open();
+        connection.getRootFolder().list(new Indenter(System.out));
+    }
+
+
+
+    private <F extends Thing, T extends Thing> void synchronize(
+        final Connection<F> fromConnection,
+        final Connection<T> toConnection,
+        final boolean doIt) throws ThingsException
+    {
+        final Indenter out = new Indenter(System.out);
+
+        final ThingsConverter<F, T> converter =
+            ThingsConverter.get(fromConnection.getScheme(), toConnection.getScheme());
+
+        fromConnection.open();
+        toConnection.open();
+
+        fromConnection.getRootFolder().syncFolderTo(
+            toConnection.getRootFolder(),
+            converter,
+            doIt,
+            out);
     }
 
 
