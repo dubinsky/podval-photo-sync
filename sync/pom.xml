@@ -43,21 +43,18 @@
         <dependency>
             <artifactId>directory</artifactId>
             <groupId>${project.groupId}</groupId>
-            <type>jar</type>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <artifactId>zenfolio</artifactId>
             <groupId>${project.groupId}</groupId>
-            <type>jar</type>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <artifactId>picasa</artifactId>
             <groupId>${project.groupId}</groupId>
-            <type>jar</type>
             <version>${project.version}</version>
         </dependency>
 

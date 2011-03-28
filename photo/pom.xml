@@ -8,7 +8,7 @@
         <version>0.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>things</artifactId>
+    <artifactId>photo</artifactId>
     <name>Hierarchy of Photos</name>
     <packaging>jar</packaging>
 </project>

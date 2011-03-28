@@ -14,11 +14,9 @@
 
     <dependencies>
         <dependency>
-            <artifactId>things</artifactId>
+            <artifactId>photo</artifactId>
             <groupId>${project.groupId}</groupId>
-            <type>jar</type>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>

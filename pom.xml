@@ -83,7 +83,7 @@
     </dependencies>
 
     <modules>
-        <module>things</module>
+        <module>photo</module>
         <module>directory</module>
         <module>picasa</module>
         <module>zenfolio-api</module>
