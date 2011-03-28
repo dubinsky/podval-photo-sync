@@ -38,7 +38,7 @@ import java.io.IOException;
  *
  * @author dub
  */
-public final class RootFolder extends Folder<PicasaThing> {
+public final class RootFolder extends Folder<PicasaPhoto> {
 
     public RootFolder(final Picasa picasa) {
         this.picasa = picasa;
@@ -70,17 +70,17 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
-    public Collection<Folder<PicasaThing>> getFolders() throws PhotoException {
+    public Collection<Folder<PicasaPhoto>> getFolders() throws PhotoException {
         ensureIsPopulated();
         return folders;
     }
 
 
     @Override
-    public Folder<PicasaThing> getFolder(final String name) throws PhotoException {
-        Folder<PicasaThing> result = null;
+    public Folder<PicasaPhoto> getFolder(final String name) throws PhotoException {
+        Folder<PicasaPhoto> result = null;
 
-        for (final Folder<PicasaThing> folder : getFolders()) {
+        for (final Folder<PicasaPhoto> folder : getFolders()) {
             if (folder.getName().equals(name)) {
                 result = folder;
                 break;
@@ -91,17 +91,17 @@ public final class RootFolder extends Folder<PicasaThing> {
     }
 
 
-    private static final List<PicasaThing> EMPTY = new LinkedList<PicasaThing>();
+    private static final List<PicasaPhoto> EMPTY = new LinkedList<PicasaPhoto>();
 
 
     @Override
-    public List<PicasaThing> getThings() throws PhotoException {
+    public List<PicasaPhoto> getThings() throws PhotoException {
         return EMPTY;
     }
 
 
     @Override
-    public PicasaThing getThing(final String name) throws PhotoException {
+    public PicasaPhoto getThing(final String name) throws PhotoException {
         return null;
     }
 
@@ -146,7 +146,7 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
-    protected Folder<PicasaThing> doCreateFolder(
+    protected Folder<PicasaPhoto> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -164,7 +164,7 @@ public final class RootFolder extends Folder<PicasaThing> {
 
 
     @Override
-    protected Folder<PicasaThing> doCreateFakeFolder(
+    protected Folder<PicasaPhoto> doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -190,5 +190,5 @@ public final class RootFolder extends Folder<PicasaThing> {
     private UserFeed feed;
 
 
-    private final List<Folder<PicasaThing>> folders = new LinkedList<Folder<PicasaThing>>();
+    private final List<Folder<PicasaPhoto>> folders = new LinkedList<Folder<PicasaPhoto>>();
 }

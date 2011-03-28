@@ -26,13 +26,13 @@ import org.podval.photo.PhotoException;
  *
  * @author dub
  */
-public class PicasaFactory extends ConnectionFactory<PicasaThing> {
+public class PicasaFactory extends ConnectionFactory<PicasaPhoto> {
 
     public static final String SCHEME = "picasa";
 
 
     @Override
-    public Connection<PicasaThing> createConnection(final ConnectionDescriptor ticket) throws PhotoException {
+    public Connection<PicasaPhoto> createConnection(final ConnectionDescriptor ticket) throws PhotoException {
         // TODO: check that ticket.getPath() is empty
         return new Picasa(ticket.getLogin(), ticket.getPassword());
     }

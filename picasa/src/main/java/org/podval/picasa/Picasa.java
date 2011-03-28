@@ -31,7 +31,7 @@ import java.io.IOException;
  *
  * @author dub
  */
-public class Picasa extends Connection<PicasaThing> {
+public class Picasa extends Connection<PicasaPhoto> {
 
     public Picasa(final String login, final String password) throws PhotoException {
         this.login = login;
@@ -72,7 +72,7 @@ public class Picasa extends Connection<PicasaThing> {
 
 
     @Override
-    public Folder<PicasaThing> getRootFolder() throws PhotoException {
+    public Folder<PicasaPhoto> getRootFolder() throws PhotoException {
         return new RootFolder(this);
     }
 

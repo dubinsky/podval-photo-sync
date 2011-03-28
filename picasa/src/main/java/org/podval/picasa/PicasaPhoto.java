@@ -31,9 +31,9 @@ import java.io.File;
  *
  * @author dub
  */
-public final class PicasaThing extends Photo {
+public final class PicasaPhoto extends Photo {
 
-    /* package */ PicasaThing(final Picasa picasa, final PhotoEntry photo) {
+    /* package */ PicasaPhoto(final Picasa picasa, final PhotoEntry photo) {
         this.picasa = picasa;
         this.photo = photo;
     }

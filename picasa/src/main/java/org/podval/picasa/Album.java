@@ -39,7 +39,7 @@ import java.io.IOException;
  *
  * @author dub
  */
-public final class Album extends Folder<PicasaThing> {
+public final class Album extends Folder<PicasaPhoto> {
 
     public Album(final Picasa picasa, final AlbumEntry album) {
         this.picasa = picasa;
@@ -92,33 +92,33 @@ public final class Album extends Folder<PicasaThing> {
     }
 
 
-    private static List<Folder<PicasaThing>> EMPTY = new LinkedList<Folder<PicasaThing>>();
+    private static List<Folder<PicasaPhoto>> EMPTY = new LinkedList<Folder<PicasaPhoto>>();
 
 
     @Override
-    public Collection<Folder<PicasaThing>> getFolders() throws PhotoException {
+    public Collection<Folder<PicasaPhoto>> getFolders() throws PhotoException {
         return EMPTY;
     }
 
 
     @Override
-    public Folder<PicasaThing> getFolder(final String name) throws PhotoException {
+    public Folder<PicasaPhoto> getFolder(final String name) throws PhotoException {
         return null;
     }
 
 
     @Override
-    public List<PicasaThing> getThings() throws PhotoException {
+    public List<PicasaPhoto> getThings() throws PhotoException {
         ensureIsPopulated();
         return things;
     }
 
 
     @Override
-    public PicasaThing getThing(final String name) throws PhotoException {
-        PicasaThing result = null;
+    public PicasaPhoto getThing(final String name) throws PhotoException {
+        PicasaPhoto result = null;
 
-        for (final PicasaThing thing : getThings()) {
+        for (final PicasaPhoto thing : getThings()) {
             if (thing.getName().equals(name)) {
                 result = thing;
                 break;
@@ -139,7 +139,7 @@ public final class Album extends Folder<PicasaThing> {
                 while (nextUrl != null) {
                     final AlbumFeed feed = AlbumFeed.executeGet(picasa.getTransport(), nextUrl);
                     for (final PhotoEntry photo : feed.photos) {
-                        things.add(new PicasaThing(picasa, photo));
+                        things.add(new PicasaPhoto(picasa, photo));
                     }
 
                     final String next = Link.find(feed.links, "next");
@@ -159,7 +159,7 @@ public final class Album extends Folder<PicasaThing> {
 
 
     @Override
-    protected Folder<PicasaThing> doCreateFolder(
+    protected Folder<PicasaPhoto> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -168,7 +168,7 @@ public final class Album extends Folder<PicasaThing> {
 
 
     @Override
-    protected Folder<PicasaThing> doCreateFakeFolder(
+    protected Folder<PicasaPhoto> doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -210,5 +210,5 @@ public final class Album extends Folder<PicasaThing> {
     private AlbumEntry originalAlbumEntry;
 
 
-    private final List<PicasaThing> things = new LinkedList<PicasaThing>();
+    private final List<PicasaPhoto> things = new LinkedList<PicasaPhoto>();
 }
