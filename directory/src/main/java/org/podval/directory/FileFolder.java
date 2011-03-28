@@ -17,12 +17,14 @@ import java.io.File;
 
 /* package */ final class FileFolder extends Folder<FileConnection, FilePhoto> {
 
-    public FileFolder(final String directoryPath) {
-        this(new File(directoryPath));
+    public FileFolder(final FileConnection connection, final String directoryPath) {
+        this(connection, new File(directoryPath));
     }
 
 
-    public FileFolder(final File directory) {
+    public FileFolder(final FileConnection connection, final File directory) {
+        super(connection);
+
         if (!directory.exists()) {
             throw new IllegalArgumentException("Does not exist: " + directory);
         }
@@ -81,7 +83,7 @@ import java.io.File;
 
 
     private void loadDirectory(final File subDirectory) {
-        subDirectories.put(subDirectory.getName(), new FileFolder(subDirectory));
+        subDirectories.put(subDirectory.getName(), new FileFolder(getConnection(), subDirectory));
     }
 
 

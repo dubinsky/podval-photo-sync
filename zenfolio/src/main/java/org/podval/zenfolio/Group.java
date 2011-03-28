@@ -23,7 +23,8 @@ import java.io.File;
 /* package */ final class Group extends Folder<Zenfolio, ZenfolioPhoto> {
 
     public Group(final Zenfolio zenfolio, final com.zenfolio.www.api._1_1.Group group) {
-        this.zenfolio = zenfolio;
+        super(zenfolio);
+
         this.group = group;
     }
 
@@ -60,8 +61,8 @@ import java.io.File;
 
                 final Folder<Zenfolio, ZenfolioPhoto> subDirectory =
                         (subGroup != null)
-                        ? new Group(zenfolio, (com.zenfolio.www.api._1_1.Group) subGroup)
-                        : new Gallery(zenfolio, (PhotoSet) element.getPhotoSet());
+                        ? new Group(getConnection(), (com.zenfolio.www.api._1_1.Group) subGroup)
+                        : new Gallery(getConnection(), (PhotoSet) element.getPhotoSet());
 
                 subFolders.add(subDirectory);
             }
@@ -118,11 +119,11 @@ import java.io.File;
             if (folderType.canHaveFolders()) {
                 final GroupUpdater updater = new GroupUpdater();
                 updater.setTitle(name);
-                result = new Group(zenfolio, zenfolio.getConnection().createGroup(group.getId(), updater));
+                result = new Group(getConnection(), getConnection().getConnection().createGroup(group.getId(), updater));
             } else {
                 final PhotoSetUpdater updater = new PhotoSetUpdater();
                 updater.setTitle(name);
-                return new Gallery(zenfolio, zenfolio.getConnection().createPhotoSet(group.getId(), PhotoSetType.Gallery, updater));
+                return new Gallery(getConnection(), getConnection().getConnection().createPhotoSet(group.getId(), PhotoSetType.Gallery, updater));
             }
         } catch (final RemoteException e) {
             throw new PhotoException(e);
@@ -142,12 +143,12 @@ import java.io.File;
         if (folderType.canHaveFolders()) {
             final com.zenfolio.www.api._1_1.Group newGroup = new com.zenfolio.www.api._1_1.Group();
             newGroup.setTitle(name);
-            result = new Group(zenfolio, newGroup);
+            result = new Group(getConnection(), newGroup);
         } else {
             final PhotoSet gallery = new PhotoSet();
             gallery.setTitle(name);
             gallery.setType(PhotoSetType.Gallery);
-            return new Gallery(zenfolio, gallery);
+            return new Gallery(getConnection(), gallery);
         }
 
         return result;
@@ -173,9 +174,6 @@ import java.io.File;
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-
-    private final Zenfolio zenfolio;
 
 
     private com.zenfolio.www.api._1_1.Group group;

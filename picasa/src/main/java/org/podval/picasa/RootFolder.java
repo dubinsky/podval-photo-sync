@@ -41,7 +41,7 @@ import java.io.IOException;
 public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
     public RootFolder(final Picasa picasa) {
-        this.picasa = picasa;
+        super(picasa);
     }
 
 
@@ -109,11 +109,11 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
     @Override
     protected void populate() throws PhotoException {
         try {
-            final PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/" + picasa.getLogin());
+            final PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/" + getConnection().getLogin());
 
             PicasaUrl nextUrl = url;
             do {
-                final UserFeed chunk = UserFeed.executeGet(picasa.getTransport(), nextUrl);
+                final UserFeed chunk = UserFeed.executeGet(getConnection().getTransport(), nextUrl);
 
                 if (feed == null) {
                     feed = chunk;
@@ -133,7 +133,7 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
     private void populate(final List<AlbumEntry> albums) throws IOException {
         if (albums != null) {
             for (final AlbumEntry album : albums) {
-                folders.add(new Album(picasa, album));
+                folders.add(new Album(getConnection(), album));
             }
         }
     }
@@ -153,8 +153,8 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
         final Album result;
         ensureIsPopulated();
         try {
-            result = new Album(picasa, name);
-            feed.insertAlbum(picasa.getTransport(), result.getAlbumEntry());
+            result = new Album(getConnection(), name);
+            feed.insertAlbum(getConnection().getTransport(), result.getAlbumEntry());
         } catch (final IOException e) {
             throw new PhotoException(e);
         }
@@ -168,7 +168,7 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
         final String name,
         final FolderType folderType) throws PhotoException
     {
-        return new Album(picasa, name);
+        return new Album(getConnection(), name);
     }
 
 
@@ -182,9 +182,6 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
     public void updateIfChanged() throws PhotoException {
         // TODO
     }
-
-
-    private final Picasa picasa;
 
 
     private UserFeed feed;

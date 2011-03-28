@@ -8,7 +8,7 @@ import org.podval.photo.PhotoException;
 /* package */ final class FileConnection extends Connection<FilePhoto> {
 
     public FileConnection(final String rootPath) {
-        rootFolder = new FileFolder(rootPath);
+        rootFolder = new FileFolder(this, rootPath);
     }
 
 

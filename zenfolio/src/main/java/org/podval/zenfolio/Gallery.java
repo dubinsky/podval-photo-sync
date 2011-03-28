@@ -29,7 +29,8 @@ import java.io.IOException;
 /* package */ final class Gallery extends Folder<Zenfolio, ZenfolioPhoto> {
 
     public Gallery(final Zenfolio zenfolio, final PhotoSet photoSet) {
-        this.zenfolio = zenfolio;
+        super(zenfolio);
+
         this.photoSet = photoSet;
     }
 
@@ -66,7 +67,7 @@ import java.io.IOException;
 
         if (id != 0) {
             try {
-                photoSet = zenfolio.getConnection().loadPhotoSet(id);
+                photoSet = getConnection().getConnection().loadPhotoSet(id);
             } catch (final RemoteException e) {
                 throw new PhotoException(e);
             }
@@ -161,7 +162,7 @@ import java.io.IOException;
 
         final PostMethod filePost = new PostMethod(url);
 
-        filePost.setRequestHeader(zenfolio.getAuthTokenHeader());
+        filePost.setRequestHeader(getConnection().getAuthTokenHeader());
 
         final String date = new Date(file.lastModified()).toString();
 
@@ -219,9 +220,6 @@ import java.io.IOException;
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-
-    private final Zenfolio zenfolio;
 
 
     private PhotoSet photoSet;

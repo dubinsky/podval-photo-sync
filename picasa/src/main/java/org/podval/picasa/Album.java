@@ -41,16 +41,17 @@ import java.io.IOException;
  */
 public final class Album extends Folder<Picasa, PicasaPhoto> {
 
-    public Album(final Picasa picasa, final AlbumEntry album) {
-        this.picasa = picasa;
-        this.albumEntry = album;
+    public Album(final Picasa picasa, final String name) {
+        this(picasa, new AlbumEntry());
+
+        this.albumEntry.title = name;
     }
 
 
-    public Album(final Picasa picasa, final String name) {
-        this.picasa = picasa;
-        this.albumEntry = new AlbumEntry();
-        this.albumEntry.title = name;
+    public Album(final Picasa picasa, final AlbumEntry album) {
+        super(picasa);
+
+        this.albumEntry = album;
     }
 
 
@@ -137,9 +138,9 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
                 PicasaUrl nextUrl = url;
 
                 while (nextUrl != null) {
-                    final AlbumFeed feed = AlbumFeed.executeGet(picasa.getTransport(), nextUrl);
+                    final AlbumFeed feed = AlbumFeed.executeGet(getConnection().getTransport(), nextUrl);
                     for (final PhotoEntry photo : feed.photos) {
-                        photos.add(new PicasaPhoto(picasa, photo));
+                        photos.add(new PicasaPhoto(getConnection(), photo));
                     }
 
                     final String next = Link.find(feed.links, "next");
@@ -193,15 +194,12 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
     public void updateIfChanged() throws PhotoException {
         if (originalAlbumEntry != null) {
             try {
-                albumEntry.executePatchRelativeToOriginal(picasa.getTransport(), originalAlbumEntry);
+                albumEntry.executePatchRelativeToOriginal(getConnection().getTransport(), originalAlbumEntry);
             } catch (final IOException e) {
                 throw new PhotoException(e);
             }
         }
     }
-
-
-    private final Picasa picasa;
 
 
     private final AlbumEntry albumEntry;

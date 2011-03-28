@@ -9,6 +9,16 @@ import java.io.IOException;
 
 public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
+    protected Folder(final C connection) {
+        this.connection = connection;
+    }
+
+
+    public final C getConnection() {
+        return connection;
+    }
+
+
     public abstract String getName();
 
 
@@ -275,6 +285,9 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
 
     public abstract void updateIfChanged() throws PhotoException;
+
+
+    private final C connection;
 
 
     private boolean isPopulated;
