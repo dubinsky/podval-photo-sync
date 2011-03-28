@@ -18,10 +18,11 @@ package org.podval.picasa.model;
 
 import com.google.api.client.util.Key;
 
+
 /**
  * @author Yaniv Inbar
  */
-public class Author {
+public final class Author {
 
   @Key
   public String name;

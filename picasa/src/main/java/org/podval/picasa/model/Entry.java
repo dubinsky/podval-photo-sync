@@ -52,12 +52,12 @@ public class Entry implements Cloneable {
     public String updated;
 
 
-    public String getFeedLink() {
+    public final String getFeedLink() {
         return Link.find(links, "http://schemas.google.com/g/2005#feed");
     }
 
 
-    public String getSelfLink() {
+    public final String getSelfLink() {
         return Link.find(links, "self");
     }
 
@@ -68,7 +68,7 @@ public class Entry implements Cloneable {
     }
 
 
-    public void executeDelete(final HttpTransport transport) throws IOException {
+    public final void executeDelete(final HttpTransport transport) throws IOException {
         final HttpRequest request = transport.buildDeleteRequest();
         request.setUrl(getEditLink());
         request.headers.ifMatch = etag;
@@ -76,7 +76,7 @@ public class Entry implements Cloneable {
     }
 
 
-    static Entry executeGet(
+    protected static Entry executeGet(
         final HttpTransport transport,
         final PicasaUrl url,
         final Class<? extends Entry> entryClass) throws IOException
@@ -88,7 +88,7 @@ public class Entry implements Cloneable {
     }
 
 
-    Entry executePatchRelativeToOriginal(
+    protected Entry executePatchRelativeToOriginal(
         final HttpTransport transport,
         final Entry original) throws IOException
     {

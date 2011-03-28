@@ -1,7 +1,7 @@
 package org.podval.zenfolio;
 
-import org.podval.things.Photo;
-import org.podval.things.Rotation;
+import org.podval.photo.Photo;
+import org.podval.photo.Rotation;
 
 import com.zenfolio.www.api._1_1.PhotoRotation;
 

@@ -22,7 +22,7 @@ import com.google.api.client.util.Key;
 /**
  * @author Yaniv Inbar
  */
-public class Category {
+public final class Category {
 
     @Key("@scheme")
     public String scheme;

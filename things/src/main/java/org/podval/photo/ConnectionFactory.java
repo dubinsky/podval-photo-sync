@@ -1,4 +1,4 @@
-package org.podval.things;
+package org.podval.photo;
 
 import java.util.ServiceLoader;
 

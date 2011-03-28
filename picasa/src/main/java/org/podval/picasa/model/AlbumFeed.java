@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * @author Yaniv Inbar
  */
-public class AlbumFeed extends Feed {
+public final class AlbumFeed extends Feed {
 
     @Key("entry")
     public List<PhotoEntry> photos;

@@ -18,10 +18,12 @@ package org.podval.picasa.model;
 
 import com.google.api.client.util.Key;
 
+
 /**
  * @author Yaniv Inbar
  */
-public class MediaGroup {
-  @Key("media:content")
-  public MediaContent content;
+public final class MediaGroup {
+
+    @Key("media:content")
+    public MediaContent content;
 }

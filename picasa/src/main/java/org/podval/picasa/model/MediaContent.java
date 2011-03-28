@@ -18,14 +18,16 @@ package org.podval.picasa.model;
 
 import com.google.api.client.util.Key;
 
+
 /**
  * @author Yaniv Inbar
  */
-public class MediaContent {
+public final class MediaContent {
 
-  @Key("@type")
-  public String type;
+    @Key("@type")
+    public String type;
 
-  @Key("@url")
-  public String url;
+
+    @Key("@url")
+    public String url;
 }

@@ -25,40 +25,51 @@ import com.google.api.client.xml.atom.AtomContent;
 import java.io.IOException;
 import java.util.List;
 
+
 /**
  * @author Yaniv Inbar
  */
 public class Feed {
 
-  @Key
-  public Author author;
+    @Key
+    public Author author;
 
-  @Key("openSearch:totalResults")
-  public int totalResults;
 
-  @Key("link")
-  public List<Link> links;
+    @Key("openSearch:totalResults")
+    public int totalResults;
 
-  private String getPostLink() {
-    return Link.find(links, "http://schemas.google.com/g/2005#post");
-  }
 
-  static Feed executeGet(HttpTransport transport, PicasaUrl url,
-      Class<? extends Feed> feedClass) throws IOException {
-    url.fields = GData.getFieldsFor(feedClass);
-    HttpRequest request = transport.buildGetRequest();
-    request.url = url;
-    return request.execute().parseAs(feedClass);
-  }
+    @Key("link")
+    public List<Link> links;
 
-  Entry executeInsert(HttpTransport transport, Entry entry)
-      throws IOException {
-    HttpRequest request = transport.buildPostRequest();
-    request.setUrl(getPostLink());
-    AtomContent content = new AtomContent();
-    content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
-    content.entry = entry;
-    request.content = content;
-    return request.execute().parseAs(entry.getClass());
-  }
+
+    private String getPostLink() {
+        return Link.find(links, "http://schemas.google.com/g/2005#post");
+    }
+
+
+    protected static Feed executeGet(
+        final HttpTransport transport,
+        final PicasaUrl url,
+        final Class<? extends Feed> feedClass) throws IOException
+    {
+        url.fields = GData.getFieldsFor(feedClass);
+        final HttpRequest request = transport.buildGetRequest();
+        request.url = url;
+        return request.execute().parseAs(feedClass);
+    }
+
+
+    protected final Entry executeInsert(
+        final HttpTransport transport,
+        final Entry entry) throws IOException
+    {
+        final HttpRequest request = transport.buildPostRequest();
+        request.setUrl(getPostLink());
+        final AtomContent content = new AtomContent();
+        content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
+        content.entry = entry;
+        request.content = content;
+        return request.execute().parseAs(entry.getClass());
+    }
 }

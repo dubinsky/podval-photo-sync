@@ -1,11 +1,11 @@
 package org.podval.sync;
 
-import org.podval.things.Connection;
-import org.podval.things.ConnectionFactory;
-import org.podval.things.ConnectionDescriptor;
-import org.podval.things.Photo;
-import org.podval.things.Indenter;
-import org.podval.things.PhotoException;
+import org.podval.photo.Connection;
+import org.podval.photo.ConnectionFactory;
+import org.podval.photo.ConnectionDescriptor;
+import org.podval.photo.Photo;
+import org.podval.photo.Indenter;
+import org.podval.photo.PhotoException;
 
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.Argument;

@@ -25,7 +25,7 @@ import java.io.IOException;
 /**
  * @author Yaniv Inbar
  */
-public class AlbumEntry extends Entry {
+public final class AlbumEntry extends Entry {
 
     @Key("gphoto:access")
     public String access;

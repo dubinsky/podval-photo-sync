@@ -1,6 +1,6 @@
 package org.podval.sync;
 
-import org.podval.things.ConnectionDescriptor;
+import org.podval.photo.ConnectionDescriptor;
 import org.kohsuke.args4j.CmdLineException;
 
 import org.junit.Assert;

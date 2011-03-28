@@ -1,8 +1,8 @@
 package org.podval.directory;
 
-import org.podval.things.Connection;
-import org.podval.things.ConnectionFactory;
-import org.podval.things.ConnectionDescriptor;
+import org.podval.photo.Connection;
+import org.podval.photo.ConnectionFactory;
+import org.podval.photo.ConnectionDescriptor;
 
 
 public final class FileFactory extends ConnectionFactory<FilePhoto> {

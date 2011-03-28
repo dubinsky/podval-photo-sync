@@ -1,8 +1,8 @@
 package org.podval.directory;
 
 import java.util.Date;
-import org.podval.things.Rotation;
-import org.podval.things.Photo;
+import org.podval.photo.Rotation;
+import org.podval.photo.Photo;
 
 import java.util.Map;
 

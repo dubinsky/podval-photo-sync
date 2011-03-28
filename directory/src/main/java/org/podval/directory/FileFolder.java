@@ -1,8 +1,8 @@
 package org.podval.directory;
 
-import org.podval.things.Folder;
-import org.podval.things.FolderType;
-import org.podval.things.PhotoException;
+import org.podval.photo.Folder;
+import org.podval.photo.FolderType;
+import org.podval.photo.PhotoException;
 
 import java.util.Collection;
 import java.util.List;

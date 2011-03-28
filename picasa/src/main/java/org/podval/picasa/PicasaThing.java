@@ -17,8 +17,8 @@
 
 package org.podval.picasa;
 
-import org.podval.things.Rotation;
-import org.podval.things.Photo;
+import org.podval.photo.Rotation;
+import org.podval.photo.Photo;
 
 import org.podval.picasa.model.PhotoEntry;
 

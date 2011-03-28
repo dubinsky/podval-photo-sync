@@ -1,4 +1,4 @@
-package org.podval.things;
+package org.podval.photo;
 
 
 public final class PhotoException extends Exception {

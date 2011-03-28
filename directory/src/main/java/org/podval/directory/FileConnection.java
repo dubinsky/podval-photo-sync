@@ -1,8 +1,8 @@
 package org.podval.directory;
 
-import org.podval.things.Connection;
-import org.podval.things.Folder;
-import org.podval.things.PhotoException;
+import org.podval.photo.Connection;
+import org.podval.photo.Folder;
+import org.podval.photo.PhotoException;
 
 
 /* package */ final class FileConnection extends Connection<FilePhoto> {

@@ -15,7 +15,7 @@
  *  under the License.
  */
 
-package org.podval.things;
+package org.podval.photo;
 
 
 /**

@@ -17,9 +17,9 @@
 
 package org.podval.picasa;
 
-import org.podval.things.Connection;
-import org.podval.things.Folder;
-import org.podval.things.PhotoException;
+import org.podval.photo.Connection;
+import org.podval.photo.Folder;
+import org.podval.photo.PhotoException;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.HttpResponseException;

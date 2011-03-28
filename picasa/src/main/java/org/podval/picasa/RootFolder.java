@@ -17,9 +17,9 @@
 
 package org.podval.picasa;
 
-import org.podval.things.Folder;
-import org.podval.things.FolderType;
-import org.podval.things.PhotoException;
+import org.podval.photo.Folder;
+import org.podval.photo.FolderType;
+import org.podval.photo.PhotoException;
 
 import org.podval.picasa.model.AlbumEntry;
 import org.podval.picasa.model.Link;

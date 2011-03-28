@@ -19,33 +19,38 @@ package org.podval.picasa.model;
 import com.google.api.client.googleapis.GoogleUrl;
 import com.google.api.client.util.Key;
 
+
 /**
  * @author Yaniv Inbar
  */
-public class PicasaUrl extends GoogleUrl {
-  
-  public static final String ROOT_URL = "https://picasaweb.google.com/data/";
+public final class PicasaUrl extends GoogleUrl {
 
-  @Key("max-results")
-  public Integer maxResults;
+    public static final String ROOT_URL = "https://picasaweb.google.com/data/";
 
-  @Key
-  public String kinds;
 
-  public PicasaUrl(String url) {
-    super(url);
-    if (Util.DEBUG) {
-      this.prettyprint = true;
+    @Key("max-results")
+    public Integer maxResults;
+
+
+    @Key
+    public String kinds;
+
+
+    public PicasaUrl(final String url) {
+        super(url);
+        if (Util.DEBUG) {
+            this.prettyprint = true;
+        }
     }
-  }
 
-  /**
-   * Constructs a new Picasa Web Albums URL based on the given relative path.
-   * 
-   * @param relativePath encoded path relative to the {@link #ROOT_URL}
-   * @return new Picasa URL
-   */
-  public static PicasaUrl relativeToRoot(String relativePath) {
-    return new PicasaUrl(ROOT_URL + relativePath);
-  }
+
+    /**
+     * Constructs a new Picasa Web Albums URL based on the given relative path.
+     *
+     * @param relativePath encoded path relative to the {@link #ROOT_URL}
+     * @return new Picasa URL
+     */
+    public static PicasaUrl relativeToRoot(final String relativePath) {
+        return new PicasaUrl(ROOT_URL + relativePath);
+    }
 }
