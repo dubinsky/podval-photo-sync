@@ -107,14 +107,14 @@ import java.io.File;
 
 
     @Override
-    public Collection<Folder<FileConnection, FilePhoto>> getFolders() throws PhotoException {
+    public Collection<FileFolder> getFolders() throws PhotoException {
         ensureIsPopulated();
         return sortedValues(subDirectories);
     }
 
 
     @Override
-    public Folder<FileConnection, FilePhoto> getFolder(final String name) throws PhotoException {
+    public FileFolder getFolder(final String name) throws PhotoException {
         ensureIsPopulated();
         return subDirectories.get(name);
     }
@@ -140,7 +140,7 @@ import java.io.File;
 
 
     @Override
-    protected Folder<FileConnection, FilePhoto> doCreateFolder(
+    protected FileFolder doCreateFolder(
         final String name, final FolderType folderType) throws PhotoException
     {
         throw new UnsupportedOperationException();
@@ -148,7 +148,7 @@ import java.io.File;
 
 
     @Override
-    protected Folder<FileConnection, FilePhoto> doCreateFakeFolder(
+    protected FileFolder doCreateFakeFolder(
         final String name, final FolderType folderType) throws PhotoException
     {
         throw new UnsupportedOperationException();
@@ -197,7 +197,7 @@ import java.io.File;
     private final File directory;
 
 
-    private final Map<String, Folder<FileConnection, FilePhoto>> subDirectories = new HashMap<String, Folder<FileConnection, FilePhoto>>();
+    private final Map<String, FileFolder> subDirectories = new HashMap<String, FileFolder>();
 
 
     private final Map<String, FilePhoto> items = new HashMap<String, FilePhoto>();

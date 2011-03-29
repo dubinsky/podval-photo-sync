@@ -1,6 +1,5 @@
 package org.podval.zenfolio;
 
-import org.podval.photo.Folder;
 import org.podval.photo.FolderType;
 import org.podval.photo.PhotoException;
 
@@ -10,7 +9,6 @@ import com.zenfolio.www.api._1_1.GroupUpdater;
 import com.zenfolio.www.api._1_1.PhotoSet;
 import com.zenfolio.www.api._1_1.PhotoSetType;
 import com.zenfolio.www.api._1_1.PhotoSetUpdater;
-import com.zenfolio.www.api._1_1.AccessType;
 
 import java.rmi.RemoteException;
 
@@ -20,18 +18,10 @@ import java.util.LinkedList;
 import java.io.File;
 
 
-/* package */ final class Group extends Folder<Zenfolio, ZenfolioPhoto> {
+/* package */ final class Group extends GroupLike<com.zenfolio.www.api._1_1.Group> {
 
-    public Group(final Zenfolio zenfolio, final com.zenfolio.www.api._1_1.Group group) {
-        super(zenfolio);
-
-        this.group = group;
-    }
-
-
-    @Override
-    public String getName() {
-        return group.getTitle();
+    public Group(final Zenfolio zenfolio, final com.zenfolio.www.api._1_1.Group element) {
+        super(zenfolio, element);
     }
 
 
@@ -42,24 +32,12 @@ import java.io.File;
 
 
     @Override
-    public boolean isPublic() {
-        return group.getAccessDescriptor().getAccessType() == AccessType.Public;
-    }
-
-
-    @Override
-    public void setPublic(final boolean value) {
-        group.getAccessDescriptor().setAccessType((value) ? AccessType.Public : AccessType.Private );
-    }
-
-
-    @Override
     protected void populate() {
-        if ((group.getElements() != null) && (group.getElements().getArrayOfChoice1Choice() != null)) {
-            for (final ArrayOfChoice1Choice element : group.getElements().getArrayOfChoice1Choice()) {
+        if ((getElement().getElements() != null) && (getElement().getElements().getArrayOfChoice1Choice() != null)) {
+            for (final ArrayOfChoice1Choice element : getElement().getElements().getArrayOfChoice1Choice()) {
                 GroupElement subGroup = element.getGroup();
 
-                final Folder<Zenfolio, ZenfolioPhoto> subDirectory =
+                final GroupLike<?> subDirectory =
                         (subGroup != null)
                         ? new Group(getConnection(), (com.zenfolio.www.api._1_1.Group) subGroup)
                         : new Gallery(getConnection(), (PhotoSet) element.getPhotoSet());
@@ -71,7 +49,7 @@ import java.io.File;
 
 
     @Override
-    public List<Folder<Zenfolio, ZenfolioPhoto>> getFolders() throws PhotoException {
+    public List<GroupLike<?>> getFolders() throws PhotoException {
         ensureIsPopulated();
 
         // @todo sort and immute?
@@ -80,10 +58,10 @@ import java.io.File;
 
 
     @Override
-    public Folder<Zenfolio, ZenfolioPhoto> getFolder(final String name) throws PhotoException {
-        Folder<Zenfolio, ZenfolioPhoto> result = null;
+    public GroupLike<?> getFolder(final String name) throws PhotoException {
+        GroupLike<?> result = null;
 
-        for (final Folder<Zenfolio, ZenfolioPhoto> subDirectory : getFolders()) {
+        for (final GroupLike<?> subDirectory : getFolders()) {
             if (subDirectory.getName().equals(name)) {
                 result = subDirectory;
                 break;
@@ -109,21 +87,21 @@ import java.io.File;
 
 
     @Override
-    public Folder<Zenfolio, ZenfolioPhoto> doCreateFolder(
+    public GroupLike<?> doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
-        final Folder<Zenfolio, ZenfolioPhoto> result;
+        final GroupLike<?> result;
 
         try {
             if (folderType.canHaveFolders()) {
                 final GroupUpdater updater = new GroupUpdater();
                 updater.setTitle(name);
-                result = new Group(getConnection(), getConnection().getConnection().createGroup(group.getId(), updater));
+                result = new Group(getConnection(), getConnection().getConnection().createGroup(getElement().getId(), updater));
             } else {
                 final PhotoSetUpdater updater = new PhotoSetUpdater();
                 updater.setTitle(name);
-                return new Gallery(getConnection(), getConnection().getConnection().createPhotoSet(group.getId(), PhotoSetType.Gallery, updater));
+                return new Gallery(getConnection(), getConnection().getConnection().createPhotoSet(getElement().getId(), PhotoSetType.Gallery, updater));
             }
         } catch (final RemoteException e) {
             throw new PhotoException(e);
@@ -134,11 +112,11 @@ import java.io.File;
 
 
     @Override
-    public Folder<Zenfolio, ZenfolioPhoto> doCreateFakeFolder(
+    public GroupLike<?> doCreateFakeFolder(
         final String name,
         final FolderType folderType)
     {
-        final Folder<Zenfolio, ZenfolioPhoto> result;
+        final GroupLike<?> result;
 
         if (folderType.canHaveFolders()) {
             final com.zenfolio.www.api._1_1.Group newGroup = new com.zenfolio.www.api._1_1.Group();
@@ -176,8 +154,5 @@ import java.io.File;
     }
 
 
-    private com.zenfolio.www.api._1_1.Group group;
-
-
-    private final List<Folder<Zenfolio, ZenfolioPhoto>> subFolders = new LinkedList<Folder<Zenfolio, ZenfolioPhoto>>();
+    private final List<GroupLike<?>> subFolders = new LinkedList<GroupLike<?>>();
 }

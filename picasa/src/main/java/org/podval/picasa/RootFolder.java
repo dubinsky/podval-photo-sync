@@ -70,17 +70,17 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
 
     @Override
-    public Collection<Folder<Picasa, PicasaPhoto>> getFolders() throws PhotoException {
+    public Collection<Album> getFolders() throws PhotoException {
         ensureIsPopulated();
         return folders;
     }
 
 
     @Override
-    public Folder<Picasa, PicasaPhoto> getFolder(final String name) throws PhotoException {
-        Folder<Picasa, PicasaPhoto> result = null;
+    public Album getFolder(final String name) throws PhotoException {
+        Album result = null;
 
-        for (final Folder<Picasa, PicasaPhoto> folder : getFolders()) {
+        for (final Album folder : getFolders()) {
             if (folder.getName().equals(name)) {
                 result = folder;
                 break;
@@ -146,7 +146,7 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
 
     @Override
-    protected Folder<Picasa, PicasaPhoto> doCreateFolder(
+    protected Album doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -164,7 +164,7 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
 
     @Override
-    protected Folder<Picasa, PicasaPhoto> doCreateFakeFolder(
+    protected Album doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -187,5 +187,5 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
     private UserFeed feed;
 
 
-    private final List<Folder<Picasa, PicasaPhoto>> folders = new LinkedList<Folder<Picasa, PicasaPhoto>>();
+    private final List<Album> folders = new LinkedList<Album>();
 }

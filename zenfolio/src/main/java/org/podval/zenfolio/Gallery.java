@@ -1,11 +1,9 @@
 package org.podval.zenfolio;
 
-import org.podval.photo.Folder;
 import org.podval.photo.FolderType;
 import org.podval.photo.PhotoException;
 
 import com.zenfolio.www.api._1_1.PhotoSet;
-import com.zenfolio.www.api._1_1.AccessType;
 
 import java.rmi.RemoteException;
 
@@ -26,18 +24,10 @@ import java.io.File;
 import java.io.IOException;
 
 
-/* package */ final class Gallery extends Folder<Zenfolio, ZenfolioPhoto> {
+/* package */ final class Gallery extends GroupLike<PhotoSet> {
 
-    public Gallery(final Zenfolio zenfolio, final PhotoSet photoSet) {
-        super(zenfolio);
-
-        this.photoSet = photoSet;
-    }
-
-
-    @Override
-    public String getName() {
-        return photoSet.getTitle();
+    public Gallery(final Zenfolio zenfolio, final PhotoSet element) {
+        super(zenfolio, element);
     }
 
 
@@ -48,32 +38,20 @@ import java.io.IOException;
 
 
     @Override
-    public boolean isPublic() {
-        return photoSet.getAccessDescriptor().getAccessType() == AccessType.Public;
-    }
-
-
-    @Override
-    public void setPublic(final boolean value) {
-        photoSet.getAccessDescriptor().setAccessType((value) ? AccessType.Public : AccessType.Private );
-    }
-
-
-    @Override
     protected void populate() throws PhotoException {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
 
-        final int id = photoSet.getId();
+        final int id = getElement().getId();
 
         if (id != 0) {
             try {
-                photoSet = getConnection().getConnection().loadPhotoSet(id);
+                setElement(getConnection().getConnection().loadPhotoSet(id));
             } catch (final RemoteException e) {
                 throw new PhotoException(e);
             }
 
-            if ((photoSet.getPhotos() != null) && (photoSet.getPhotos().getPhoto() != null)) {
-                for (final com.zenfolio.www.api._1_1.Photo rawPhoto : photoSet.getPhotos().getPhoto()) {
+            if ((getElement().getPhotos() != null) && (getElement().getPhotos().getPhoto() != null)) {
+                for (final com.zenfolio.www.api._1_1.Photo rawPhoto : getElement().getPhotos().getPhoto()) {
                     final ZenfolioPhoto photo = new ZenfolioPhoto(rawPhoto);
                     photos.add(photo);
                 }
@@ -83,13 +61,13 @@ import java.io.IOException;
 
 
     @Override
-    public List<Folder<Zenfolio, ZenfolioPhoto>> getFolders() {
-        return new LinkedList<Folder<Zenfolio, ZenfolioPhoto>>();
+    public List<Gallery> getFolders() {
+        return new LinkedList<Gallery>();
     }
 
 
     @Override
-    public Folder<Zenfolio, ZenfolioPhoto> getFolder(final String name) {
+    public Gallery getFolder(final String name) {
         return null;
     }
 
@@ -125,7 +103,7 @@ import java.io.IOException;
 
 
     @Override
-    protected Folder<Zenfolio, ZenfolioPhoto> doCreateFolder(
+    protected Gallery doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -135,7 +113,7 @@ import java.io.IOException;
 
 
     @Override
-    protected Folder<Zenfolio, ZenfolioPhoto> doCreateFakeFolder(
+    protected Gallery doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -158,7 +136,7 @@ import java.io.IOException;
 
 
     private String postFile(final String name, final File file) throws IOException {
-        final String url = "http://www.zenfolio.com" + photoSet.getUploadUrl();
+        final String url = "http://www.zenfolio.com" + getElement().getUploadUrl();
 
         final PostMethod filePost = new PostMethod(url);
 
@@ -220,9 +198,6 @@ import java.io.IOException;
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-
-    private PhotoSet photoSet;
 
 
     private final List<ZenfolioPhoto> photos = new LinkedList<ZenfolioPhoto>();

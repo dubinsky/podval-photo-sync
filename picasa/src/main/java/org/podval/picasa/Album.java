@@ -93,17 +93,17 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
     }
 
 
-    private static List<Folder<Picasa, PicasaPhoto>> EMPTY = new LinkedList<Folder<Picasa, PicasaPhoto>>();
+    private static List<Album> EMPTY = new LinkedList<Album>();
 
 
     @Override
-    public Collection<Folder<Picasa, PicasaPhoto>> getFolders() throws PhotoException {
+    public Collection<Album> getFolders() throws PhotoException {
         return EMPTY;
     }
 
 
     @Override
-    public Folder<Picasa, PicasaPhoto> getFolder(final String name) throws PhotoException {
+    public Album getFolder(final String name) throws PhotoException {
         return null;
     }
 
@@ -160,7 +160,7 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
 
 
     @Override
-    protected Folder<Picasa, PicasaPhoto> doCreateFolder(
+    protected Album doCreateFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {
@@ -169,7 +169,7 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
 
 
     @Override
-    protected Folder<Picasa, PicasaPhoto> doCreateFakeFolder(
+    protected Album doCreateFakeFolder(
         final String name,
         final FolderType folderType) throws PhotoException
     {

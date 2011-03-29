@@ -36,7 +36,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     }
 
 
-    public abstract Collection<Folder<C, P>> getFolders() throws PhotoException;
+    public abstract Collection<? extends Folder<C, P>> getFolders() throws PhotoException;
 
 
     public abstract Folder<C, P> getFolder(final String name) throws PhotoException;
