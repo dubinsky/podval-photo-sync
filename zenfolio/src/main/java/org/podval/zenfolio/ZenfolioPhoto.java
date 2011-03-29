@@ -14,7 +14,10 @@ import java.util.HashMap;
 
 public final class ZenfolioPhoto extends Photo {
 
-    /* package */ ZenfolioPhoto(final com.zenfolio.www.api._1_1.Photo photo) {
+    // I do not deal with photos in the Groups; just in the Galleries.
+    /* package */ ZenfolioPhoto(final Gallery folder, final com.zenfolio.www.api._1_1.Photo photo) {
+        super(folder);
+
         this.photo = photo;
     }
 

@@ -140,7 +140,7 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
                 while (nextUrl != null) {
                     final AlbumFeed feed = AlbumFeed.executeGet(getConnection().getTransport(), nextUrl);
                     for (final PhotoEntry photo : feed.photos) {
-                        photos.add(new PicasaPhoto(getConnection(), photo));
+                        photos.add(new PicasaPhoto(this, photo));
                     }
 
                     final String next = Link.find(feed.links, "next");

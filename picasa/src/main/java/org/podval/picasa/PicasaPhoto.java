@@ -33,8 +33,9 @@ import java.io.File;
  */
 public final class PicasaPhoto extends Photo {
 
-    /* package */ PicasaPhoto(final Picasa picasa, final PhotoEntry photo) {
-        this.picasa = picasa;
+    /* package */ PicasaPhoto(final Album folder, final PhotoEntry photo) {
+        super(folder);
+
         this.photo = photo;
     }
 
@@ -83,9 +84,6 @@ public final class PicasaPhoto extends Photo {
         // TODO: download!!!
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-
-    private final Picasa picasa;
 
 
     private final PhotoEntry photo;

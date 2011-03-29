@@ -11,7 +11,9 @@ import java.io.File;
 
 public final class FilePhoto extends Photo {
 
-    /* package */ FilePhoto(final String name, final Map<String, File> components) {
+    /* package */ FilePhoto(final FileFolder folder, final String name, final Map<String, File> components) {
+        super(folder);
+
         this.name = name;
         this.components = components;
     }

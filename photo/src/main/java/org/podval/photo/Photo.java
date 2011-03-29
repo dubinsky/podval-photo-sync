@@ -9,7 +9,17 @@ import java.io.File;
  * In fact, I even tried it.
  * But let's first deal with what we are dealing with - photos!
  */
-public abstract class Photo {
+public abstract class Photo<F extends Folder> {
+
+    protected Photo(final F folder) {
+        this.folder = folder;
+    }
+
+
+    public F getFolder() {
+        return folder;
+    }
+
 
     public abstract String getName();
 
@@ -40,4 +50,7 @@ public abstract class Photo {
 
 
     public abstract File getOriginalFile();
+
+
+    private final F folder;
 }

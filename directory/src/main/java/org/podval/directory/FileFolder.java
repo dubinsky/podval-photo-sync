@@ -102,7 +102,7 @@ import java.io.File;
 
 
     private FilePhoto makeItem(final String name, final Map<String, File> components) {
-        return new FilePhoto(name, components);
+        return new FilePhoto(this, name, components);
     }
 
 

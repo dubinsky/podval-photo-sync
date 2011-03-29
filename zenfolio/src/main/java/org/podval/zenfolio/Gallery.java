@@ -52,7 +52,7 @@ import java.io.IOException;
 
             if ((getElement().getPhotos() != null) && (getElement().getPhotos().getPhoto() != null)) {
                 for (final com.zenfolio.www.api._1_1.Photo rawPhoto : getElement().getPhotos().getPhoto()) {
-                    final ZenfolioPhoto photo = new ZenfolioPhoto(rawPhoto);
+                    final ZenfolioPhoto photo = new ZenfolioPhoto(this, rawPhoto);
                     photos.add(photo);
                 }
             }
