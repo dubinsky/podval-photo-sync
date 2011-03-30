@@ -71,15 +71,14 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
 
     public <D extends Connection<O>, O extends Photo> void syncFolderTo(
-        final Folder<D, O> toFolder,
-        final boolean doIt)
+        final Folder<D, O> toFolder)
         throws PhotoException
     {
         getLog().debug("Synchronizing " + getName());
 
         syncProperties(toFolder);
-        syncContentTo(toFolder, doIt);
-        syncFoldersTo(toFolder, doIt);
+        syncContentTo(toFolder);
+        syncFoldersTo(toFolder);
 
 //        syncBackwards(from, to);
     }
@@ -106,8 +105,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
 
     private <D extends Connection<O>, O extends Photo> void syncContentTo(
-        final Folder<D, O> toFolder,
-        final boolean doIt) throws PhotoException
+        final Folder<D, O> toFolder) throws PhotoException
     {
         for (final P photo : getPhotos()) {
             if (hasFolders()) {
@@ -115,7 +113,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
             } else {
                 if (toFolder.getPhoto(photo.getName()) == null) {
                     try {
-                        toFolder.addPhoto(photo, doIt);
+                        toFolder.addPhoto(photo);
                     } catch (final IOException e) {
                         throw new PhotoException(e);
                     }
@@ -125,10 +123,9 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     }
 
 
-    private <O extends Photo> void addPhoto(
-        final O photo,
-        final boolean doIt) throws IOException
-    {
+    private <O extends Photo> void addPhoto(final O photo) throws IOException {
+        final boolean doIt = !getConnection().isReadOnly();
+
         final String name = photo.getName();
 
         // @todo distinguish between "exist" and "available as local file"...
@@ -152,30 +149,30 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
 
     private <D extends Connection<O>, O extends Photo> void syncFoldersTo(
-        final Folder<D, O> toFolder,
-        final boolean doIt) throws PhotoException
+        final Folder<D, O> toFolder) throws PhotoException
     {
         // @todo skip the collections!
 
         for (final Folder<C, P> fromSubFolder : getFolders()) {
-            final Folder<D, O> toSubFolder = toFolder.getElementForSubDirectory(fromSubFolder, doIt);
+            final Folder<D, O> toSubFolder = toFolder.getElementForSubDirectory(fromSubFolder);
 
             if (toSubFolder != null) {
-                fromSubFolder.syncFolderTo(toSubFolder, doIt);
+                fromSubFolder.syncFolderTo(toSubFolder);
             }
         }
     }
 
 
     private <D extends Connection<O>, O extends Photo> Folder<C, P> getElementForSubDirectory(
-        final Folder<D, O> toFolder,
-        final boolean doIt) throws PhotoException
+        final Folder<D, O> toFolder) throws PhotoException
     {
         Folder<C, P> result = null;
 
-        final String name = getName();
+        final boolean doIt = !getConnection().isReadOnly();
 
-        final boolean shouldHaveFolders = hasFolders();
+        final String name = toFolder.getName();
+
+        final boolean shouldHaveFolders = toFolder.hasFolders();
 
         final FolderType folderType = (shouldHaveFolders) ?
             FolderType.Folders :

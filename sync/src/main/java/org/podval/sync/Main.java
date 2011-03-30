@@ -140,7 +140,7 @@ public final class Main {
             list(firstConnection);
         } else {
             final Connection secondConnection = ConnectionFactory.getConnection(secondTicket);
-            synchronize(firstConnection, secondConnection, !isDryRun);
+            synchronize(firstConnection, secondConnection);
         }
     }
 
@@ -154,15 +154,12 @@ public final class Main {
 
     private <F extends Photo, T extends Photo> void synchronize(
         final Connection<F> fromConnection,
-        final Connection<T> toConnection,
-        final boolean doIt) throws PhotoException
+        final Connection<T> toConnection) throws PhotoException
     {
         open(fromConnection);
         open(toConnection);
 
-        fromConnection.getRootFolder().syncFolderTo(
-            toConnection.getRootFolder(),
-            doIt);
+        fromConnection.getRootFolder().syncFolderTo(toConnection.getRootFolder());
     }
 
 
@@ -170,6 +167,8 @@ public final class Main {
         if (logLevel == LogLevel.TRACE) {
             connection.enableLowLevelLogging();
         }
+
+        connection.setReadOnly(isDryRun);
 
         connection.open();
     }

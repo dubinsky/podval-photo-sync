@@ -12,6 +12,16 @@ public abstract class Connection<P extends Photo> {
     public abstract void enableLowLevelLogging();
 
 
+    public final void setReadOnly(final boolean value) {
+        isReadOnly = value;
+    }
+
+
+    public final boolean isReadOnly() {
+        return isReadOnly;
+    }
+
+
     public abstract void open() throws PhotoException;
 
 
@@ -32,4 +42,7 @@ public abstract class Connection<P extends Photo> {
 
         return result;
     }
+
+
+    private boolean isReadOnly;
 }
