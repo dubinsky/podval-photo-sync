@@ -6,6 +6,9 @@ import java.util.List;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
+
 
 public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
@@ -69,15 +72,14 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
     public <D extends Connection<O>, O extends Photo> void syncFolderTo(
         final Folder<D, O> toFolder,
-        final boolean doIt,
-        final Indenter out)
+        final boolean doIt)
         throws PhotoException
     {
-        out.println(getName());
+        getLog().debug("Synchronizing " + getName());
 
         syncProperties(toFolder);
-        syncContentTo(toFolder, doIt, out);
-        syncFoldersTo(toFolder, doIt, out);
+        syncContentTo(toFolder, doIt);
+        syncFoldersTo(toFolder, doIt);
 
 //        syncBackwards(from, to);
     }
@@ -91,52 +93,41 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
 
     private <D extends Connection<O>, O extends Photo> void syncBackwards(
-        final Folder<D, O> toFolder,
-        final Indenter out) throws PhotoException
+        final Folder<D, O> toFolder) throws PhotoException
     {
-        out.push();
-
         for (final Folder<D, O> toSubFolder : toFolder.getFolders()) {
             final String name = toSubFolder.getName();
             final Folder<C, P> fromSubFolder = getFolder(name);
             if (fromSubFolder == null) {
-                out.message("No file for the element: " + name);
+                getLog().info("No file for the element: " + name);
             }
         }
-
-        out.pop();
     }
 
 
     private <D extends Connection<O>, O extends Photo> void syncContentTo(
         final Folder<D, O> toFolder,
-        final boolean doIt,
-        final Indenter out) throws PhotoException
+        final boolean doIt) throws PhotoException
     {
-        out.push();
-
         for (final P photo : getPhotos()) {
             if (hasFolders()) {
-                out.message("Skipping " + photo + " on the folder level");
+                getLog().info("Skipping " + photo + " on the folder level");
             } else {
                 if (toFolder.getPhoto(photo.getName()) == null) {
                     try {
-                        toFolder.addPhoto(photo, doIt, out);
+                        toFolder.addPhoto(photo, doIt);
                     } catch (final IOException e) {
                         throw new PhotoException(e);
                     }
                 }
             }
         }
-
-        out.pop();
     }
 
 
     private <O extends Photo> void addPhoto(
         final O photo,
-        final boolean doIt,
-        final Indenter out) throws IOException
+        final boolean doIt) throws IOException
     {
         final String name = photo.getName();
 
@@ -144,36 +135,33 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
         final File file = photo.getOriginalFile();
         if (file != null) {
             final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
-            out.message(message);
+            getLog().debug(message);
 
             if (doIt) {
                 try {
                     addFile(file.getName(), file);
                 } catch (final PhotoException e) {
-                    out.message(e.getMessage());
+                    getLog().error(e.getMessage());
                 }
             }
 
         } else {
-            out.message("Raw conversions are not yet implemented. Can not add " + name);
+            getLog().info("Raw conversions are not yet implemented. Can not add " + name);
         }
     }
 
 
     private <D extends Connection<O>, O extends Photo> void syncFoldersTo(
         final Folder<D, O> toFolder,
-        final boolean doIt,
-        final Indenter out) throws PhotoException
+        final boolean doIt) throws PhotoException
     {
         // @todo skip the collections!
 
         for (final Folder<C, P> fromSubFolder : getFolders()) {
-            final Folder<D, O> toSubFolder = toFolder.getElementForSubDirectory(fromSubFolder, doIt, out);
+            final Folder<D, O> toSubFolder = toFolder.getElementForSubDirectory(fromSubFolder, doIt);
 
             if (toSubFolder != null) {
-                out.push();
-                fromSubFolder.syncFolderTo(toSubFolder, doIt, out);
-                out.pop();
+                fromSubFolder.syncFolderTo(toSubFolder, doIt);
             }
         }
     }
@@ -181,8 +169,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
     private <D extends Connection<O>, O extends Photo> Folder<C, P> getElementForSubDirectory(
         final Folder<D, O> toFolder,
-        final boolean doIt,
-        final Indenter out) throws PhotoException
+        final boolean doIt) throws PhotoException
     {
         Folder<C, P> result = null;
 
@@ -201,7 +188,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
                 ((doIt) ? "creating" : "'creating'") + " " +
                 folderType + " " + name;
 
-            out.message(message);
+            getLog().debug(message);
 
             // TODO: set properties when creating, so that we do not have to update it immediately!
             toSubFolder = (doIt) ?
@@ -212,9 +199,9 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
         final boolean canHaveFolders = toSubFolder.getFolderType().canHaveFolders();
 
         if (canHaveFolders && !shouldHaveFolders) {
-            out.message("Can have sub-folders, but should't: " + name);
+            getLog().info("Can have sub-folders, but should't: " + name);
         } if (!canHaveFolders && shouldHaveFolders) {
-            out.message("Can't have sub-folders, but should: " + name);
+            getLog().info("Can't have sub-folders, but should: " + name);
         } else {
             result = toSubFolder;
         }
@@ -285,6 +272,11 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
 
     public abstract void updateIfChanged() throws PhotoException;
+
+
+    private Log getLog() {
+        return LogFactory.getLog(Connection.LOG);
+    }
 
 
     private final C connection;

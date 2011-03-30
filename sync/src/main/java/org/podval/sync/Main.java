@@ -7,6 +7,10 @@ import org.podval.photo.Photo;
 import org.podval.photo.Indenter;
 import org.podval.photo.PhotoException;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+import java.util.logging.Handler;
+
 import org.kohsuke.args4j.Option;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineParser;
@@ -21,8 +25,15 @@ public final class Main {
     }
 
 
+    private static enum LogLevel { INFO, DEBUG, TRACE }
+
+
     @Option(name="-h", aliases="--help", usage="display help message")
     private boolean help = false;
+
+
+    @Option(name="-l", aliases="--log-level", usage="logging level")
+    private LogLevel logLevel = LogLevel.INFO;
 
 
     @Option(name="-d", aliases="--dry-run", usage="dry run")
@@ -47,6 +58,8 @@ public final class Main {
 
     private void run(final String[] args) {
         parse(args);
+
+        configureLogging();
 
         try {
             run();
@@ -100,10 +113,27 @@ public final class Main {
     }
 
 
-    private void run() throws PhotoException {
-        // TODO: Provide universal way to enable logging...
-/////        org.podval.picasa.model.Util.enableLogging();
+    private void configureLogging() {
+        for (final Handler handler: Logger.getLogger("").getHandlers()) {
+            handler.setLevel(Level.ALL);
+        }
 
+        final Level level;
+
+        if (logLevel == LogLevel.TRACE) {
+            level = Level.ALL;
+        } else if (logLevel == LogLevel.DEBUG) {
+            level = Level.FINE;
+        } else {
+            level = Level.INFO;
+        }
+
+        final Logger log = Logger.getLogger(Connection.LOG);
+        log.setLevel(level);
+    }
+
+
+    private void run() throws PhotoException {
         final Connection firstConnection = ConnectionFactory.getConnection(firstTicket);
 
         if (secondTicket == null) {
@@ -116,7 +146,7 @@ public final class Main {
 
 
     private void list(final Connection<?> connection) throws PhotoException {
-        connection.open();
+        open(connection);
         connection.getRootFolder().list(new Indenter(System.out));
     }
 
@@ -127,15 +157,21 @@ public final class Main {
         final Connection<T> toConnection,
         final boolean doIt) throws PhotoException
     {
-        final Indenter out = new Indenter(System.out);
-
-        fromConnection.open();
-        toConnection.open();
+        open(fromConnection);
+        open(toConnection);
 
         fromConnection.getRootFolder().syncFolderTo(
             toConnection.getRootFolder(),
-            doIt,
-            out);
+            doIt);
+    }
+
+
+    private void open(final Connection connection) throws PhotoException {
+        if (logLevel == LogLevel.TRACE) {
+            connection.enableLowLevelLogging();
+        }
+
+        connection.open();
     }
 
 

@@ -46,6 +46,11 @@ import java.util.ArrayList;
 
 
     @Override
+    public void enableLowLevelLogging() {
+    }
+
+
+    @Override
     public void open() throws PhotoException {
         if (password != null) {
             login();

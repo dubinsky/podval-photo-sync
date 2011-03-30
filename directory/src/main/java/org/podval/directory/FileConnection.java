@@ -19,6 +19,11 @@ import org.podval.photo.PhotoException;
 
 
     @Override
+    public void enableLowLevelLogging() {
+    }
+
+
+    @Override
     public void open() throws PhotoException {
     }
 

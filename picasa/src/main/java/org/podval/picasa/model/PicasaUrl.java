@@ -28,6 +28,9 @@ public final class PicasaUrl extends GoogleUrl {
     public static final String ROOT_URL = "https://picasaweb.google.com/data/";
 
 
+    public static boolean isLoggingEnabled;
+
+
     @Key("max-results")
     public Integer maxResults;
 
@@ -38,9 +41,7 @@ public final class PicasaUrl extends GoogleUrl {
 
     public PicasaUrl(final String url) {
         super(url);
-        if (Util.DEBUG) {
-            this.prettyprint = true;
-        }
+        this.prettyprint = isLoggingEnabled;
     }
 
 

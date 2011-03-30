@@ -3,7 +3,13 @@ package org.podval.photo;
 
 public abstract class Connection<P extends Photo> {
 
+    public static final String LOG = "org.podval.photo";
+
+
     public abstract String getScheme();
+
+
+    public abstract void enableLowLevelLogging();
 
 
     public abstract void open() throws PhotoException;

@@ -20,9 +20,13 @@ package org.podval.picasa;
 import org.podval.photo.Connection;
 import org.podval.photo.Folder;
 import org.podval.photo.PhotoException;
+import org.podval.picasa.model.PicasaUrl;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.HttpResponseException;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.io.IOException;
 
@@ -48,6 +52,15 @@ public class Picasa extends Connection<PicasaPhoto> {
     @Override
     public String getScheme() {
         return PicasaFactory.SCHEME;
+    }
+
+
+    @Override
+    public void enableLowLevelLogging() {
+        Logger logger = Logger.getLogger("com.google.api.client");
+        logger.setLevel(Level.CONFIG);
+
+        PicasaUrl.isLoggingEnabled = true;
     }
 
 

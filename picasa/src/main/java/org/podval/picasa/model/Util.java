@@ -19,10 +19,6 @@ package org.podval.picasa.model;
 import com.google.api.client.xml.XmlNamespaceDictionary;
 
 import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 
 /**
@@ -30,10 +26,9 @@ import java.util.logging.Logger;
  */
 public class Util {
 
-    public static final boolean DEBUG = true;
-
     public static final XmlNamespaceDictionary NAMESPACE_DICTIONARY =
         new XmlNamespaceDictionary();
+
 
     static {
         Map<String, String> map = NAMESPACE_DICTIONARY.namespaceAliasToUriMap;
@@ -48,33 +43,5 @@ public class Util {
         map.put("media", "http://search.yahoo.com/mrss/");
         map.put("openSearch", "http://a9.com/-/spec/opensearch/1.1/");
         map.put("xml", "http://www.w3.org/XML/1998/namespace");
-    }
-
-
-    public static void enableLogging() {
-        if (DEBUG) {
-            Logger logger = Logger.getLogger("com.google.api.client");
-            logger.setLevel(Level.CONFIG);
-            logger.addHandler(new Handler() {
-
-                @Override
-                public void close() throws SecurityException {
-                }
-
-
-                @Override
-                public void flush() {
-                }
-
-
-                @Override
-                public void publish(LogRecord record) {
-                    // default ConsoleHandler will take care of >= INFO
-                    if (record.getLevel().intValue() < Level.INFO.intValue()) {
-                        System.out.println(record.getMessage());
-                    }
-                }
-            });
-        }
     }
 }
