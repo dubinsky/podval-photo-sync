@@ -26,9 +26,7 @@ import org.podval.picasa.model.Link;
 import org.podval.picasa.model.PicasaUrl;
 import org.podval.picasa.model.UserFeed;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.LinkedList;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,43 +68,6 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
 
     @Override
-    public Collection<Album> getFolders() throws PhotoException {
-        ensureIsPopulated();
-        return folders;
-    }
-
-
-    @Override
-    public Album getFolder(final String name) throws PhotoException {
-        Album result = null;
-
-        for (final Album folder : getFolders()) {
-            if (folder.getName().equals(name)) {
-                result = folder;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-
-    private static final List<PicasaPhoto> EMPTY = new LinkedList<PicasaPhoto>();
-
-
-    @Override
-    public List<PicasaPhoto> getPhotos() throws PhotoException {
-        return EMPTY;
-    }
-
-
-    @Override
-    public PicasaPhoto getPhoto(final String name) throws PhotoException {
-        return null;
-    }
-
-
-    @Override
     protected void populate() throws PhotoException {
         try {
             final PicasaUrl url = PicasaUrl.relativeToRoot("feed/api/user/" + getConnection().getLogin());
@@ -133,7 +94,7 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
     private void populate(final List<AlbumEntry> albums) throws IOException {
         if (albums != null) {
             for (final AlbumEntry album : albums) {
-                folders.add(new Album(getConnection(), album));
+                register(new Album(getConnection(), album));
             }
         }
     }
@@ -185,7 +146,4 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
 
     private UserFeed feed;
-
-
-    private final List<Album> folders = new LinkedList<Album>();
 }

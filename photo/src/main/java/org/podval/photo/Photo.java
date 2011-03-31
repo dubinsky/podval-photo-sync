@@ -9,7 +9,7 @@ import java.io.File;
  * In fact, I even tried it.
  * But let's first deal with what we are dealing with - photos!
  */
-public abstract class Photo<F extends Folder> {
+public abstract class Photo<F extends Folder> implements PhotoId {
 
     protected Photo(final F folder) {
         this.folder = folder;
@@ -21,12 +21,15 @@ public abstract class Photo<F extends Folder> {
     }
 
 
+    @Override
     public abstract String getName();
 
 
+    @Override
     public abstract Date getTimestamp();
 
 
+    @Override
     public abstract int getSize();
 
 

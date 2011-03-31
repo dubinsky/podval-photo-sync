@@ -16,8 +16,6 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.StringPart;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.util.Date;
 
 import java.io.File;
@@ -53,46 +51,10 @@ import java.io.IOException;
             if ((getElement().getPhotos() != null) && (getElement().getPhotos().getPhoto() != null)) {
                 for (final com.zenfolio.www.api._1_1.Photo rawPhoto : getElement().getPhotos().getPhoto()) {
                     final ZenfolioPhoto photo = new ZenfolioPhoto(this, rawPhoto);
-                    photos.add(photo);
+                    register(photo);
                 }
             }
         }
-    }
-
-
-    @Override
-    public List<Gallery> getFolders() {
-        return new LinkedList<Gallery>();
-    }
-
-
-    @Override
-    public Gallery getFolder(final String name) {
-        return null;
-    }
-
-
-    @Override
-    public ZenfolioPhoto getPhoto(final String name) throws PhotoException {
-        ZenfolioPhoto result = null;
-
-        for (final ZenfolioPhoto photo : getPhotos()) {
-            if (photo.getName().equals(name)) {
-                result = photo;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-
-    @Override
-    public List<ZenfolioPhoto> getPhotos() throws PhotoException {
-        ensureIsPopulated();
-
-        // @todo sort and immute?
-        return photos;
     }
 
 
@@ -108,7 +70,7 @@ import java.io.IOException;
         final FolderType folderType) throws PhotoException
     {
         // will not be called - checked in the base class
-        throw new UnsupportedOperationException("Gallery can not have subdirectories");
+        throw new UnsupportedOperationException("Gallery can not have folders");
     }
 
 
@@ -118,7 +80,7 @@ import java.io.IOException;
         final FolderType folderType) throws PhotoException
     {
         // will not be called - checked in the base class
-        throw new UnsupportedOperationException("Gallery can not have subdirectories");
+        throw new UnsupportedOperationException("Gallery can not have folders");
     }
 
 
@@ -198,7 +160,4 @@ import java.io.IOException;
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-
-    private final List<ZenfolioPhoto> photos = new LinkedList<ZenfolioPhoto>();
 }

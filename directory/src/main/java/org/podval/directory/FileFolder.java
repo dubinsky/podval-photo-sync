@@ -4,13 +4,8 @@ import org.podval.photo.Folder;
 import org.podval.photo.FolderType;
 import org.podval.photo.PhotoException;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.LinkedList;
-import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Collections;
 
 import java.io.File;
 
@@ -76,14 +71,15 @@ import java.io.File;
         for (final Map.Entry<String, Map<String, File>> entry : bunches.entrySet()) {
             final String name = entry.getKey();
             final Map<String, File> bunch = entry.getValue();
-            final FilePhoto item = makeItem(name, bunch);
-            items.put(name, item);
+            final FilePhoto photo = makePhoto(name, bunch);
+
+            register(photo);
         }
     }
 
 
-    private void loadDirectory(final File subDirectory) {
-        subDirectories.put(subDirectory.getName(), new FileFolder(getConnection(), subDirectory));
+    private void loadDirectory(final File folder) {
+        register(new FileFolder(getConnection(), folder));
     }
 
 
@@ -101,36 +97,8 @@ import java.io.File;
     }
 
 
-    private FilePhoto makeItem(final String name, final Map<String, File> components) {
+    private FilePhoto makePhoto(final String name, final Map<String, File> components) {
         return new FilePhoto(this, name, components);
-    }
-
-
-    @Override
-    public Collection<FileFolder> getFolders() throws PhotoException {
-        ensureIsPopulated();
-        return sortedValues(subDirectories);
-    }
-
-
-    @Override
-    public FileFolder getFolder(final String name) throws PhotoException {
-        ensureIsPopulated();
-        return subDirectories.get(name);
-    }
-
-
-    @Override
-    public FilePhoto getPhoto(final String name) throws PhotoException {
-        ensureIsPopulated();
-        return items.get(name);
-    }
-
-
-    @Override
-    public List<FilePhoto> getPhotos() throws PhotoException {
-        ensureIsPopulated();
-        return sortedValues(items);
     }
 
 
@@ -162,17 +130,6 @@ import java.io.File;
     }
 
 
-    private <T> List<T> sortedValues(final Map<String, T> map) {
-        final List<String> keys = new LinkedList<String>(map.keySet());
-        final List<T> result = new ArrayList<T>(keys.size());
-        Collections.sort(keys);
-        for (final String key : keys) {
-            result.add(map.get(key));
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-
     private String getName(final File file) {
         final String filename = file.getName();
         final int dot = filename.lastIndexOf('.');
@@ -195,10 +152,4 @@ import java.io.File;
 
 
     private final File directory;
-
-
-    private final Map<String, FileFolder> subDirectories = new HashMap<String, FileFolder>();
-
-
-    private final Map<String, FilePhoto> items = new HashMap<String, FilePhoto>();
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011 dub.
+ *  Copyright 2011 Leonid Dubinsky dub@podval.org.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -27,17 +27,13 @@ import org.podval.picasa.model.AlbumFeed;
 import org.podval.picasa.model.PhotoEntry;
 import org.podval.picasa.model.Link;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-
 import java.io.File;
 import java.io.IOException;
 
 
 /**
  *
- * @author dub
+ * @author Leonid Dubinsky dub@podval.org
  */
 public final class Album extends Folder<Picasa, PicasaPhoto> {
 
@@ -93,43 +89,6 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
     }
 
 
-    private static List<Album> EMPTY = new LinkedList<Album>();
-
-
-    @Override
-    public Collection<Album> getFolders() throws PhotoException {
-        return EMPTY;
-    }
-
-
-    @Override
-    public Album getFolder(final String name) throws PhotoException {
-        return null;
-    }
-
-
-    @Override
-    public List<PicasaPhoto> getPhotos() throws PhotoException {
-        ensureIsPopulated();
-        return photos;
-    }
-
-
-    @Override
-    public PicasaPhoto getPhoto(final String name) throws PhotoException {
-        PicasaPhoto result = null;
-
-        for (final PicasaPhoto photo : getPhotos()) {
-            if (photo.getName().equals(name)) {
-                result = photo;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-
     @Override
     protected void populate() throws PhotoException {
         try {
@@ -140,7 +99,7 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
                 while (nextUrl != null) {
                     final AlbumFeed feed = AlbumFeed.executeGet(getConnection().getTransport(), nextUrl);
                     for (final PhotoEntry photo : feed.photos) {
-                        photos.add(new PicasaPhoto(this, photo));
+                        register(new PicasaPhoto(this, photo));
                     }
 
                     final String next = Link.find(feed.links, "next");
@@ -206,7 +165,4 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
 
 
     private AlbumEntry originalAlbumEntry;
-
-
-    private final List<PicasaPhoto> photos = new LinkedList<PicasaPhoto>();
 }

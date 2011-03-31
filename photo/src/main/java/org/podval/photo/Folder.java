@@ -1,7 +1,7 @@
 package org.podval.photo;
 
-import java.util.Collection;
 import java.util.List;
+import java.util.LinkedList;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +25,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     public abstract String getName();
 
 
+    // TODO when in Scala, encode the ability to have folders/photos in traits...
     public abstract FolderType getFolderType();
 
 
@@ -39,16 +40,75 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     }
 
 
-    public abstract Collection<? extends Folder<C, P>> getFolders() throws PhotoException;
+    public final List<? extends Folder<C, P>> getFolders() throws PhotoException {
+        ensureIsPopulated();
+        // TODO sort?
+        // TODO immute?
+
+        return folders;
+    }
 
 
-    public abstract Folder<C, P> getFolder(final String name) throws PhotoException;
+    public final Folder<C, P> getFolder(final String name) throws PhotoException {
+        return (getFolderType().canHaveFolders()) ? findFolder(name) : null;
+    }
 
 
-    public abstract List<P> getPhotos() throws PhotoException;
+    private Folder<C, P> findFolder(final String name) throws PhotoException {
+        Folder<C, P> result = null;
+
+        for (final Folder<C, P> folder : getFolders()) {
+            if (folder.getName().equals(name)) {
+                result = folder;
+                break;
+            }
+        }
+
+        return result;
+    }
 
 
-    public abstract P getPhoto(final String name) throws PhotoException;
+    public final boolean hasPhotos() throws PhotoException {
+        return !getPhotos().isEmpty();
+    }
+
+
+    public final List<P> getPhotos() throws PhotoException {
+        ensureIsPopulated();
+        // TODO sort?
+        // TODO immute?
+        return photos;
+    }
+
+
+//    private <T> List<T> sortedValues(final Map<String, T> map) {
+//        final List<String> keys = new LinkedList<String>(map.keySet());
+//        final List<T> result = new ArrayList<T>(keys.size());
+//        Collections.sort(keys);
+//        for (final String key : keys) {
+//            result.add(map.get(key));
+//        }
+//        return Collections.unmodifiableList(result);
+//    }
+
+
+    public final P getPhoto(final String name) throws PhotoException {
+        return (getFolderType().canHavePhotos()) ? findPhoto(name) : null;
+    }
+
+
+    private P findPhoto(final String name) throws PhotoException {
+        P result = null;
+
+        for (final P photo : getPhotos()) {
+            if (photo.getName().equals(name)) {
+                result = photo;
+                break;
+            }
+        }
+
+        return result;
+    }
 
 
     public void list(final Indenter out) throws PhotoException {
@@ -128,7 +188,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
         final String name = photo.getName();
 
-        // @todo distinguish between "exist" and "available as local file"...
+        // TODO distinguish between "exists" and "available as local file"...
         final File file = photo.getOriginalFile();
         if (file != null) {
             final String message = ((doIt) ? "adding" : "'adding'") + " photo" + " " + name;
@@ -215,7 +275,21 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     }
 
 
+    // TODO when in Scala, change populate()'s signature to return a pair of
+    // collections - for folders and for photos...
     protected abstract void populate() throws PhotoException;
+
+
+    protected final void register(final P photo) {
+        // TODO Map<String, P> name2photo?
+        photos.add(photo);
+    }
+
+
+    protected final void register(final  Folder<C, P> folder) {
+        // TODO Map<String, P> name2folder?
+        folders.add(folder);
+    }
 
 
     public final Folder<C, P> createFolder(
@@ -277,6 +351,12 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
 
 
     private final C connection;
+
+
+    private final List<Folder<C, P>> folders = new LinkedList<Folder<C, P>>();
+
+
+    private final List<P> photos = new LinkedList<P>();
 
 
     private boolean isPopulated;

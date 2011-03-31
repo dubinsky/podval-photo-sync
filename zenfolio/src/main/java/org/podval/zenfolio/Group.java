@@ -12,9 +12,6 @@ import com.zenfolio.www.api._1_1.PhotoSetUpdater;
 
 import java.rmi.RemoteException;
 
-import java.util.List;
-import java.util.LinkedList;
-
 import java.io.File;
 
 
@@ -37,52 +34,14 @@ import java.io.File;
             for (final ArrayOfChoice1Choice element : getElement().getElements().getArrayOfChoice1Choice()) {
                 GroupElement subGroup = element.getGroup();
 
-                final GroupLike<?> subDirectory =
+                final GroupLike<?> folder =
                         (subGroup != null)
                         ? new Group(getConnection(), (com.zenfolio.www.api._1_1.Group) subGroup)
                         : new Gallery(getConnection(), (PhotoSet) element.getPhotoSet());
 
-                subFolders.add(subDirectory);
+                register(folder);
             }
         }
-    }
-
-
-    @Override
-    public List<GroupLike<?>> getFolders() throws PhotoException {
-        ensureIsPopulated();
-
-        // @todo sort and immute?
-        return subFolders;
-    }
-
-
-    @Override
-    public GroupLike<?> getFolder(final String name) throws PhotoException {
-        GroupLike<?> result = null;
-
-        for (final GroupLike<?> subDirectory : getFolders()) {
-            if (subDirectory.getName().equals(name)) {
-                result = subDirectory;
-                break;
-            }
-        }
-
-        return result;
-    }
-
-
-    @Override
-    public List<ZenfolioPhoto> getPhotos() {
-        final List<ZenfolioPhoto> result = new LinkedList<ZenfolioPhoto>();
-
-        return result;
-    }
-
-
-    @Override
-    public ZenfolioPhoto getPhoto(final String name) {
-        return null;
     }
 
 
@@ -152,7 +111,4 @@ import java.io.File;
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-
-    private final List<GroupLike<?>> subFolders = new LinkedList<GroupLike<?>>();
 }
