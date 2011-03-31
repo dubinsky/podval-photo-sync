@@ -22,6 +22,7 @@ package org.podval.photo;
  *
  * @author dub
  */
+// TODO look into subsuming this into Folder, but see subfolder creation...
 public enum FolderType {
 
     Folders(true, false, "pile"),

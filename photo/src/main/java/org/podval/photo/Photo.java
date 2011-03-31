@@ -33,6 +33,16 @@ public abstract class Photo<F extends Folder> implements PhotoId {
     public abstract int getSize();
 
 
+    // TODO when in Scala, move this into the PhotoId trait...
+    public final boolean isIdentifiedWith(final PhotoId id) {
+        boolean namesEqual = getName().equals(id.getName());
+        boolean timestampsEqual = getTimestamp().equals(id.getTimestamp());
+        boolean sizesEqual = getSize() == id.getSize();
+
+        return timestampsEqual || (namesEqual && sizesEqual);
+    }
+
+
     public abstract Rotation getRotation();
 
 

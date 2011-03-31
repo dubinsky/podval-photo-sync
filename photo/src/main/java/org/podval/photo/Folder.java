@@ -81,6 +81,23 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     }
 
 
+    public final List<P> getPhotos(final PhotoId id) throws PhotoException {
+        final List<P> result = new LinkedList<P>();
+
+        for (final P photo: getPhotos()) {
+            if (photo.isIdentifiedWith(id)) {
+                result.add(photo);
+            }
+        }
+
+        for (final Folder<C, P> folder: getFolders()) {
+            result.addAll(folder.getPhotos(id));
+        }
+
+        return result;
+    }
+
+
 //    private <T> List<T> sortedValues(final Map<String, T> map) {
 //        final List<String> keys = new LinkedList<String>(map.keySet());
 //        final List<T> result = new ArrayList<T>(keys.size());
@@ -256,9 +273,9 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
         final boolean canHaveFolders = toSubFolder.getFolderType().canHaveFolders();
 
         if (canHaveFolders && !shouldHaveFolders) {
-            getLog().info("Can have sub-folders, but should't: " + name);
+            getLog().info("Can have folders, but should't: " + name);
         } if (!canHaveFolders && shouldHaveFolders) {
-            getLog().info("Can't have sub-folders, but should: " + name);
+            getLog().info("Can't have folders, but should: " + name);
         } else {
             result = toSubFolder;
         }
