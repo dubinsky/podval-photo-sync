@@ -62,7 +62,7 @@ public abstract class Photo<F extends Folder> implements PhotoId {
     }
 
 
-    public abstract File getOriginalFile();
+    public abstract File getOriginalFile() throws PhotoException;
 
 
     private final F folder;

@@ -24,14 +24,14 @@ import java.util.Map;
 /**
  * @author Yaniv Inbar
  */
-public class Util {
+public class Namespaces {
 
-    public static final XmlNamespaceDictionary NAMESPACE_DICTIONARY =
+    public static final XmlNamespaceDictionary DICTIONARY =
         new XmlNamespaceDictionary();
 
 
     static {
-        Map<String, String> map = NAMESPACE_DICTIONARY.namespaceAliasToUriMap;
+        Map<String, String> map = DICTIONARY.namespaceAliasToUriMap;
         map.put("", "http://www.w3.org/2005/Atom");
         map.put("atom", "http://www.w3.org/2005/Atom");
         map.put("exif", "http://schemas.google.com/photos/exif/2007");

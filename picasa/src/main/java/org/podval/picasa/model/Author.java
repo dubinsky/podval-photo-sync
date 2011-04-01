@@ -24,6 +24,6 @@ import com.google.api.client.util.Key;
  */
 public final class Author {
 
-  @Key
-  public String name;
+    @Key
+    public String name;
 }

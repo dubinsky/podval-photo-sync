@@ -67,7 +67,7 @@ public class Feed {
         final HttpRequest request = transport.buildPostRequest();
         request.setUrl(getPostLink());
         final AtomContent content = new AtomContent();
-        content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
+        content.namespaceDictionary = Namespaces.DICTIONARY;
         content.entry = entry;
         request.content = content;
         return request.execute().parseAs(entry.getClass());

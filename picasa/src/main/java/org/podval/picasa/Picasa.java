@@ -23,7 +23,7 @@ import org.podval.photo.Folder;
 import org.podval.photo.PhotoException;
 
 import org.podval.picasa.model.PicasaUrl;
-import org.podval.picasa.model.Util;
+import org.podval.picasa.model.Namespaces;
 
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.HttpResponseException;
@@ -70,7 +70,7 @@ public class Picasa extends Connection<PicasaPhoto> {
         headers.setApplicationName(applicationName);
         headers.gdataVersion = "2";
         final AtomParser parser = new AtomParser();
-        parser.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
+        parser.namespaceDictionary = Namespaces.DICTIONARY;
         result.addParser(parser);
         return result;
     }

@@ -16,7 +16,6 @@
 
 package org.podval.picasa.model;
 
-import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
@@ -25,12 +24,13 @@ import com.google.api.client.util.Key;
 import com.google.api.client.xml.atom.AtomContent;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 
 /**
  * @author Yaniv Inbar
  */
-public class PhotoEntry extends Entry {
+public final class PhotoEntry extends Entry {
 
     @Key
     public Category category = Category.newKind("photo");
@@ -60,11 +60,22 @@ public class PhotoEntry extends Entry {
     {
         final HttpRequest request = transport.buildPostRequest();
         request.setUrl(albumFeedLink);
-        final GoogleHeaders headers = (GoogleHeaders) request.headers;
-        headers.setSlugFromFileName(fileName);
+//        final GoogleHeaders headers = (GoogleHeaders) request.headers;
+//        headers.setSlugFromFileName(fileName);
         request.content = content;
         return request.execute().parseAs(PhotoEntry.class);
     }
+
+
+//    private PhotoEntry postPhoto(final AlbumEntry album)
+//        throws IOException {
+//        InputStreamContent content = new InputStreamContent();
+//        content.inputStream = new URL(photoUrlString).openStream();
+//        content.type = "image/jpeg";
+//        PhotoEntry photo = PhotoEntry.executeInsert(
+//            transport, album.getFeedLink(), content, fileName);
+//        return photo;
+//    }
 
 
     public PhotoEntry executeInsertWithMetadata(
@@ -75,7 +86,7 @@ public class PhotoEntry extends Entry {
         final HttpRequest request = transport.buildPostRequest();
         request.setUrl(albumFeedLink);
         final AtomContent atomContent = new AtomContent();
-        atomContent.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
+        atomContent.namespaceDictionary = Namespaces.DICTIONARY;
         atomContent.entry = this;
         final MultipartRelatedContent multiPartContent =
             MultipartRelatedContent.forRequest(request);
@@ -83,5 +94,27 @@ public class PhotoEntry extends Entry {
         multiPartContent.parts.add(content);
         request.content = multiPartContent;
         return request.execute().parseAs(PhotoEntry.class);
+    }
+
+
+    private static final String MEDIA_TYPE = "image/jpeg";
+
+
+    public String getOriginalUrl() {
+        final MediaContent content = (mediaGroup == null) ? null :
+            ((mediaGroup.content == null) ? null : mediaGroup.content);
+
+        return (content.type.equals(MEDIA_TYPE)) ? content.url : null;
+    }
+
+
+    public static void download(
+        final HttpTransport transport,
+        final String url,
+        final OutputStream out) throws IOException
+    {
+        final HttpRequest request = transport.buildGetRequest();
+        request.setUrl(url);
+        InputStreamContent.copy(request.execute().getContent(), out);
     }
 }

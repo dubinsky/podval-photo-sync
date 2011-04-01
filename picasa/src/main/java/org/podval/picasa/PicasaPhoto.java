@@ -17,6 +17,8 @@
 
 package org.podval.picasa;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 import org.podval.photo.Rotation;
 import org.podval.photo.Photo;
 
@@ -25,15 +27,18 @@ import org.podval.picasa.model.PhotoEntry;
 import java.util.Date;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import org.podval.photo.PhotoException;
 
 
 /**
  *
  * @author dub
  */
-public final class PicasaPhoto extends Photo {
+public final class PicasaPhoto extends Photo<Album> {
 
-    /* package */ PicasaPhoto(final Album folder, final PhotoEntry photo) {
+    public PicasaPhoto(final Album folder, final PhotoEntry photo) {
         super(folder);
 
         this.photo = photo;
@@ -80,9 +85,24 @@ public final class PicasaPhoto extends Photo {
 
 
     @Override
-    public File getOriginalFile() {
-        // TODO: download!!!
-        throw new UnsupportedOperationException("Not supported yet.");
+    public File getOriginalFile() throws PhotoException {
+        final File result;
+
+        final String url = photo.getOriginalUrl();
+
+        if (url == null) {
+            throw new PhotoException("No URL of the original jpeg! ");
+        }
+
+        try {
+            result = File.createTempFile("p-p-s-p", null, null);
+            final OutputStream out = new BufferedOutputStream(new FileOutputStream(result));
+            PhotoEntry.download(getFolder().getConnection().getTransport(), url, out);
+        } catch (final IOException e) {
+            throw new PhotoException("Failed to retrieve original jpeg!", e);
+        }
+
+        return result;
     }
 
 

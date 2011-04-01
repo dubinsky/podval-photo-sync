@@ -97,7 +97,7 @@ public class Entry implements Cloneable {
         request.headers.ifMatch = etag;
         final AtomPatchRelativeToOriginalContent content =
             new AtomPatchRelativeToOriginalContent();
-        content.namespaceDictionary = Util.NAMESPACE_DICTIONARY;
+        content.namespaceDictionary = Namespaces.DICTIONARY;
         content.originalEntry = original;
         content.patchedEntry = this;
         request.content = content;

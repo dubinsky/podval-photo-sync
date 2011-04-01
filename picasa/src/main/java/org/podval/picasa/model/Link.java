@@ -36,7 +36,7 @@ public final class Link {
 
     public static String find(final List<Link> links, final String rel) {
         if (links != null) {
-            for (Link link : links) {
+            for (final Link link : links) {
                 if (rel.equals(link.rel)) {
                     return link.href;
                 }
