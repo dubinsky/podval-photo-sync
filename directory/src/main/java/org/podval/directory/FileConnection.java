@@ -1,20 +1,26 @@
 package org.podval.directory;
 
+import org.podval.photo.ConnectionDescriptor;
 import org.podval.photo.Connection;
 import org.podval.photo.Folder;
 import org.podval.photo.PhotoException;
 
+import java.io.File;
 
-/* package */ final class FileConnection extends Connection<FilePhoto> {
 
-    public FileConnection(final String rootPath) {
-        rootFolder = new FileFolder(this, rootPath);
+public final class FileConnection extends Connection<FilePhoto> {
+
+    public static final String SCHEME = "file";
+
+
+    public FileConnection(final ConnectionDescriptor descriptor) {
+        rootFolder = new FileFolder(this, new File(descriptor.getPath()));
     }
 
 
     @Override
     public String getScheme() {
-        return FileFactory.SCHEME;
+        return SCHEME;
     }
 
 

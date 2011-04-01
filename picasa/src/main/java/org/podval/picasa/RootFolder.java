@@ -62,8 +62,10 @@ public final class RootFolder extends Folder<Picasa, PicasaPhoto> {
 
 
     @Override
-    public void setPublic(final boolean value) {
-        // TODO block setting root folder to private
+    public void setPublic(final boolean value) throws PhotoException {
+        if (!value) {
+            throw new PhotoException("Picasa album list is always public!");
+        }
     }
 
 

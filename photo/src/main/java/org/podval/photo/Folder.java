@@ -32,7 +32,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     public abstract boolean isPublic();
 
 
-    public abstract void setPublic(final boolean value);
+    public abstract void setPublic(final boolean value) throws PhotoException;
 
 
     public final boolean hasFolders() throws PhotoException {

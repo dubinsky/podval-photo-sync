@@ -14,8 +14,9 @@ import org.apache.axis2.transport.http.HTTPConstants;
 
 import org.apache.commons.httpclient.Header;
 
-import org.podval.photo.Folder;
+import org.podval.photo.ConnectionDescriptor;
 import org.podval.photo.Connection;
+import org.podval.photo.Folder;
 import org.podval.photo.PhotoException;
 
 import java.io.IOException;
@@ -26,10 +27,13 @@ import java.util.ArrayList;
 
 /* package */ final class Zenfolio extends Connection<ZenfolioPhoto> {
 
-    public Zenfolio(final String login, final String password, String path) throws PhotoException {
-        this.login = login;
-        this.password = password;
-        this.path = path;
+    public static final String SCHEME = "zenfolio";
+
+
+    public Zenfolio(final ConnectionDescriptor descriptor) throws PhotoException {
+        this.login = descriptor.getLogin();
+        this.password = descriptor.getPassword();
+        this.path = descriptor.getPath();
 
         try {
             this.connection = new ZfApiStub();
@@ -41,7 +45,7 @@ import java.util.ArrayList;
 
     @Override
     public String getScheme() {
-        return ZenfolioFactory.SCHEME;
+        return SCHEME;
     }
 
 

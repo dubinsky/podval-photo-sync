@@ -1,7 +1,7 @@
 package org.podval.sync;
 
 import org.podval.photo.ConnectionDescriptor;
-import org.podval.directory.FileFactory;
+import org.podval.directory.FileConnection;
 
 import org.kohsuke.args4j.CmdLineException;
 
@@ -72,7 +72,7 @@ public final class UriParser {
 
 
     private static String defaultScheme(final String scheme) {
-        return (scheme == null) ? FileFactory.SCHEME : scheme;
+        return (scheme == null) ? FileConnection.SCHEME : scheme;
     }
 
 

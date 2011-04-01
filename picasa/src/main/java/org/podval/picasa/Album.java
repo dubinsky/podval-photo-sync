@@ -27,6 +27,8 @@ import org.podval.picasa.model.AlbumFeed;
 import org.podval.picasa.model.PhotoEntry;
 import org.podval.picasa.model.Link;
 
+import java.util.List;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -94,20 +96,26 @@ public final class Album extends Folder<Picasa, PicasaPhoto> {
         try {
             if ((albumEntry != null) && (albumEntry.numPhotos != 0)) {
                 final PicasaUrl url = new PicasaUrl(albumEntry.getFeedLink());
-                PicasaUrl nextUrl = url;
 
-                while (nextUrl != null) {
+                PicasaUrl nextUrl = url;
+                do {
                     final AlbumFeed feed = AlbumFeed.executeGet(getConnection().getTransport(), nextUrl);
-                    for (final PhotoEntry photo : feed.photos) {
-                        register(new PicasaPhoto(this, photo));
-                    }
+
+                    populate(feed.photos);
 
                     final String next = Link.find(feed.links, "next");
                     nextUrl = (next == null) ? null : new PicasaUrl(next);
-                }
+                } while (nextUrl != null);
             }
         } catch (final IOException e) {
             throw new PhotoException(e);
+        }
+    }
+
+
+    private void populate(final List<PhotoEntry> photos) {
+        for (final PhotoEntry photo : photos) {
+            register(new PicasaPhoto(this, photo));
         }
     }
 

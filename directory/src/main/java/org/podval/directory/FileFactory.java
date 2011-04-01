@@ -7,17 +7,14 @@ import org.podval.photo.ConnectionDescriptor;
 
 public final class FileFactory extends ConnectionFactory<FilePhoto> {
 
-    public static final String SCHEME = "file";
-
-
     @Override
-    public Connection<FilePhoto> createConnection(final ConnectionDescriptor ticket) {
-        return new FileConnection(ticket.getPath());
+    public Connection<FilePhoto> createConnection(final ConnectionDescriptor descriptor) {
+        return new FileConnection(descriptor);
     }
 
 
     @Override
     public String getScheme() {
-        return SCHEME;
+        return FileConnection.SCHEME;
     }
 }

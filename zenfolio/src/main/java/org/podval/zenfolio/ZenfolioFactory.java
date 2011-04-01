@@ -8,17 +8,14 @@ import org.podval.photo.PhotoException;
 
 public final class ZenfolioFactory extends ConnectionFactory<ZenfolioPhoto> {
 
-    public static final String SCHEME = "zenfolio";
-
-
     @Override
-    public Connection<ZenfolioPhoto> createConnection(final ConnectionDescriptor ticket) throws PhotoException {
-        return new Zenfolio(ticket.getLogin(), ticket.getPassword(), ticket.getPath());
+    public Connection<ZenfolioPhoto> createConnection(final ConnectionDescriptor descriptor) throws PhotoException {
+        return new Zenfolio(descriptor);
     }
 
 
     @Override
     public String getScheme() {
-        return SCHEME;
+        return Zenfolio.SCHEME;
     }
 }

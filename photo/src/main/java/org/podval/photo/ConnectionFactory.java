@@ -21,7 +21,7 @@ public abstract class ConnectionFactory<T extends Photo> {
     public static ConnectionFactory get(final String scheme) {
         ConnectionFactory result = null;
 
-        for (final ConnectionFactory factory : getLoader()) {
+        for (final ConnectionFactory factory : getAll()) {
             if (factory.getScheme().equals(scheme)) {
                 result = factory;
                 break;
@@ -32,12 +32,7 @@ public abstract class ConnectionFactory<T extends Photo> {
     }
 
 
-    public static Iterable<ConnectionFactory> getAll() {
-        return getLoader();
-    }
-
-
-    private static synchronized ServiceLoader<ConnectionFactory> getLoader() {
+    public static synchronized Iterable<ConnectionFactory> getAll() {
         if (loader == null) {
             loader = ServiceLoader.load(ConnectionFactory.class);
         }
@@ -49,7 +44,9 @@ public abstract class ConnectionFactory<T extends Photo> {
     private static ServiceLoader<ConnectionFactory> loader;
 
 
-    public abstract Connection<T> createConnection(final ConnectionDescriptor ticket) throws PhotoException;
+    // TODO do createConnection() and getScheme() through reflection?
+
+    public abstract Connection<T> createConnection(final ConnectionDescriptor descriptor) throws PhotoException;
 
 
     public abstract String getScheme();

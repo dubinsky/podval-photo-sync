@@ -27,15 +27,13 @@ public final class FilePhoto extends Photo {
 
     @Override
     public Date getTimestamp() {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new Date(getOriginalFile().lastModified());
     }
 
 
     @Override
     public int getSize() {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+        return (int) getOriginalFile().length();
     }
 
 
@@ -46,14 +44,14 @@ public final class FilePhoto extends Photo {
     }
 
 
-    public File get(final String extension) {
-        return components.get(extension);
-    }
-
-
     @Override
     public File getOriginalFile() {
         return get("jpg");
+    }
+
+
+    public File get(final String extension) {
+        return components.get(extension);
     }
 
 

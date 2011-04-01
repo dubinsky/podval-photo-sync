@@ -12,11 +12,6 @@ import java.io.File;
 
 /* package */ final class FileFolder extends Folder<FileConnection, FilePhoto> {
 
-    public FileFolder(final FileConnection connection, final String directoryPath) {
-        this(connection, new File(directoryPath));
-    }
-
-
     public FileFolder(final FileConnection connection, final File directory) {
         super(connection);
 
@@ -51,8 +46,10 @@ import java.io.File;
 
 
     @Override
-    public void setPublic(final boolean value) {
-        // TODO ...
+    public void setPublic(final boolean value) throws PhotoException {
+        if (!value) {
+            throw new PhotoException("File system folders are always public!");
+        }
     }
 
 
@@ -62,43 +59,27 @@ import java.io.File;
 
         for (final File file : directory.listFiles()) {
             if (file.isDirectory()) {
-                loadDirectory(file);
+                register(new FileFolder(getConnection(), file));
             } else {
-                loadFile(file, bunches);
+                getBunch(bunches, getName(file)).put(getExtension(file), file);
             }
         }
 
-        for (final Map.Entry<String, Map<String, File>> entry : bunches.entrySet()) {
-            final String name = entry.getKey();
-            final Map<String, File> bunch = entry.getValue();
-            final FilePhoto photo = makePhoto(name, bunch);
-
-            register(photo);
+        for (final String name: bunches.keySet()) {
+            register(new FilePhoto(this, name, bunches.get(name)));
         }
     }
 
 
-    private void loadDirectory(final File folder) {
-        register(new FileFolder(getConnection(), folder));
-    }
-
-
-    private void loadFile(final File file, final Map<String, Map<String, File>> bunches) {
-        final String name = getName(file);
-
-        Map<String, File> bunch = bunches.get(name);
-        if (bunch == null) {
-            bunch = new HashMap<String, File>();
-            // @todo duplicates?
-            bunches.put(name, bunch);
+    private Map<String, File> getBunch(final Map<String, Map<String, File>> bunches, final String name) {
+        Map<String, File> result = bunches.get(name);
+        if (result == null) {
+            result = new HashMap<String, File>();
+            // TODO duplicates?
+            bunches.put(name, result);
         }
 
-        bunch.put(getExtension(file), file);
-    }
-
-
-    private FilePhoto makePhoto(final String name, final Map<String, File> components) {
-        return new FilePhoto(this, name, components);
+        return result;
     }
 
 
@@ -125,7 +106,7 @@ import java.io.File;
 
     @Override
     public void doAddFile(final String name, final File file) {
-        // @todo implement
+        // TODO implement
         throw new UnsupportedOperationException("Not implemented yet!!!");
     }
 
