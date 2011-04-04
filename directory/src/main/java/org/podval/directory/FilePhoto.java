@@ -9,7 +9,7 @@ import java.util.Map;
 import java.io.File;
 
 
-public final class FilePhoto extends Photo {
+public final class FilePhoto extends Photo<FileFolder> {
 
     /* package */ FilePhoto(final FileFolder folder, final String name, final Map<String, File> components) {
         super(folder);

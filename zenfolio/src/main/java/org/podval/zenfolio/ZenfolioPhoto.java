@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 
-public final class ZenfolioPhoto extends Photo {
+public final class ZenfolioPhoto extends Photo<GroupLike<?>> {
 
     // I do not deal with photos in the Groups; just in the Galleries.
     /* package */ ZenfolioPhoto(final Gallery folder, final com.zenfolio.www.api._1_1.Photo photo) {
