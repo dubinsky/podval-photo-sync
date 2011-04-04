@@ -17,7 +17,10 @@
 
 package org.podval.photo.picasa
 
+import org.podval.photo.NotRoot
+import org.podval.picasa.model.AlbumEntry
 
-class Album {
+
+class Album(parent: PicasaFolder, entry: AlbumEntry) extends PicasaFolder with NotRoot[Picasa, PicasaFolder] {
 
 }

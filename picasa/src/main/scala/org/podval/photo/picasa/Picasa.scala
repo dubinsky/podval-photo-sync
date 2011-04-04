@@ -18,9 +18,33 @@
 package org.podval.photo.picasa
 
 import org.podval.photo.ConnectionNG
+import org.podval.picasa.model.Namespaces
+
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.googleapis.GoogleHeaders;
+import com.google.api.client.googleapis.GoogleTransport;
+import com.google.api.client.xml.atom.AtomParser;
 
 
-class Picasa(login: String) extends ConnectionNG {
+class Picasa(login: String) extends ConnectionNG[Picasa, PicasaFolder] {
 
     def getLogin() = login
+
+
+    val transport: HttpTransport = createTransport("Podval-PicasaSync/1.0")
+
+
+    private def createTransport(applicationName: String): HttpTransport = {
+        val result = GoogleTransport.create()
+
+        val headers = result.defaultHeaders.asInstanceOf[GoogleHeaders]
+        headers.setApplicationName(applicationName)
+        headers.gdataVersion = "2"
+
+        val parser = new AtomParser()
+        parser.namespaceDictionary = Namespaces.DICTIONARY;
+        result.addParser(parser);
+
+        result;
+    }
 }

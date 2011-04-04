@@ -20,7 +20,7 @@ package org.podval.photo
 import scala.collection.mutable.ListBuffer
 
 
-trait NoFolders extends FolderNG {
+trait NoFolders[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] {
 
     override final def canHaveFolders(): Boolean = false
 
@@ -28,18 +28,18 @@ trait NoFolders extends FolderNG {
     override final def hasFolders(): Boolean = false
 
 
-    override final def getFolders(): Seq[FolderNG] = folders
+    override final def getFolders(): Seq[F] = folders
 
 
-    override final def getFolder(name: String): Option[FolderNG] = scala.None // TODO WTF do I need to prefix this?!
+    override final def getFolder(name: String): Option[F] = scala.None // TODO WTF do I need to prefix this?!
 
 
-    private val folders = List[FolderNG]() // TODO make "static"!
+    private val folders = List[F]() // TODO make "static"!
 }
 
 
 
-trait YesFolders extends FolderNG {
+trait YesFolders[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] {
 
     override final def canHaveFolders(): Boolean = true
 
@@ -47,24 +47,24 @@ trait YesFolders extends FolderNG {
     override final def hasFolders(): Boolean = !getFolders().isEmpty
 
 
-    override final def getFolders(): Seq[FolderNG] = folders
+    override final def getFolders(): Seq[F] = folders
 
 
-    override final def getFolder(name: String): Option[FolderNG] = getFolders().find(_.name == name)
+    override final def getFolder(name: String): Option[F] = getFolders().find(_.name == name)
 
 
     protected final def populateFolders() { folders ++= retrieveFolders() }
 
 
-    protected def retrieveFolders(): Seq[FolderNG]
+    protected def retrieveFolders(): Seq[F]
 
 
-    private val folders: ListBuffer[FolderNG] = new ListBuffer[FolderNG]()
+    private val folders: ListBuffer[F] = new ListBuffer[F]()
 }
 
 
 
-trait NoPhotos extends FolderNG {
+trait NoPhotos[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] {
 
     override final def canHavePhotos(): Boolean = false
 
@@ -83,7 +83,7 @@ trait NoPhotos extends FolderNG {
 
 
 
-trait YesPhotos extends FolderNG {
+trait YesPhotos[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] {
 
     override final def canHavePhotos(): Boolean = true
 
@@ -107,26 +107,26 @@ trait YesPhotos extends FolderNG {
 }
 
 
-trait Root extends FolderNG {
+trait Root[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] {
 
-    override final def getConnection(): ConnectionNG = connection
-
-
-    override final def getParent(): Option[FolderNG] = scala.None
+    override final def getConnection(): C = connection
 
 
-    protected val connection: ConnectionNG
+    override final def getParent(): Option[F] = scala.None
+
+
+    protected val connection: C
 }
 
 
 
-trait NotRoot extends FolderNG {
+trait NotRoot[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] {
 
-    override final def getConnection(): ConnectionNG = getParent().get.getConnection()
-
-
-    override final def getParent(): Option[FolderNG] = Some(parent)
+    override final def getConnection(): C = getParent().get.getConnection()
 
 
-    protected val parent: FolderNG
+    override final def getParent(): Option[F] = Some(parent)
+
+
+    protected val parent: F
 }

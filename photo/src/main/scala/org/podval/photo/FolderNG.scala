@@ -20,12 +20,12 @@ package org.podval.photo
 import scala.xml.{Elem}
 
 
-trait FolderNG {
+trait FolderNG[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] {
     
-    def getConnection(): ConnectionNG
+    def getConnection(): C
 
 
-    def getParent(): Option[FolderNG]
+    def getParent(): Option[F]
 
 
     def name(): String
@@ -37,10 +37,10 @@ trait FolderNG {
     def hasFolders(): Boolean
 
 
-    def getFolders(): Seq[FolderNG]
+    def getFolders(): Seq[F]
 
 
-    def getFolder(name: String): Option[FolderNG]
+    def getFolder(name: String): Option[F]
 
 
     def canHavePhotos(): Boolean

@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait AlbumList extends FolderNG with YesFolders with NoPhotos {
+trait AlbumList[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] with YesFolders[C, F] with NoPhotos[C, F] {
 
     override final def populate() {
         populateFolders()
@@ -26,7 +26,7 @@ trait AlbumList extends FolderNG with YesFolders with NoPhotos {
 }
 
 
-trait Album extends FolderNG with NoFolders with YesPhotos {
+trait Album[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] with NoFolders[C, F] with YesPhotos[C, F] {
 
     override final def populate() {
         populatePhotos()
@@ -34,7 +34,7 @@ trait Album extends FolderNG with NoFolders with YesPhotos {
 }
 
 
-trait Mix extends FolderNG with YesFolders with YesPhotos {
+trait Mix[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] extends FolderNG[C, F] with YesFolders[C, F] with YesPhotos[C, F] {
 
     override final def populate() {
         populateFolders()

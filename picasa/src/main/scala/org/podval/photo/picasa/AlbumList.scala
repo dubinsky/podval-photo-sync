@@ -19,36 +19,38 @@ package org.podval.photo.picasa
 
 import org.podval.photo.{FolderNG, PhotoException}
 
-import org.podval.picasa.model.{PicasaUrl, UserFeed, Link}
+import org.podval.picasa.model.{PicasaUrl, UserFeed, AlbumEntry, Link}
 
 import scala.collection.mutable.ListBuffer
+
+import scala.collection.JavaConversions._
 
 import java.io.IOException
 
 
-final class AlbumList extends org.podval.photo.AlbumList with org.podval.photo.Root {
+final class AlbumList extends PicasaFolder with org.podval.photo.AlbumList[Picasa, PicasaFolder] with org.podval.photo.Root[Picasa, PicasaFolder] {
 
     override def name(): String = "/"
 
 
-    override def retrieveFolders(): Seq[FolderNG] = {
-        val result = new ListBuffer[FolderNG]()
+    override def retrieveFolders(): Seq[PicasaFolder] = {
+        val result = new ListBuffer[PicasaFolder]()
 
         try {
             val url = PicasaUrl.relativeToRoot("feed/api/user/" + getConnection().getLogin());
 
             var nextUrl = url;
             do {
-                val chunk = UserFeed.executeGet(getConnection().getTransport(), nextUrl);
+                val chunk = UserFeed.executeGet(getConnection().transport, nextUrl);
 
                 if (feed == null) {
                     feed = chunk;
                 }
 
-                val albums = chunk.albums
+                val albums: Seq[AlbumEntry] = chunk.albums
 
                 if (albums != null) {
-                    result ++=(albums map (new Album(getConnection(), _)))
+                    result ++=(albums map (new Album(this, _)))
                 }
 
                 val next = Link.find(chunk.links, "next");

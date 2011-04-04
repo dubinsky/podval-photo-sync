@@ -15,9 +15,11 @@
  *  under the License.
  */
 
-package org.podval.photo
+package org.podval.photo.picasa
+
+import org.podval.photo.FolderNG
 
 
-class ConnectionNG[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] {
+class PicasaFolder extends FolderNG[Picasa, PicasaFolder] {
 
 }
