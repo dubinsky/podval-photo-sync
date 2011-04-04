@@ -200,7 +200,7 @@ public abstract class Folder<C extends Connection<P>, P extends Photo> {
     }
 
 
-    private <O extends Photo> void addPhoto(final O photo) throws IOException {
+    private <O extends Photo> void addPhoto(final O photo) throws PhotoException, IOException {
         final boolean doIt = !getConnection().isReadOnly();
 
         final String name = photo.getName();
