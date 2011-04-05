@@ -20,13 +20,12 @@ package org.podval.photo.picasa
 import org.podval.photo.ConnectionNG
 import org.podval.picasa.model.Namespaces
 
+import com.google.api.client.googleapis.{GoogleTransport, GoogleHeaders}
 import com.google.api.client.http.HttpTransport;
-import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.googleapis.GoogleTransport;
 import com.google.api.client.xml.atom.AtomParser;
 
 
-class Picasa(login: String) extends ConnectionNG[Picasa, PicasaFolder, PicasaPhoto] {
+final class Picasa(login: String) extends ConnectionNG[Picasa, PicasaFolder, PicasaPhoto] {
 
     def getLogin() = login
 
