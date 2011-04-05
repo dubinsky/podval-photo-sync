@@ -15,12 +15,23 @@
  *  under the License.
  */
 
-package org.podval.photo.picasa
-
-import org.podval.photo.NotRoot
-import org.podval.picasa.model.AlbumEntry
+package org.podval.photo
 
 
-class Album(parent: PicasaFolder, entry: AlbumEntry) extends PicasaFolder with NotRoot[Picasa, PicasaFolder] {
+trait NoPhotos[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
+    extends FolderNG[C, F, P]
+{
+    override final def canHavePhotos(): Boolean = false
 
+
+    override final def hasPhotos(): Boolean = false
+
+
+    override final def getPhotos(): Seq[P] = photos
+
+
+    override final def getPhoto(name: String): Option[P] = scala.None // TODO WTF do I need to prefix this?!
+
+
+    private val photos = List[P]() // TODO make "static""!
 }

@@ -17,7 +17,7 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{FolderNG, PhotoException}
+import org.podval.photo.{RootAlbumList, PhotoException}
 
 import org.podval.picasa.model.{PicasaUrl, UserFeed, AlbumEntry, Link}
 
@@ -28,7 +28,9 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-final class AlbumList extends PicasaFolder with org.podval.photo.AlbumList[Picasa, PicasaFolder] with org.podval.photo.Root[Picasa, PicasaFolder] {
+final class PicasaAlbumList(connectionArg: Picasa) extends {
+    val connection = connectionArg
+} with PicasaFolder with RootAlbumList[Picasa, PicasaFolder, PicasaPhoto] {
 
     override def name(): String = "/"
 
@@ -37,25 +39,25 @@ final class AlbumList extends PicasaFolder with org.podval.photo.AlbumList[Picas
         val result = new ListBuffer[PicasaFolder]()
 
         try {
-            val url = PicasaUrl.relativeToRoot("feed/api/user/" + getConnection().getLogin());
+            val url = PicasaUrl.relativeToRoot("feed/api/user/" + getConnection().getLogin())
 
-            var nextUrl = url;
+            var nextUrl = url
             do {
-                val chunk = UserFeed.executeGet(getConnection().transport, nextUrl);
+                val chunk = UserFeed.executeGet(getConnection().transport, nextUrl)
 
                 if (feed == null) {
-                    feed = chunk;
+                    feed = chunk
                 }
 
                 val albums: Seq[AlbumEntry] = chunk.albums
 
                 if (albums != null) {
-                    result ++=(albums map (new Album(this, _)))
+                    result ++= (albums map (new PicasaAlbum(this, _)))
                 }
 
-                val next = Link.find(chunk.links, "next");
-                nextUrl = if (next == null) null else new PicasaUrl(next);
-            } while (nextUrl != null);
+                val next = Link.find(chunk.links, "next")
+                nextUrl = if (next == null) null else new PicasaUrl(next) // TODO standard function?
+            } while (nextUrl != null)
         } catch {
             case e: IOException => throw new PhotoException(e)
         }

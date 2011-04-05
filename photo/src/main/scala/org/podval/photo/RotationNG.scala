@@ -17,12 +17,6 @@
 
 package org.podval.photo
 
-
-class RotationNG {
+object RotationNG extends Enumeration {
+    val None, Right, R180, Left = Value
 }
-
-
-case class None extends RotationNG {}
-case class Right extends RotationNG {}
-case class R180 extends RotationNG {}
-case class LEFT extends RotationNG {}

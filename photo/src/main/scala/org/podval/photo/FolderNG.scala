@@ -20,7 +20,7 @@ package org.podval.photo
 import scala.xml.{Elem}
 
 
-trait FolderNG[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] {
+trait FolderNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] {
     
     def getConnection(): C
 
@@ -49,10 +49,10 @@ trait FolderNG[C <: ConnectionNG[C, F], F <: FolderNG[C, F]] {
     def hasPhotos(): Boolean
 
 
-    def getPhotos(): Seq[PhotoNG]
+    def getPhotos(): Seq[P]
 
 
-    def getPhoto(name: String): Option[PhotoNG]
+    def getPhoto(name: String): Option[P]
 
 
     protected final def ensurePopulated() {

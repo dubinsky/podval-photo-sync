@@ -18,6 +18,20 @@
 package org.podval.photo
 
 
-class ConnectionNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] {
+trait NoFolders[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
+    extends FolderNG[C, F, P]
+{
+    override final def canHaveFolders(): Boolean = false
 
+
+    override final def hasFolders(): Boolean = false
+
+
+    override final def getFolders(): Seq[F] = folders
+
+
+    override final def getFolder(name: String): Option[F] = scala.None // TODO WTF do I need to prefix this?!
+
+
+    private val folders = List[F]() // TODO make "static"!
 }

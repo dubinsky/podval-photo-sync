@@ -17,7 +17,28 @@
 
 package org.podval.photo
 
+import scala.collection.mutable.ListBuffer
 
-class ConnectionNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] {
 
+trait YesFolders[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] extends FolderNG[C, F, P] {
+
+    override final def canHaveFolders(): Boolean = true
+
+
+    override final def hasFolders(): Boolean = !getFolders().isEmpty
+
+
+    override final def getFolders(): Seq[F] = folders
+
+
+    override final def getFolder(name: String): Option[F] = getFolders().find(_.name == name)
+
+
+    protected final def populateFolders() { folders ++= retrieveFolders() }
+
+
+    protected def retrieveFolders(): Seq[F]
+
+
+    private val folders: ListBuffer[F] = new ListBuffer[F]()
 }

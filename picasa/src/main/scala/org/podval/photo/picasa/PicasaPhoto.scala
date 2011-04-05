@@ -15,32 +15,33 @@
  *  under the License.
  */
 
-package org.podval.photo
+package org.podval.photo.picasa
 
-import scala.xml.Elem
+import org.podval.photo.{PhotoNG, RotationNG}
+
+import org.podval.picasa.model.PhotoEntry
 
 import java.util.Date
 
 
-trait PhotoNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] {
+class PicasaPhoto(album: PicasaAlbum, entry: PhotoEntry)
+    extends PhotoNG[Picasa, PicasaFolder, PicasaPhoto]
+{
 
-    def name(): String
-
-
-    def timestamp(): Date
-
-
-    def size(): Int
+    override def name(): String = entry.title
 
 
-    def rotation(): RotationNG.Value
+    override def timestamp(): Date = new Date(entry.timestamp)
 
 
-    def list(): Elem =
-        <photo
-            name={name()}
-            date={timestamp().toString}
-            size={size().toString}
-            rotation={rotation().toString}
-        />
+    override def size(): Int = entry.size
+
+
+    override def rotation(): RotationNG.Value = entry.rotation match {
+        // TODO deal with null...
+        case   0 => RotationNG.None
+        case  90 => RotationNG.Right
+        case 180 => RotationNG.R180
+        case 270 => RotationNG.Left
+    }
 }
