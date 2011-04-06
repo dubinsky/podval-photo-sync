@@ -17,7 +17,7 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{NotRootAlbum, PhotoException}
+import org.podval.photo.{NonRootAlbum, PhotoException}
 
 import org.podval.picasa.model.{PicasaUrl, AlbumEntry, AlbumFeed, PhotoEntry, Link}
 
@@ -28,9 +28,10 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-class PicasaAlbum(parentArg: PicasaFolder, entry: AlbumEntry) extends {
-    val parent = parentArg
-} with PicasaFolder with NotRootAlbum[Picasa, PicasaFolder, PicasaPhoto] {
+class PicasaAlbum(parent: PicasaFolder, entry: AlbumEntry)
+extends NonRootAlbum[Picasa, PicasaFolder, PicasaPhoto](parent)
+with PicasaFolder
+{
 
     override def name(): String = entry.title
 

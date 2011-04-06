@@ -19,7 +19,32 @@ package org.podval.photo.files
 
 import org.podval.photo.PhotoNG
 
+import java.io.File
 
-final class FilesPhoto extends PhotoNG[FilesConnection, FilesFolder, FilesPhoto] {
+import java.util.Date
 
+
+final class FilesPhoto(parent: FilesFolder, name: String, files: Map[String, File])
+    extends PhotoNG[FilesConnection, FilesFolder, FilesPhoto](parent)
+{
+
+    override def name() = name
+
+
+    override def timestamp() = new Date(getOriginalFile().lastModified())
+
+
+    override def size() = getOriginalFile().length().toInt
+
+
+    override def rotation() = throw new UnsupportedOperationException("Not supported yet.") // TODO
+
+
+    def getOriginalFile() = get("jpg").get
+
+
+    def get(extension: String): Option[File] = files.get(extension)
+
+
+    def exists(extension: String): Boolean = get(extension).isDefined
 }

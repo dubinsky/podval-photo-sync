@@ -20,5 +20,5 @@ package org.podval.photo.picasa
 import org.podval.photo.FolderNG
 
 
-abstract class PicasaFolder extends FolderNG[Picasa, PicasaFolder, PicasaPhoto] {
+trait PicasaFolder extends FolderNG[Picasa, PicasaFolder, PicasaPhoto] {
 }

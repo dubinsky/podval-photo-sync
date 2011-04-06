@@ -18,14 +18,11 @@
 package org.podval.photo
 
 
-trait YesRoot[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
+abstract class YesRoot[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]](connection: C)
     extends FolderNG[C, F, P]
 {
     override final def getConnection(): C = connection
 
 
     override final def getParent(): Option[F] = scala.None
-
-
-    protected val connection: C
 }

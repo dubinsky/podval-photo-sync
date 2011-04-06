@@ -15,18 +15,14 @@
  *  under the License.
  */
 
-package org.podval.photo.files
-
-import org.podval.photo.ConnectionNG
+package org.podval.photo
 
 
-final class FilesConnection extends ConnectionNG[FilesConnection, FilesFolder, FilesPhoto] {
+abstract class NonRoot[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]](parent: F)
+    extends FolderNG[C, F, P]
+{
+    override final def getConnection(): C = getParent().get.getConnection()
 
-//    if (!directory.exists()) {
-//        throw new IllegalArgumentException("Does not exist: " + directory);
-//    }
-//
-//    if (!directory.isDirectory()) {
-//        throw new IllegalArgumentException("Not a directory: " + directory);
-//    }
+
+    override final def getParent(): Option[F] = Some(parent)
 }

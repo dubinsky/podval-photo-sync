@@ -22,7 +22,10 @@ import scala.xml.Elem
 import java.util.Date
 
 
-trait PhotoNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] {
+abstract class PhotoNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]](parent: F) {
+
+    def getParent(): F = parent
+
 
     def name(): String
 

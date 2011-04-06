@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait RootAlbumList[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
-    extends AlbumList[C, F, P] with YesRoot[C, F, P]
+abstract class RootAlbumList[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]](connection: C)
+    extends YesRoot[C, F, P](connection) with AlbumList[C, F, P]
 {
 }

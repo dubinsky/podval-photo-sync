@@ -24,8 +24,8 @@ import org.podval.picasa.model.PhotoEntry
 import java.util.Date
 
 
-final class PicasaPhoto(album: PicasaAlbum, entry: PhotoEntry)
-    extends PhotoNG[Picasa, PicasaFolder, PicasaPhoto]
+final class PicasaPhoto(parent: PicasaAlbum, entry: PhotoEntry)
+    extends PhotoNG[Picasa, PicasaFolder, PicasaPhoto](parent)
 {
 
     override def name() = entry.title

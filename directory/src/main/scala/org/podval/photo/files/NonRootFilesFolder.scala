@@ -15,17 +15,16 @@
  *  under the License.
  */
 
-package org.podval.photo
+package org.podval.photo.files
+
+import org.podval.photo.NonRoot
+
+import java.io.File
 
 
-trait NotRoot[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
-    extends FolderNG[C, F, P]
+final class NonRootFilesFolder(parent: FilesFolder, directory: File)
+extends NonRoot[FilesConnection, FilesFolder, FilesPhoto](parent)
+with FilesFolder
 {
-    override final def getConnection(): C = getParent().get.getConnection()
-
-
-    override final def getParent(): Option[F] = Some(parent)
-
-
-    protected val parent: F
+    def getDirectory() = directory
 }
