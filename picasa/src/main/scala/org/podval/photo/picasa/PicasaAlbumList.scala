@@ -28,9 +28,11 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-final class PicasaAlbumList(connection: Picasa)
-extends RootAlbumList[Picasa, PicasaFolder, PicasaPhoto](connection)
-with PicasaFolder {
+final class PicasaAlbumList(connectionArg: Picasa) extends PicasaFolder
+with RootAlbumList[Picasa, PicasaFolder, PicasaPhoto]
+{
+    protected val connection = connectionArg
+
 
     override def name(): String = "/"
 

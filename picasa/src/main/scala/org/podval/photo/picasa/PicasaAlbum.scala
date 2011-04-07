@@ -28,12 +28,14 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-class PicasaAlbum(parent: PicasaFolder, entry: AlbumEntry)
-extends NonRootAlbum[Picasa, PicasaFolder, PicasaPhoto](parent)
-with PicasaFolder
+class PicasaAlbum(parentArg: PicasaFolder, entry: AlbumEntry) extends PicasaFolder
+with NonRootAlbum[Picasa, PicasaFolder, PicasaPhoto]
 {
+    protected val parent = parentArg
+
 
     override def name(): String = entry.title
+
 
     override protected def retrievePhotos(): Seq[PicasaPhoto] = {
         val result = new ListBuffer[PicasaPhoto]()

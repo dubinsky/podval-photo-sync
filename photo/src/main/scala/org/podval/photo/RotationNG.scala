@@ -17,6 +17,7 @@
 
 package org.podval.photo
 
+
 object RotationNG extends Enumeration {
     val None, Right, R180, Left = Value
 }

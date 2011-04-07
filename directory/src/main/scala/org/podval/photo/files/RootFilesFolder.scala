@@ -17,14 +17,13 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.YesRoot
+import org.podval.photo.Root
 
 import java.io.File
 
 
-final class RootFilesFolder(connection: FilesConnection, directory: File)
-extends YesRoot[FilesConnection, FilesFolder, FilesPhoto](connection)
-with FilesFolder
+final class RootFilesFolder(connectionArg: FilesConnection, directory: File)
+extends FilesFolder(directory) with Root[FilesConnection, FilesFolder, FilesPhoto]
 {
-    def getDirectory() = directory
+    protected val connection = connectionArg
 }

@@ -24,20 +24,20 @@ import java.io.File
 import scala.collection.mutable
 
 
-trait FilesFolder extends Mix[FilesConnection, FilesFolder, FilesPhoto] {
+abstract class FilesFolder(directory: File) extends Mix[FilesConnection, FilesFolder, FilesPhoto] {
 
-    override def name() = getDirectory().getName()
+    override def name() = directory.getName()
 
 
     protected final override def retrieveFolders(): Seq[FilesFolder] = {
-        getDirectory().listFiles().filter(_.isDirectory).map(file => new NonRootFilesFolder(this, file))
+        directory.listFiles().filter(_.isDirectory).map(file => new NonRootFilesFolder(this, file))
     }
 
 
     protected final override def retrievePhotos(): Seq[FilesPhoto] = {
         val bunches = mutable.Map.empty[String, mutable.Map[String, File]]
 
-        getDirectory().listFiles() filter(_.isFile) foreach(register(bunches, _))
+        directory.listFiles() filter(_.isFile) foreach(register(bunches, _))
 
         bunches.keys.map(name => new FilesPhoto(this, name, Map.empty ++ bunches(name))).toSeq
     }
@@ -60,7 +60,4 @@ trait FilesFolder extends Mix[FilesConnection, FilesFolder, FilesPhoto] {
         val dot = filename.lastIndexOf('.')
         if (dot == -1) (filename, "") else (filename.substring(0, dot), filename.substring(dot+1))
     }
-
-
-    protected def getDirectory(): File
 }

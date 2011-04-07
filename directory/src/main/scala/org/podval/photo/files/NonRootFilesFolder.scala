@@ -22,9 +22,9 @@ import org.podval.photo.NonRoot
 import java.io.File
 
 
-final class NonRootFilesFolder(parent: FilesFolder, directory: File)
-extends NonRoot[FilesConnection, FilesFolder, FilesPhoto](parent)
-with FilesFolder
+final class NonRootFilesFolder(parentArg: FilesFolder, directory: File)
+extends FilesFolder(directory)
+with NonRoot[FilesConnection, FilesFolder, FilesPhoto]
 {
-    def getDirectory() = directory
+    protected val parent = parentArg
 }
