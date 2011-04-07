@@ -18,9 +18,7 @@
 package org.podval.photo
 
 
-trait AlbumList[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
-    extends FolderNG[C, F, P] with YesFolders[C, F, P] with NoPhotos[C, F, P]
-{
+trait AlbumList extends FolderNG with YesFolders with NoPhotos {
 
     override final def populate() {
         populateFolders()

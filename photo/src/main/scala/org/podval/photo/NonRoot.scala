@@ -18,10 +18,13 @@
 package org.podval.photo
 
 
-trait NonRoot[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
-    extends FolderNG[C, F, P]
-{
-    override final def getConnection(): C = getParent().get.getConnection()
+trait NonRoot extends FolderNG {
+
+    // TODO When I use abstract type members instead of type parameters,
+    // I can't figure out a way to avoid this cast.
+    // I hope that Scala type system has a way to eliminate the cast - I just
+    // don't know it yet ;)
+    override final def getConnection(): C = getParent().get.getConnection().asInstanceOf[C]
 
 
     override final def getParent(): Option[F] = Some(parent)

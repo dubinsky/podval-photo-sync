@@ -20,8 +20,17 @@ package org.podval.photo
 import scala.xml.{Elem}
 
 
-trait FolderNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] {
-    
+trait FolderNG {
+
+    type C <: ConnectionNG
+
+
+    type F <: FolderNG
+
+
+    type P <: PhotoNG
+
+
     def getConnection(): C
 
 

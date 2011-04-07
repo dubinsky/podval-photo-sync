@@ -18,9 +18,8 @@
 package org.podval.photo
 
 
-trait Root[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
-    extends FolderNG[C, F, P]
-{
+trait Root extends FolderNG {
+
     override final def getConnection(): C = connection
 
 

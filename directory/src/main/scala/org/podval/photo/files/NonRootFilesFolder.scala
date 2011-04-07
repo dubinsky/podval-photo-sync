@@ -23,8 +23,7 @@ import java.io.File
 
 
 final class NonRootFilesFolder(parentArg: FilesFolder, directory: File)
-extends FilesFolder(directory)
-with NonRoot[FilesConnection, FilesFolder, FilesPhoto]
+extends FilesFolder(directory) with NonRoot
 {
     protected val parent = parentArg
 }

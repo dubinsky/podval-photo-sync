@@ -24,9 +24,15 @@ import java.io.File
 import java.util.Date
 
 
-final class FilesPhoto(parent: FilesFolder, name: String, files: Map[String, File])
-    extends PhotoNG[FilesConnection, FilesFolder, FilesPhoto](parent)
+final class FilesPhoto(parentArg: FilesFolder, name: String, files: Map[String, File])
+    extends PhotoNG
 {
+
+    type F = FilesFolder
+
+
+    protected val parent = parentArg
+
 
     override def name() = name
 

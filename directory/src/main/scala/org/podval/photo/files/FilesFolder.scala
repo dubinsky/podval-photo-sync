@@ -24,13 +24,22 @@ import java.io.File
 import scala.collection.mutable
 
 
-abstract class FilesFolder(directory: File) extends Mix[FilesConnection, FilesFolder, FilesPhoto] {
+abstract class FilesFolder(directory: File) extends Mix {
+
+    type C = FilesConnection
+
+
+    type F = FilesFolder
+
+
+    type P = FilesPhoto
+
 
     override def name() = directory.getName()
 
 
     protected final override def retrieveFolders(): Seq[FilesFolder] = {
-        directory.listFiles().filter(_.isDirectory).map(file => new NonRootFilesFolder(this, file))
+        directory.listFiles() filter(_.isDirectory) map(file => new NonRootFilesFolder(this, file))
     }
 
 

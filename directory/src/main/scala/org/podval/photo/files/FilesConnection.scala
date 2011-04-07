@@ -20,7 +20,7 @@ package org.podval.photo.files
 import org.podval.photo.ConnectionNG
 
 
-final class FilesConnection extends ConnectionNG[FilesConnection, FilesFolder, FilesPhoto] {
+final class FilesConnection extends ConnectionNG {
 
 //    if (!directory.exists()) {
 //        throw new IllegalArgumentException("Does not exist: " + directory);

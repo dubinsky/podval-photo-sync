@@ -22,7 +22,10 @@ import scala.xml.Elem
 import java.util.Date
 
 
-abstract class PhotoNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]](parent: F) {
+trait PhotoNG {
+
+    type F <: FolderNG
+
 
     def getParent(): F = parent
 
@@ -46,4 +49,6 @@ abstract class PhotoNG[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: 
             size={size().toString}
             rotation={rotation().toString}
         />
+
+    protected val parent: F
 }

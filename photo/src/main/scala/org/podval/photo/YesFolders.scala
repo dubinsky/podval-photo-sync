@@ -20,7 +20,7 @@ package org.podval.photo
 import scala.collection.mutable.ListBuffer
 
 
-trait YesFolders[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]] extends FolderNG[C, F, P] {
+trait YesFolders extends FolderNG {
 
     override final def canHaveFolders(): Boolean = true
 

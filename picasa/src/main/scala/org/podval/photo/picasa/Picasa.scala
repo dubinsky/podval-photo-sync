@@ -25,7 +25,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.xml.atom.AtomParser;
 
 
-final class Picasa(login: String) extends ConnectionNG[Picasa, PicasaFolder, PicasaPhoto] {
+final class Picasa(login: String) extends ConnectionNG {
 
     def getLogin() = login
 

@@ -23,7 +23,7 @@ import java.io.File
 
 
 final class RootFilesFolder(connectionArg: FilesConnection, directory: File)
-extends FilesFolder(directory) with Root[FilesConnection, FilesFolder, FilesPhoto]
+extends FilesFolder(directory) with Root
 {
     protected val connection = connectionArg
 }

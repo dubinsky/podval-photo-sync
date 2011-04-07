@@ -18,7 +18,5 @@
 package org.podval.photo
 
 
-trait NonRootAlbum[C <: ConnectionNG[C, F, P], F <: FolderNG[C, F, P], P <: PhotoNG[C, F, P]]
-    extends Album[C, F, P] with NonRoot[C, F, P]
-{
+trait NonRootAlbum extends Album with NonRoot {
 }

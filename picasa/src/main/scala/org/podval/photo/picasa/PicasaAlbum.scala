@@ -28,8 +28,7 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-class PicasaAlbum(parentArg: PicasaFolder, entry: AlbumEntry) extends PicasaFolder
-with NonRootAlbum[Picasa, PicasaFolder, PicasaPhoto]
+class PicasaAlbum(parentArg: PicasaFolder, entry: AlbumEntry) extends PicasaFolder with NonRootAlbum
 {
     protected val parent = parentArg
 
