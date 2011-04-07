@@ -18,6 +18,13 @@
 package org.podval.photo
 
 
-class ConnectionNG {
+abstract class ConnectionNG {
 
+    type F <: FolderNG
+
+
+    def open() // TODO @throws
+
+
+    def getRootFolder(): F
 }

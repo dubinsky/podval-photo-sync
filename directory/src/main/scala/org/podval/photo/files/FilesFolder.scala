@@ -35,6 +35,15 @@ abstract class FilesFolder(directory: File) extends Mix {
     type P = FilesPhoto
 
 
+    if (!directory.exists()) {
+        throw new IllegalArgumentException("Does not exist: " + directory);
+    }
+
+    if (!directory.isDirectory()) {
+        throw new IllegalArgumentException("Not a directory: " + directory);
+    }
+
+
     override def name() = directory.getName()
 
 

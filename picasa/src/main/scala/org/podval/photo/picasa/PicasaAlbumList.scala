@@ -36,7 +36,7 @@ final class PicasaAlbumList(connectionArg: Picasa) extends PicasaFolder with Roo
     override def name(): String = "/"
 
 
-    override def retrieveFolders(): Seq[PicasaFolder] = {
+    protected override def retrieveFolders(): Seq[PicasaFolder] = {
         val result = new ListBuffer[PicasaFolder]()
 
         try {

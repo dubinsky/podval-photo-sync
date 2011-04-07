@@ -17,16 +17,21 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.ConnectionNG
+import org.podval.photo.{ConnectionNG, ConnectionDescriptor}
+
+import java.io.File
 
 
-final class FilesConnection extends ConnectionNG {
+final class FilesConnection(descriptor: ConnectionDescriptor) extends ConnectionNG {
 
-//    if (!directory.exists()) {
-//        throw new IllegalArgumentException("Does not exist: " + directory);
-//    }
-//
-//    if (!directory.isDirectory()) {
-//        throw new IllegalArgumentException("Not a directory: " + directory);
-//    }
+    type F = FilesFolder
+
+
+    private val rootFolder: F =  new RootFilesFolder(this, new File(descriptor.getPath()))
+
+
+    override def open() {}
+
+
+    override def getRootFolder(): F = rootFolder
 }

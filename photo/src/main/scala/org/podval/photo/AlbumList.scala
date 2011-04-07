@@ -18,9 +18,5 @@
 package org.podval.photo
 
 
-trait AlbumList extends FolderNG with YesFolders with NoPhotos {
-
-    override final def populate() {
-        populateFolders()
-    }
+trait AlbumList extends FolderNG with Folders with NoPhotos {
 }

@@ -17,17 +17,35 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.ConnectionNG
+import org.podval.photo.{ConnectionNG, ConnectionDescriptor, PhotoException}
 import org.podval.picasa.model.Namespaces
 
 import com.google.api.client.googleapis.{GoogleTransport, GoogleHeaders}
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.xml.atom.AtomParser;
+import com.google.api.client.googleapis.auth.clientlogin.ClientLogin
+import com.google.api.client.http.{HttpTransport, HttpResponseException}
+import com.google.api.client.xml.atom.AtomParser
+
+import java.io.IOException
 
 
-final class Picasa(login: String) extends ConnectionNG {
+final class Picasa(descriptor: ConnectionDescriptor) extends ConnectionNG {
 
-    def getLogin() = login
+    type F = PicasaFolder
+
+
+    private val path = descriptor.getPath
+    if ((path != null) &&  !path.isEmpty() && !path.equals("/")) {
+        throw new PhotoException("Picasa does not support hierarchy; path must be empty!")
+    }
+
+
+    def getLogin(): String = descriptor.getLogin()
+
+
+    private val rootFolder: F = new PicasaAlbumList(this)
+
+
+    override def getRootFolder(): F = rootFolder
 
 
     val transport: HttpTransport = createTransport("Podval-PicasaSync/1.0")
@@ -41,9 +59,31 @@ final class Picasa(login: String) extends ConnectionNG {
         headers.gdataVersion = "2"
 
         val parser = new AtomParser()
-        parser.namespaceDictionary = Namespaces.DICTIONARY;
-        result.addParser(parser);
+        parser.namespaceDictionary = Namespaces.DICTIONARY
+        result.addParser(parser)
 
-        result;
+        result
+    }
+
+
+    override def open() = if (descriptor.getPassword != null) { login() }
+
+
+    private def login() {
+        try {
+            authenticate()
+        } catch {
+            case e: HttpResponseException => throw new PhotoException(e)
+            case e: IOException => throw new PhotoException(e)
+        }
+    }
+
+
+    private def authenticate() {
+        val authenticator = new ClientLogin()
+        authenticator.authTokenType = "lh2" //"ndev";
+        authenticator.username = getLogin()
+        authenticator.password = descriptor.getPassword()
+        authenticator.authenticate().setAuthorizationHeader(transport)
     }
 }

@@ -18,10 +18,5 @@
 package org.podval.photo
 
 
-trait Mix extends FolderNG with YesFolders with YesPhotos {
-
-    override final def populate() {
-        populateFolders()
-        populatePhotos()
-    }
+trait Mix extends FolderNG with Folders with Photos {
 }

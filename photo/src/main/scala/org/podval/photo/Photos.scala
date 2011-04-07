@@ -20,25 +20,32 @@ package org.podval.photo
 import scala.collection.mutable.ListBuffer
 
 
-trait YesFolders extends FolderNG {
+trait Photos extends FolderNG {
 
-    override final def canHaveFolders(): Boolean = true
-
-
-    override final def hasFolders(): Boolean = !getFolders().isEmpty
+    override final def canHavePhotos(): Boolean = true
 
 
-    override final def getFolders(): Seq[F] = folders
+    override final def hasPhotos(): Boolean = !photos.isEmpty
 
 
-    override final def getFolder(name: String): Option[F] = getFolders().find(_.name == name)
+    override final def getPhoto(name: String): Option[P] = photos.find(_.name == name)
 
 
-    protected final def populateFolders() { folders ++= retrieveFolders() }
+    override final def getPhotos(): Seq[P] = {
+        if (!isPopulated) {
+            photos ++= retrievePhotos()
+            isPopulated = true
+        }
+
+        photos
+    }
 
 
-    protected def retrieveFolders(): Seq[F]
+    private var isPopulated: Boolean = false
 
 
-    private val folders: ListBuffer[F] = new ListBuffer[F]()
+    protected def retrievePhotos(): Seq[P]
+
+
+    private val photos: ListBuffer[P] = new ListBuffer[P]()
 }

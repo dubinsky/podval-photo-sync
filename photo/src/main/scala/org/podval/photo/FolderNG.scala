@@ -64,20 +64,6 @@ trait FolderNG {
     def getPhoto(name: String): Option[P]
 
 
-    protected final def ensurePopulated() {
-        if (!isPopulated) {
-            populate()
-            isPopulated = true
-        }
-    }
-
-
-    protected def populate()
-
-
-    private var isPopulated: Boolean = false
-
-
     def list(): Elem =
         <folder>
            <name>{name()}</name>
