@@ -23,8 +23,39 @@ abstract class ConnectionNG {
     type F <: FolderNG
 
 
+    def getScheme(): String
+
+
+    def enableLowLevelLogging(): Unit
+
+
     def open() // TODO @throws
 
 
     def getRootFolder(): F
+
+
+    var isReadOnly: Boolean = false
+
+
+//    protected final <C extends Connection<P>> Folder<C, P> getSubFolderByPath(final Folder<C, P> folder, final String path) throws PhotoException {
+//        Folder<C, P> result = folder;
+//
+//        if (path != null) {
+//            for (final String name : path.split("/")) {
+//                if (!name.isEmpty()) {
+//                    result.getFolderType().checkCanHaveFolders(result);
+//                    result = result.getFolder(name);
+//                }
+//            }
+//        }
+//
+//        return result;
+//    }
+}
+
+
+object ConnectionNG {
+
+    val LOG = "org.podval.photo"
 }

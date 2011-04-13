@@ -17,11 +17,13 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{PhotoNG, RotationNG}
+import org.podval.photo.{PhotoNG, RotationNG, PhotoException}
 
 import org.podval.picasa.model.PhotoEntry
 
 import java.util.Date
+
+import java.io.{File, FileOutputStream, BufferedOutputStream, IOException}
 
 
 final class PicasaPhoto(parentArg: PicasaAlbum, entry: PhotoEntry) extends PhotoNG {
@@ -47,5 +49,23 @@ final class PicasaPhoto(parentArg: PicasaAlbum, entry: PhotoEntry) extends Photo
         case  90 => RotationNG.Right
         case 180 => RotationNG.R180
         case 270 => RotationNG.Left
+    }
+
+
+    override def getOriginalFile(): File = {
+        val url = entry.getOriginalUrl()
+
+        if (url == null) {
+            throw new PhotoException("No URL of the original jpeg! ")
+        }
+
+        try {
+            val result = File.createTempFile("p-p-s-p", null, null)
+            val out = new BufferedOutputStream(new FileOutputStream(result))
+            PhotoEntry.download(parent.getConnection().transport, url, out)
+            result
+        } catch {
+            case e: IOException => throw new PhotoException("Failed to retrieve original jpeg!", e)
+        }
     }
 }

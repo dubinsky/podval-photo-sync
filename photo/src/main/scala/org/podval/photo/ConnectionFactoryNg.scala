@@ -17,44 +17,13 @@
 
 package org.podval.photo
 
-import scala.xml.Elem
 
-import java.util.Date
+abstract class ConnectionFactoryNg {
 
-import java.io.File
+    // TODO do createConnection() and getScheme() through reflection?
 
-
-trait PhotoNG extends PhotoIdNg {
-
-    type F <: FolderNG
+    def createConnection(descriptor: ConnectionDescriptorNg): ConnectionNG
 
 
-    def getParent(): F = parent
-
-
-    override def name(): String
-
-
-    override def timestamp(): Date
-
-
-    override def size(): Int
-
-
-    def rotation(): RotationNG.Value
-
-
-    def list(): Elem =
-        <photo
-            name={name()}
-            date={timestamp().toString}
-            size={size().toString}
-            rotation={rotation().toString}
-        />
-
-
-    def getOriginalFile(): File
-
-
-    protected val parent: F
+    def getScheme(): String
 }

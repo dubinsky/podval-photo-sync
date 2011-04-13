@@ -36,6 +36,16 @@ final class PicasaAlbumList(connectionArg: Picasa) extends PicasaFolder with Roo
     override def name(): String = "/"
 
 
+    override def isPublic() = true
+
+
+    override def setPublic(value: Boolean) {
+        if (!value) {
+            throw new PhotoException("Picasa album list is always public!")
+        }
+    }
+
+
     protected override def retrieveFolders(): Seq[PicasaFolder] = {
         val result = new ListBuffer[PicasaFolder]()
 
@@ -67,5 +77,49 @@ final class PicasaAlbumList(connectionArg: Picasa) extends PicasaFolder with Roo
     }
 
 
+    override def updateIfChanged() {
+        // TODO
+    }
+
+
     private var feed: UserFeed = null
+
+
+//    @Override
+//    protected void checkFolderType(final FolderType folderType) {
+//        // TODO?
+//    }
+//
+//
+//    @Override
+//    protected Album doCreateFolder(
+//        final String name,
+//        final FolderType folderType) throws PhotoException
+//    {
+//        final Album result;
+//        ensureIsPopulated();
+//        try {
+//            result = new Album(getConnection(), name);
+//            feed.insertAlbum(getConnection().getTransport(), result.getAlbumEntry());
+//        } catch (final IOException e) {
+//            throw new PhotoException(e);
+//        }
+//
+//        return result;
+//    }
+//
+//
+//    @Override
+//    protected Album doCreateFakeFolder(
+//        final String name,
+//        final FolderType folderType) throws PhotoException
+//    {
+//        return new Album(getConnection(), name);
+//    }
+//
+//
+//    @Override
+//    protected void doAddFile(final String name, final File file) throws PhotoException {
+//        throw new UnsupportedOperationException("Not supported yet.");
+//    }
 }

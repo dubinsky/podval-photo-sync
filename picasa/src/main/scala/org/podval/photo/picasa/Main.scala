@@ -15,46 +15,20 @@
  *  under the License.
  */
 
-package org.podval.photo
+package org.podval.photo.picasa
 
-import scala.xml.Elem
-
-import java.util.Date
-
-import java.io.File
+import org.podval.photo.ConnectionDescriptorNg
 
 
-trait PhotoNG extends PhotoIdNg {
+object Main {
 
-    type F <: FolderNG
-
-
-    def getParent(): F = parent
-
-
-    override def name(): String
-
-
-    override def timestamp(): Date
-
-
-    override def size(): Int
-
-
-    def rotation(): RotationNG.Value
-
-
-    def list(): Elem =
-        <photo
-            name={name()}
-            date={timestamp().toString}
-            size={size().toString}
-            rotation={rotation().toString}
-        />
-
-
-    def getOriginalFile(): File
-
-
-    protected val parent: F
+    def main(args: Array[String]) {
+        val descriptor = new ConnectionDescriptorNg(null, "leoniddubinsky", null, null, null)
+        val picasa = new Picasa(descriptor)
+        picasa.open()
+        val list = picasa.getRootFolder()
+        for (f: PicasaFolder <- list.getFolders) {
+            Console.println(f.name())
+        }
+    }
 }

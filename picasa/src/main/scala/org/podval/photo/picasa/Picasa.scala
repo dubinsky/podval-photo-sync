@@ -17,35 +17,48 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{ConnectionNG, ConnectionDescriptor, PhotoException}
-import org.podval.picasa.model.Namespaces
+import org.podval.photo.{ConnectionFactoryNg, ConnectionNG, ConnectionDescriptorNg, PhotoException}
+import org.podval.picasa.model.{Namespaces, PicasaUrl}
 
 import com.google.api.client.googleapis.{GoogleTransport, GoogleHeaders}
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin
 import com.google.api.client.http.{HttpTransport, HttpResponseException}
 import com.google.api.client.xml.atom.AtomParser
 
+import java.util.logging.{Logger, Level}
+
 import java.io.IOException
 
 
-final class Picasa(descriptor: ConnectionDescriptor) extends ConnectionNG {
+final class Picasa(descriptor: ConnectionDescriptorNg) extends ConnectionNG {
 
     type F = PicasaFolder
 
 
-    private val path = descriptor.getPath
+    private val path = descriptor.path
     if ((path != null) &&  !path.isEmpty() && !path.equals("/")) {
         throw new PhotoException("Picasa does not support hierarchy; path must be empty!")
     }
 
 
-    def getLogin(): String = descriptor.getLogin()
+    def getLogin(): String = descriptor.login
 
 
     private val rootFolder: F = new PicasaAlbumList(this)
 
 
     override def getRootFolder(): F = rootFolder
+
+
+    override def getScheme() = Picasa.SCHEME
+
+
+    override def enableLowLevelLogging() {
+        val logger = Logger.getLogger("com.google.api.client")
+        logger.setLevel(Level.CONFIG);
+
+        PicasaUrl.isLoggingEnabled = true;
+    }
 
 
     val transport: HttpTransport = createTransport("Podval-PicasaSync/1.0")
@@ -66,7 +79,12 @@ final class Picasa(descriptor: ConnectionDescriptor) extends ConnectionNG {
     }
 
 
-    override def open() = if (descriptor.getPassword != null) { login() }
+    override def open() {
+        // TODO lift into base class
+        if (descriptor.password != null) {
+            login()
+        }
+    }
 
 
     private def login() {
@@ -83,7 +101,22 @@ final class Picasa(descriptor: ConnectionDescriptor) extends ConnectionNG {
         val authenticator = new ClientLogin()
         authenticator.authTokenType = "lh2" //"ndev";
         authenticator.username = getLogin()
-        authenticator.password = descriptor.getPassword()
+        authenticator.password = descriptor.password
         authenticator.authenticate().setAuthorizationHeader(transport)
     }
+}
+
+
+object Picasa {
+
+    val SCHEME = "picasa"
+}
+
+
+final class PicasaFactrory extends ConnectionFactoryNg {
+
+    def createConnection(descriptor: ConnectionDescriptorNg) = new Picasa(descriptor)
+
+
+    def getScheme() = Picasa.SCHEME
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011 dub.
+ *  Copyright 2011 Leonid Dubinsky <dub@podval.org>.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,27 +15,27 @@
  *  under the License.
  */
 
-package org.podval.picasa;
+package org.podval.photo
 
-import org.podval.photo.Connection;
-import org.podval.photo.ConnectionFactory;
-import org.podval.photo.ConnectionDescriptor;
-import org.podval.photo.PhotoException;
-
-/**
- *
- * @author dub
- */
-public class PicasaFactory extends ConnectionFactory<PicasaPhoto> {
-
-    @Override
-    public Connection<PicasaPhoto> createConnection(final ConnectionDescriptor descriptor) throws PhotoException {
-        return new Picasa(descriptor);
-    }
+import java.util.Date
 
 
-    @Override
-    public String getScheme() {
-        return Picasa.SCHEME;
+trait PhotoIdNg {
+
+    def name(): String
+
+
+    def timestamp(): Date
+
+
+    def size(): Int
+
+
+    final def isIdentifiedBy(id: PhotoIdNg): Boolean = {
+        val namesEqual = name() == id.name()
+        val timestampsEqual = timestamp() == id.timestamp()
+        val sizesEqual = size() == id.size();
+
+        timestampsEqual || (namesEqual && sizesEqual)
     }
 }

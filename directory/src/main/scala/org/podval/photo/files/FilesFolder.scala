@@ -17,7 +17,7 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.Mix
+import org.podval.photo.{Mix, PhotoException}
 
 import java.io.File
 
@@ -44,7 +44,17 @@ abstract class FilesFolder(directory: File) extends Mix {
     }
 
 
-    override def name() = directory.getName()
+    final override def name() = directory.getName()
+
+
+    final override def isPublic() = true
+
+
+    final override def setPublic(value: Boolean) {
+        if (!value) {
+            throw new PhotoException("File system folders are always public!")
+        }
+    }
 
 
     protected final override def retrieveFolders(): Seq[FilesFolder] = {
@@ -78,4 +88,39 @@ abstract class FilesFolder(directory: File) extends Mix {
         val dot = filename.lastIndexOf('.')
         if (dot == -1) (filename, "") else (filename.substring(0, dot), filename.substring(dot+1))
     }
+
+
+    final override def updateIfChanged() {
+        // TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
+
+
+
+//    @Override
+//    protected void checkFolderType(final FolderType folderType) {
+//    }
+//
+//
+//    @Override
+//    protected FileFolder doCreateFolder(
+//        final String name, final FolderType folderType) throws PhotoException
+//    {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//
+//    @Override
+//    protected FileFolder doCreateFakeFolder(
+//        final String name, final FolderType folderType) throws PhotoException
+//    {
+//        throw new UnsupportedOperationException();
+//    }
+//
+//
+//    @Override
+//    public void doAddFile(final String name, final File file) {
+//        // TODO implement
+//        throw new UnsupportedOperationException("Not implemented yet!!!");
+//    }

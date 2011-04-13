@@ -17,21 +17,45 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.{ConnectionNG, ConnectionDescriptor}
+import org.podval.photo.{ConnectionFactoryNg, ConnectionNG, ConnectionDescriptorNg}
 
 import java.io.File
 
 
-final class FilesConnection(descriptor: ConnectionDescriptor) extends ConnectionNG {
+final class FilesConnection(descriptor: ConnectionDescriptorNg) extends ConnectionNG {
 
     type F = FilesFolder
 
 
-    private val rootFolder: F =  new RootFilesFolder(this, new File(descriptor.getPath()))
+    private val rootFolder: F =  new RootFilesFolder(this, new File(descriptor.path))
 
 
-    override def open() {}
+    override def getScheme() = FilesConnection.SCHEME
+
+
+    override def enableLowLevelLogging() {
+    }
+
+
+    override def open() {
+    }
 
 
     override def getRootFolder(): F = rootFolder
+}
+
+
+
+object FilesConnection {
+
+    val SCHEME = "file"
+}
+
+
+final class FilesFactory extends ConnectionFactoryNg {
+
+    override def createConnection(descriptor: ConnectionDescriptorNg) = new FilesConnection(descriptor)
+
+
+    override def getScheme() = FilesConnection.SCHEME
 }
