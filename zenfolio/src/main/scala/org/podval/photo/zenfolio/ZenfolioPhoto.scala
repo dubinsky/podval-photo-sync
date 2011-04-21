@@ -1,18 +1,32 @@
-package org.podval.zenfolio;
+/*
+ *  Copyright 2011 Leonid Dubinsky <dub@podval.org>.
+ * 
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *  under the License.
+ */
 
-import org.podval.photo.Photo;
-import org.podval.photo.Rotation;
+package org.podval.zenfolio
 
-import com.zenfolio.www.api._1_1.PhotoRotation;
+import org.podval.photo.{PhotoNG, RotationNG}
 
-import java.io.File;
+import com.zenfolio.www.api._1_1.PhotoRotation
 
-import java.util.Date;
-import java.util.Map;
-import java.util.HashMap;
+import java.io.File
+
+import java.util.{Date, Map, HashMap}
 
 
-public final class ZenfolioPhoto extends Photo<GroupLike<?>> {
+final class ZenfolioPhoto extends PhotoNG {
 
     // I do not deal with photos in the Groups; just in the Galleries.
     /* package */ ZenfolioPhoto(final Gallery folder, final com.zenfolio.www.api._1_1.Photo photo) {

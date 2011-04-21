@@ -22,7 +22,7 @@ import org.podval.photo.ConnectionFactories
 import org.podval.photo.ConnectionDescriptorNg;
 //import org.podval.photo.Photo;
 //import org.podval.photo.Indenter;
-//import org.podval.photo.PhotoException;
+import org.podval.photo.PhotoException;
 //
 import java.util.logging.Logger;
 import java.util.logging.Level;

@@ -30,7 +30,7 @@ import java.util.logging.{Logger, Level}
 import java.io.IOException
 
 
-final class Picasa(descriptor: ConnectionDescriptorNg) extends ConnectionNG {
+final class Picasa(descriptor: ConnectionDescriptorNg) extends ConnectionNG(descriptor) {
 
     type F = PicasaFolder
 
@@ -79,15 +79,7 @@ final class Picasa(descriptor: ConnectionDescriptorNg) extends ConnectionNG {
     }
 
 
-    override def open() {
-        // TODO lift into base class
-        if (descriptor.password != null) {
-            login()
-        }
-    }
-
-
-    private def login() {
+    protected override def login() {
         try {
             authenticate()
         } catch {
@@ -107,10 +99,12 @@ final class Picasa(descriptor: ConnectionDescriptorNg) extends ConnectionNG {
 }
 
 
+
 object Picasa {
 
     val SCHEME = "picasa"
 }
+
 
 
 final class PicasaFactrory extends ConnectionFactoryNg {

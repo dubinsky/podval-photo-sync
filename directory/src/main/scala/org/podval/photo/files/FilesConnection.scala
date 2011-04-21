@@ -22,7 +22,7 @@ import org.podval.photo.{ConnectionFactoryNg, ConnectionNG, ConnectionDescriptor
 import java.io.File
 
 
-final class FilesConnection(descriptor: ConnectionDescriptorNg) extends ConnectionNG {
+final class FilesConnection(descriptor: ConnectionDescriptorNg) extends ConnectionNG(descriptor) {
 
     type F = FilesFolder
 
@@ -37,7 +37,7 @@ final class FilesConnection(descriptor: ConnectionDescriptorNg) extends Connecti
     }
 
 
-    override def open() {
+    protected override def login() {
     }
 
 

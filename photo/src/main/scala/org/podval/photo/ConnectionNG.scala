@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-abstract class ConnectionNG {
+abstract class ConnectionNG(descriptor: ConnectionDescriptorNg) {
 
     type F <: FolderNG
 
@@ -29,7 +29,14 @@ abstract class ConnectionNG {
     def enableLowLevelLogging(): Unit
 
 
-    def open() // TODO @throws
+    final def open() { // TODO: throws
+        if (descriptor.password != null) {
+            login()
+        }
+    }
+
+
+    protected def login()
 
 
     def getRootFolder(): F
@@ -38,20 +45,20 @@ abstract class ConnectionNG {
     var isReadOnly: Boolean = false
 
 
-//    protected final <C extends Connection<P>> Folder<C, P> getSubFolderByPath(final Folder<C, P> folder, final String path) throws PhotoException {
-//        Folder<C, P> result = folder;
-//
-//        if (path != null) {
-//            for (final String name : path.split("/")) {
-//                if (!name.isEmpty()) {
-//                    result.getFolderType().checkCanHaveFolders(result);
-//                    result = result.getFolder(name);
-//                }
-//            }
-//        }
-//
-//        return result;
-//    }
+    protected final def getSubFolderByPath(folder: F, path: String): F = {
+        var result = folder
+
+        if (path != null) {
+            for (name <- path.split("/")) {
+                if (!name.isEmpty()) {
+////                    result.getFolderType().checkCanHaveFolders(result);
+                    result = result.getFolder(name).get.asInstanceOf[F];
+                }
+            }
+        }
+
+        result
+    }
 }
 
 
