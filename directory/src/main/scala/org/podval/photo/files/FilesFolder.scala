@@ -36,11 +36,11 @@ abstract class FilesFolder(directory: File) extends Mix {
 
 
     if (!directory.exists()) {
-        throw new IllegalArgumentException("Does not exist: " + directory);
+        throw new IllegalArgumentException("Does not exist: " + directory)
     }
 
     if (!directory.isDirectory()) {
-        throw new IllegalArgumentException("Not a directory: " + directory);
+        throw new IllegalArgumentException("Not a directory: " + directory)
     }
 
 
@@ -57,9 +57,8 @@ abstract class FilesFolder(directory: File) extends Mix {
     }
 
 
-    protected final override def retrieveFolders(): Seq[FilesFolder] = {
+    protected final override def retrieveFolders(): Seq[FilesFolder] =
         directory.listFiles() filter(_.isDirectory) map(file => new NonRootFilesFolder(this, file))
-    }
 
 
     protected final override def retrievePhotos(): Seq[FilesPhoto] = {

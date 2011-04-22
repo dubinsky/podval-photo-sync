@@ -15,9 +15,9 @@
  *  under the License.
  */
 
-package org.podval.zenfolio
+package org.podval.photo.zenfolio
 
-import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor, Folder, PhotoException}
+import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor, PhotoException}
 
 import com.zenfolio.www.api._1_1.{ZfApi, ZfApiStub, AuthChallenge}
 
@@ -26,18 +26,16 @@ import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException
 
 import org.apache.axis2.client.{Stub, Options}
-import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.axis2.transport.http.HTTPConstants
 
-import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.Header
 
 import java.io.IOException;
-
-import java.util.ArrayList;
 
 
 final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
 
-    type F = ZenfolioFolder
+    type F = ZenfolioFolder[_]
 
 
     override def getScheme() = Zenfolio.SCHEME
@@ -76,7 +74,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
     protected override def login() {
         try {
-            val authChallenge = connection.getChallenge(descriptor.login)
+            val authChallenge: AuthChallenge = connection.getChallenge(descriptor.login)
 
             val challenge: Array[Byte] = Bytes.readBytes(authChallenge.getChallenge())
             val passwordSalt: Array[Byte] = Bytes.readBytes(authChallenge.getPasswordSalt())
@@ -98,8 +96,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
 //      options.setProperty(HTTPConstants.HEADER_COOKIE, "zf_token=" + authToken);
 
-        val headers = new ArrayList()
-        headers.add(getAuthTokenHeader())
+        val headers = Seq(getAuthTokenHeader())
         options.setProperty(HTTPConstants.HTTP_HEADERS, headers)
     }
 

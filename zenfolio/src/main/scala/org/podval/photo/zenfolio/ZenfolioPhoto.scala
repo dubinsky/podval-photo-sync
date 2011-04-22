@@ -15,18 +15,18 @@
  *  under the License.
  */
 
-package org.podval.zenfolio
+package org.podval.photo.zenfolio
 
 import org.podval.photo.{Photo, Rotation}
 
-import com.zenfolio.www.api._1_1.PhotoRotation
+import com.zenfolio.www.api._1_1.{Photo => ZPhoto, PhotoRotation}
 
 import java.io.File
 
-import java.util.{Date, Map, HashMap}
+import java.util.{Date}
 
 
-final class ZenfolioPhoto(folder: Gallery, var photo: com.zenfolio.www.api._1_1.Photo) extends Photo {
+final class ZenfolioPhoto(protected val parent: Gallery, var photo: ZPhoto) extends Photo {
 
     // I do not deal with photos in the Groups; just in the Galleries.
 
@@ -41,7 +41,7 @@ final class ZenfolioPhoto(folder: Gallery, var photo: com.zenfolio.www.api._1_1.
 
 
     // TODO: deal with null...
-    override def getRotation(): Rotation = ZenfolioPhoto.getRotation(photo.getRotation())
+    override def rotation(): Rotation.Value = ZenfolioPhoto.rotations.get(photo.getRotation()).get
 
 
     override def getOriginalFile(): File = throw new UnsupportedOperationException("Not supported yet.")  // TODO: download
@@ -51,18 +51,14 @@ final class ZenfolioPhoto(folder: Gallery, var photo: com.zenfolio.www.api._1_1.
 
 private object ZenfolioPhoto {
 
-    private val rotations = new Map[PhotoRotation, Rotation](
+    val rotations = Map[PhotoRotation, Rotation.Value](
       PhotoRotation.None -> Rotation.None,
 //        rotations.put(PhotoRotation.Flip, Rotation.Flip);
       PhotoRotation.Rotate180 -> Rotation.R180,
 //        rotations.put(PhotoRotation.Rotate180Flip, Rotation.Rotate180Flip);
       PhotoRotation.Rotate270 -> Rotation.Left,
 //        rotations.put(PhotoRotation.Rotate270Flip, Rotation.Rotate270);
-      PhotoRotation.Rotate90, Rotation.Right
+      PhotoRotation.Rotate90 -> Rotation.Right
 //        rotations.put(PhotoRotation.Rotate90Flip, Rotation.Rotate90Flip);
     )
-
-
-    // TODO: deal with Nobe...
-    override def getRotation(rotation: PhotoRotation): Rotation = rotations.get(photo.getRotation(rotation)).get
 }

@@ -26,12 +26,9 @@ import java.util.Date
 import java.io.{File, FileOutputStream, BufferedOutputStream, IOException}
 
 
-final class PicasaPhoto(parentArg: PicasaAlbum, entry: PhotoEntry) extends Photo {
+final class PicasaPhoto(protected val parent: PicasaAlbum, entry: PhotoEntry) extends Photo {
 
     type F = PicasaAlbum
-
-
-    protected val parent = parentArg
 
 
     override def name() = entry.title

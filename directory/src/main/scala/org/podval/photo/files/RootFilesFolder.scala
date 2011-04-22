@@ -22,8 +22,7 @@ import org.podval.photo.Root
 import java.io.File
 
 
-final class RootFilesFolder(connectionArg: FilesConnection, directory: File)
+final class RootFilesFolder(protected val connection: FilesConnection, directory: File)
 extends FilesFolder(directory) with Root
 {
-    protected val connection = connectionArg
 }
