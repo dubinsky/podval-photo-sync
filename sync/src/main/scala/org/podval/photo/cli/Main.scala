@@ -17,9 +17,9 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.ConnectionNG;
+import org.podval.photo.Connection;
 import org.podval.photo.ConnectionFactories
-import org.podval.photo.ConnectionDescriptorNg;
+import org.podval.photo.ConnectionDescriptor;
 //import org.podval.photo.Photo;
 //import org.podval.photo.Indenter;
 import org.podval.photo.PhotoException;
@@ -146,14 +146,14 @@ object Main {
                 Level.INFO
             }
 
-        val log = Logger.getLogger(ConnectionNG.LOG);
+        val log = Logger.getLogger(Connection.LOG);
 
         log.setLevel(level);
     }
 
 
     private def run() {
-        val firstConnection: ConnectionNG = ConnectionFactories.getConnection(firstTicket)
+        val firstConnection: Connection = ConnectionFactories.getConnection(firstTicket)
 
         if (secondTicket == null) {
             list(firstConnection);
@@ -164,7 +164,7 @@ object Main {
     }
 
 
-    private def list(connection: ConnectionNG) {
+    private def list(connection: Connection) {
         open(connection);
         val xml = connection.getRootFolder().list();
         // TODO prettyprint!
@@ -183,7 +183,7 @@ object Main {
 //    }
 
 
-    private def open(connection: ConnectionNG) {
+    private def open(connection: Connection) {
         if (enableLowLevelLogging) {
             connection.enableLowLevelLogging()
         }
@@ -194,10 +194,10 @@ object Main {
     }
 
 
-    private var firstTicket: ConnectionDescriptorNg = null
+    private var firstTicket: ConnectionDescriptor = null
 
 
-    private var secondTicket: ConnectionDescriptorNg = null
+    private var secondTicket: ConnectionDescriptor = null
 
 
     private var enableLowLevelLogging = false

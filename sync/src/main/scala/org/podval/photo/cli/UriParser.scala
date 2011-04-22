@@ -31,9 +31,9 @@ object UriParser {
         val uri: URI = toUri(uriStr)
 
 
-        private def toUri(uriStr: String) = {
+        def toUri(uriStr: String) = {
             try {
-                uri = new URI(uriStr)
+                new URI(uriStr)
             } catch {
                 case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
             }
@@ -41,24 +41,20 @@ object UriParser {
 
         val userInfo: String = getUserInfo(uri)
 
-        final String login;
-        final String password;
+        val (login: String, password: String) = 
 
         if (userInfo == null) {
-            login = null;
-            password = null;
+            (null, null)
         } else {
-            final int colon = userInfo.indexOf(':');
+            val colon = userInfo.indexOf(':')
             if (colon == -1) {
-                login = userInfo;
-                password = null;
+                (userInfo, null)
             } else {
-                login = userInfo.substring(0, colon);
-                password = userInfo.substring(colon+1);
+                (userInfo.substring(0, colon), userInfo.substring(colon+1))
             }
         }
 
-        return new ConnectionDescriptor(
+        new ConnectionDescriptor(
             defaultScheme(uri.getScheme()),
             login,
             password,
@@ -67,30 +63,27 @@ object UriParser {
     }
 
 
-    private static String getUserInfo(final URI uri) {
-        final String result;
+    private def getUserInfo(uri: URI): String = {
+        val userInfo = uri.getUserInfo()
+        val host = uri.getHost()
+        val authority = uri.getAuthority()
 
-        final String userInfo = uri.getUserInfo();
-        final String host = uri.getHost();
-        final String authority = uri.getAuthority();
         if ((host == null) && (authority != null)) {
-            result = (authority.endsWith("@")) ?
-                authority.substring(0, authority.length()-1) :
-                authority;
+            if (authority.endsWith("@")) {
+                authority.substring(0, authority.length()-1)
+            } else {
+                authority
+            }
         } else {
-            result = userInfo;
+            userInfo;
         }
-
-        return result;
     }
 
 
-    private static String defaultScheme(final String scheme) {
-        return (scheme == null) ? FileConnection.SCHEME : scheme;
-    }
+    private def defaultScheme(scheme: String): String =
+        if (scheme == null) FileConnection.SCHEME else scheme
 
 
-    private static String addSuffix(final String what, final String suffix) {
-        return ((what == null) || (suffix == null)) ? what : what + "/" + suffix;
-    }
+    private def addSuffix(what: String, suffix: String) =
+        if ((what == null) || (suffix == null)) what else what + "/" + suffix
 }
