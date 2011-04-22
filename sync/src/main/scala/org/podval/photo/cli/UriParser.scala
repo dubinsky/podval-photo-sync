@@ -1,31 +1,45 @@
-package org.podval.sync;
+/*
+ * Copyright 2011 Podval Group.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-import org.podval.photo.ConnectionDescriptor;
-import org.podval.directory.FileConnection;
+package org.podval.photo.cli
 
-import org.kohsuke.args4j.CmdLineException;
+import org.podval.photo.ConnectionDescriptor
+import org.podval.directory.FileConnection
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import org.kohsuke.args4j.CmdLineException
 
-
-public final class UriParser {
-
-    private UriParser() {
-    }
+import java.net.{URI, URISyntaxException}
 
 
-    public static ConnectionDescriptor fromUri(final String uriStr, final String suffix)
-        throws CmdLineException
-    {
-        final URI uri;
-        try {
-            uri = new URI(uriStr);
-        } catch (final URISyntaxException e) {
-            throw new CmdLineException(e.getMessage());
+object UriParser {
+
+    def fromUri(uriStr: String, suffix: String): ConnectionDescriptor = { // throws CmdLineException
+
+        val uri: URI = toUri(uriStr)
+
+
+        private def toUri(uriStr: String) = {
+            try {
+                uri = new URI(uriStr)
+            } catch {
+                case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
+            }
         }
 
-        final String userInfo = getUserInfo(uri);
+        val userInfo: String = getUserInfo(uri)
 
         final String login;
         final String password;
