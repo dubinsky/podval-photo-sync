@@ -1,42 +1,39 @@
 package org.podval.zenfolio;
 
-import org.podval.photo.{Album, PhotoException}
+import org.podval.photo.{NonRootAlbum, PhotoException}
 
-import com.zenfolio.www.api._1_1.PhotoSet;
+import com.zenfolio.www.api._1_1.{PhotoSet, Photo => ZPhoto}
 
-import java.rmi.RemoteException;
+import java.rmi.RemoteException
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.httpclient.methods.RequestEntity;
-import org.apache.commons.httpclient.methods.multipart.MultipartRequestEntity;
-import org.apache.commons.httpclient.methods.multipart.Part;
-import org.apache.commons.httpclient.methods.multipart.FilePart;
-import org.apache.commons.httpclient.methods.multipart.StringPart;
+import org.apache.commons.httpclient.{HttpClient, HttpStatus}
+import org.apache.commons.httpclient.methods.{PostMethod, RequestEntity}
+import org.apache.commons.httpclient.methods.multipart.{MultipartRequestEntity, Part, FilePart, StringPart}
 
-import java.util.Date;
+import java.util.Date
 
-import java.io.File;
-import java.io.IOException;
+import java.io.{File, IOException}
 
 
-/* package */ final class Gallery(element: PhotoSet) extends ZenfolioFolder[PhotoSet](element) with Album {
+/* package */ final class Gallery(parentArg: ZenfolioFolder, element: PhotoSet) extends ZenfolioFolder[PhotoSet](element) with NonRootAlbum {
+
+    protected val parent = parentArg
+
 
     protected override def retrievePhotos(): Seq[P] = { // throws PhotoException {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
 
-        val id = getElement().getId()
+        val id = element.getId()
 
         if (id != 0) {
             try {
-                setElement(getConnection().getConnection().loadPhotoSet(id))
+                element = getConnection().getConnection().loadPhotoSet(id)
             } catch {
                 case e: RemoteException => throw new PhotoException(e)
             }
 
-            if ((getElement().getPhotos() != null) && (getElement().getPhotos().getPhoto() != null)) {
-                for (rawPhoto: com.zenfolio.www.api._1_1.Photo <- getElement().getPhotos().getPhoto())
+            if ((element.getPhotos() != null) && (getElement().getPhotos().getPhoto() != null)) {
+                for (rawPhoto: ZPhoto <- element.getPhotos().getPhoto())
                     yield new ZenfolioPhoto(this, rawPhoto)
             }
         }

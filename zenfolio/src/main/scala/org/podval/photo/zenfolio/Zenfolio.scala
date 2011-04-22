@@ -67,7 +67,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
     private def getRealRootFolder(): F = {
         try {
-            new Group(this, connection.loadGroupHierarchy(descriptor.login))
+            new RootGroup(this, connection.loadGroupHierarchy(descriptor.login))
         } catch {
             case e: RemoteException => throw new PhotoException(e)
         }

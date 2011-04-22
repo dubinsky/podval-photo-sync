@@ -2,29 +2,29 @@ package org.podval.zenfolio;
 
 import org.podval.photo.{AlbumList, PhotoException}
 
-import com.zenfolio.www.api._1_1.{ArrayOfChoice1Choice, GroupElement, GroupUpdater, PhotoSet, PhotoSetType, PhotoSetUpdater}
+import com.zenfolio.www.api._1_1.{ArrayOfChoice1Choice, GroupElement, GroupUpdater, PhotoSet, PhotoSetType, PhotoSetUpdater, Group => ZGroup}
 
 import java.rmi.RemoteException;
 
 import java.io.File;
 
 
-/* package */ final class Group(element: com.zenfolio.www.api._1_1.Group) extends ZenfolioFolder[com.zenfolio.www.api._1_1.Group](element) with AlbumList {
+/* package */ class Group(element: ZGroup) extends ZenfolioFolder[ZGroup](element) with AlbumList {
 
-    protected override def retrieveFolders(): Seq[F] = {
-        if ((getElement().getElements() != null) && (getElement().getElements().getArrayOfChoice1Choice() != null)) {
-            for (element <- getElement().getElements().getArrayOfChoice1Choice()
-                 subGroup = element.getGroup()
-
-                 folder =
-                    if (subGroup != null)
-                    new Group(subGroup.asInstanceOf[com.zenfolio.www.api._1_1.Group]) else
-                    new Gallery(element.asInstanceOf[PhotoSet].getPhotoSet())
-            ) yield folder
+    protected final override def retrieveFolders(): Seq[F] = {
+        if ((element.getElements() != null) && (element.getElements().getArrayOfChoice1Choice() != null)) {
+            val choices: Array[ArrayOfChoice1Choice] = element.getElements().getArrayOfChoice1Choice()
+            choices.map(toFolder)
+        } else {
+            Seq[F]()
         }
     }
 
 
+    private def toFolder(what: ArrayOfChoice1Choice) =
+        if (what.getGroup != null) new NonRootGroup(this, what.getGroup) else new Gallery(what.getPhotoSet())
+
+    
 //    @Override
 //    public GroupLike<?> doCreateFolder(
 //        final String name,

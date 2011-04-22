@@ -27,7 +27,7 @@ abstract class ZenfolioFolder[R <: GroupElement](var element: R) extends Folder 
     type C = Zenfolio
 
 
-    type F = ZenfolioFolder
+    type F = ZenfolioFolder[_]
 
 
     type P = ZenfolioPhoto
