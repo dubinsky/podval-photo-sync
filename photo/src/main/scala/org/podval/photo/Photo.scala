@@ -17,25 +17,44 @@
 
 package org.podval.photo
 
+import scala.xml.Elem
+
 import java.util.Date
 
-
-trait PhotoIdNg {
-
-    def name(): String
+import java.io.File
 
 
-    def timestamp(): Date
+trait Photo extends PhotoId {
+
+    type F <: Folder
 
 
-    def size(): Int
+    def getParent(): F = parent
 
 
-    final def isIdentifiedBy(id: PhotoIdNg): Boolean = {
-        val namesEqual = name() == id.name()
-        val timestampsEqual = timestamp() == id.timestamp()
-        val sizesEqual = size() == id.size();
+    override def name(): String
 
-        timestampsEqual || (namesEqual && sizesEqual)
-    }
+
+    override def timestamp(): Date
+
+
+    override def size(): Int
+
+
+    def rotation(): Rotation.Value
+
+
+    def list(): Elem =
+        <photo
+            name={name()}
+            date={timestamp().toString}
+            size={size().toString}
+            rotation={rotation().toString}
+        />
+
+
+    def getOriginalFile(): File
+
+
+    protected val parent: F
 }

@@ -24,15 +24,15 @@ import java.io.{File, IOException}
 import org.apache.commons.logging.{LogFactory, Log};
 
 
-trait FolderNG {
+trait Folder {
 
-    type C <: ConnectionNG
-
-
-    type F <: FolderNG
+    type C <: Connection
 
 
-    type P <: PhotoNG
+    type F <: Folder
+
+
+    type P <: Photo
 
 
     def getConnection(): C
@@ -74,7 +74,7 @@ trait FolderNG {
     def getPhoto(name: String): Option[P]
 
 
-    final def getPhotos(id: PhotoIdNg): Seq[P] = {
+    final def getPhotos(id: PhotoId): Seq[P] = {
         val photos: Seq[P] = getPhotos().filter(id.isIdentifiedBy)
         val folders: Seq[P] = getFolders().flatMap(_.getPhotos(id)).asInstanceOf[Seq[P]]
         photos ++ folders

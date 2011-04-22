@@ -17,7 +17,7 @@
 
 package org.podval.zenfolio
 
-import org.podval.photo.{PhotoNG, RotationNG}
+import org.podval.photo.{Photo, Rotation}
 
 import com.zenfolio.www.api._1_1.PhotoRotation
 
@@ -26,62 +26,43 @@ import java.io.File
 import java.util.{Date, Map, HashMap}
 
 
-final class ZenfolioPhoto extends PhotoNG {
+final class ZenfolioPhoto(folder: Gallery, var photo: com.zenfolio.www.api._1_1.Photo) extends Photo {
 
     // I do not deal with photos in the Groups; just in the Galleries.
-    /* package */ ZenfolioPhoto(final Gallery folder, final com.zenfolio.www.api._1_1.Photo photo) {
-        super(folder);
-
-        this.photo = photo;
-    }
 
 
-    @Override
-    public String getName() {
-        return photo.getFileName();
-    }
+    override def name(): String = photo.getFileName()
 
 
-    @Override
-    public Date getTimestamp() {
-        return photo.getTakenOn().getTime();
-    }
+    override def timestamp(): Date = photo.getTakenOn().getTime()
 
 
-    @Override
-    public int getSize() {
-        return photo.getSize();
-    }
+    override def size(): Int = photo.getSize()
 
 
-    private static final Map<PhotoRotation, Rotation> rotations = new HashMap<PhotoRotation, Rotation>();
+    // TODO: deal with null...
+    override def getRotation(): Rotation = ZenfolioPhoto.getRotation(photo.getRotation())
 
-    static {
-        rotations.put(PhotoRotation.None, Rotation.None);
+
+    override def getOriginalFile(): File = throw new UnsupportedOperationException("Not supported yet.")  // TODO: download
+}
+
+
+
+private object ZenfolioPhoto {
+
+    private val rotations = new Map[PhotoRotation, Rotation](
+      PhotoRotation.None -> Rotation.None,
 //        rotations.put(PhotoRotation.Flip, Rotation.Flip);
-        rotations.put(PhotoRotation.Rotate180, Rotation.R180);
+      PhotoRotation.Rotate180 -> Rotation.R180,
 //        rotations.put(PhotoRotation.Rotate180Flip, Rotation.Rotate180Flip);
-        rotations.put(PhotoRotation.Rotate270, Rotation.Left);
+      PhotoRotation.Rotate270 -> Rotation.Left,
 //        rotations.put(PhotoRotation.Rotate270Flip, Rotation.Rotate270);
-        rotations.put(PhotoRotation.Rotate90, Rotation.Right);
+      PhotoRotation.Rotate90, Rotation.Right
 //        rotations.put(PhotoRotation.Rotate90Flip, Rotation.Rotate90Flip);
-    }
+    )
 
 
-    @Override
-    public Rotation getRotation() {
-        final Rotation result = rotations.get(photo.getRotation());
-        // TODO: deal with null...
-        return result;
-    }
-
-
-    @Override
-    public File getOriginalFile() {
-        // TODO: download
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-
-    private com.zenfolio.www.api._1_1.Photo photo;
+    // TODO: deal with Nobe...
+    override def getRotation(rotation: PhotoRotation): Rotation = rotations.get(photo.getRotation(rotation)).get
 }

@@ -35,7 +35,7 @@ object Bytes {
     }
 
 
-    private final class BytesDataSource(bytes: Array[Bytes]) extends DataSource {
+    private final class BytesDataSource(bytes: Array[Byte]) extends DataSource {
 
         override def getInputStream(): InputStream = new ByteArrayInputStream(bytes) // throws IOException {
             

@@ -18,5 +18,5 @@
 package org.podval.photo
 
 
-trait Album extends FolderNG with NoFolders with Photos {
+trait Album extends Folder with NoFolders with Photos {
 }

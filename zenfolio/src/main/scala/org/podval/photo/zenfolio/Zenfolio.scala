@@ -17,32 +17,25 @@
 
 package org.podval.zenfolio
 
-import org.podval.photo.{ConnectionFactoryNg, ConnectionNG, ConnectionDescriptorNg, PhotoException}
+import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor, Folder, PhotoException}
 
 import com.zenfolio.www.api._1_1.{ZfApi, ZfApiStub, AuthChallenge}
 
 import java.rmi.RemoteException;
 
-import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchAlgorithmException
 
-import org.apache.axis2.client.Stub;
-import org.apache.axis2.client.Options;
+import org.apache.axis2.client.{Stub, Options}
 import org.apache.axis2.transport.http.HTTPConstants;
 
 import org.apache.commons.httpclient.Header;
 
-import org.podval.photo.ConnectionDescriptor;
-import org.podval.photo.Connection;
-import org.podval.photo.Folder;
-import org.podval.photo.PhotoException;
-
 import java.io.IOException;
 
-import java.util.List;
 import java.util.ArrayList;
 
 
-final class Zenfolio(descriptor: ConnectionDescriptorNg) extends ConnectionNG(descriptor) {
+final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
 
     type F = ZenfolioFolder
 
@@ -129,9 +122,9 @@ object Zenfolio {
 
 
 
-final class ZenfolioFactrory extends ConnectionFactoryNg {
+final class ZenfolioFactrory extends ConnectionFactory {
 
-    def createConnection(descriptor: ConnectionDescriptorNg) = new Zenfolio(descriptor)
+    def createConnection(descriptor: ConnectionDescriptor) = new Zenfolio(descriptor)
 
 
     def getScheme() = Zenfolio.SCHEME

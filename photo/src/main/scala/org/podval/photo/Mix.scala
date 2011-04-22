@@ -18,5 +18,5 @@
 package org.podval.photo
 
 
-trait Mix extends FolderNG with Folders with Photos {
+trait Mix extends Folder with Folders with Photos {
 }

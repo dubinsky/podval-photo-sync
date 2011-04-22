@@ -18,9 +18,9 @@
 package org.podval.photo
 
 
-abstract class ConnectionNG(descriptor: ConnectionDescriptorNg) {
+abstract class Connection(descriptor: ConnectionDescriptor) {
 
-    type F <: FolderNG
+    type F <: Folder
 
 
     def getScheme(): String
@@ -62,7 +62,7 @@ abstract class ConnectionNG(descriptor: ConnectionDescriptorNg) {
 }
 
 
-object ConnectionNG {
+object Connection {
 
     val LOG = "org.podval.photo"
 }

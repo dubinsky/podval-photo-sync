@@ -17,7 +17,7 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{PhotoNG, RotationNG, PhotoException}
+import org.podval.photo.{Photo, Rotation, PhotoException}
 
 import org.podval.picasa.model.PhotoEntry
 
@@ -26,7 +26,7 @@ import java.util.Date
 import java.io.{File, FileOutputStream, BufferedOutputStream, IOException}
 
 
-final class PicasaPhoto(parentArg: PicasaAlbum, entry: PhotoEntry) extends PhotoNG {
+final class PicasaPhoto(parentArg: PicasaAlbum, entry: PhotoEntry) extends Photo {
 
     type F = PicasaAlbum
 
@@ -45,10 +45,10 @@ final class PicasaPhoto(parentArg: PicasaAlbum, entry: PhotoEntry) extends Photo
 
     override def rotation() = entry.rotation match {
         // TODO deal with null...
-        case   0 => RotationNG.None
-        case  90 => RotationNG.Right
-        case 180 => RotationNG.R180
-        case 270 => RotationNG.Left
+        case   0 => Rotation.None
+        case  90 => Rotation.Right
+        case 180 => Rotation.R180
+        case 270 => Rotation.Left
     }
 
 

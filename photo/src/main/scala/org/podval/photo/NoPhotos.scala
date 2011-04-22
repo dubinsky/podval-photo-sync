@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait NoPhotos extends FolderNG {
+trait NoPhotos extends Folder {
 
     override final def canHavePhotos(): Boolean = false
 

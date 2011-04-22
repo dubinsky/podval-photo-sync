@@ -17,12 +17,12 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.FolderNG
+import org.podval.photo.Folder
 
 import com.zenfolio.www.api._1_1.{GroupElement, AccessType}
 
 
-abstract class ZenfolioFolder[R <: GroupElement](var element: R) extends FolderNG {
+abstract class ZenfolioFolder[R <: GroupElement](var element: R) extends Folder {
 
     type C = Zenfolio
 

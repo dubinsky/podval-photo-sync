@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011 dub.
+ *  Copyright 2011 Leonid Dubinsky <dub@podval.org>.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,21 +15,14 @@
  *  under the License.
  */
 
-package org.podval.photo;
+package org.podval.photo
 
 
-/**
- *
- * @author dub
- */
-public enum Rotation {
-    None,
-    Right,
-    R180,
-    Left
-//        ,
-//    Flip,
-//    Rotate90Flip,
-//    Rotate180Flip,
-//    Rotate270Flip
+final class ConnectionDescriptor(
+    val scheme: String,
+    val login: String,
+    val password: String,
+    val host: String,
+    val path: String)
+{
 }

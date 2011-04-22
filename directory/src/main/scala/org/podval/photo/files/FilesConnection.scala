@@ -17,12 +17,12 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.{ConnectionFactoryNg, ConnectionNG, ConnectionDescriptorNg}
+import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor}
 
 import java.io.File
 
 
-final class FilesConnection(descriptor: ConnectionDescriptorNg) extends ConnectionNG(descriptor) {
+final class FilesConnection(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
 
     type F = FilesFolder
 
@@ -52,9 +52,9 @@ object FilesConnection {
 }
 
 
-final class FilesFactory extends ConnectionFactoryNg {
+final class FilesFactory extends ConnectionFactory {
 
-    override def createConnection(descriptor: ConnectionDescriptorNg) = new FilesConnection(descriptor)
+    override def createConnection(descriptor: ConnectionDescriptor) = new FilesConnection(descriptor)
 
 
     override def getScheme() = FilesConnection.SCHEME

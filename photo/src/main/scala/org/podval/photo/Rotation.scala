@@ -17,44 +17,8 @@
 
 package org.podval.photo
 
-import scala.xml.Elem
 
-import java.util.Date
+object Rotation extends Enumeration {
 
-import java.io.File
-
-
-trait PhotoNG extends PhotoIdNg {
-
-    type F <: FolderNG
-
-
-    def getParent(): F = parent
-
-
-    override def name(): String
-
-
-    override def timestamp(): Date
-
-
-    override def size(): Int
-
-
-    def rotation(): RotationNG.Value
-
-
-    def list(): Elem =
-        <photo
-            name={name()}
-            date={timestamp().toString}
-            size={size().toString}
-            rotation={rotation().toString}
-        />
-
-
-    def getOriginalFile(): File
-
-
-    protected val parent: F
+    val None, Right, R180, Left = Value
 }

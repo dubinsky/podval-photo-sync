@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait NonRoot extends FolderNG {
+trait NonRoot extends Folder {
 
     // TODO When I use abstract type members instead of type parameters,
     // I can't figure out a way to avoid this cast.

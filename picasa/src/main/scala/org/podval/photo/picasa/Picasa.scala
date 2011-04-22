@@ -17,7 +17,7 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{ConnectionFactoryNg, ConnectionNG, ConnectionDescriptorNg, PhotoException}
+import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor, PhotoException}
 import org.podval.picasa.model.{Namespaces, PicasaUrl}
 
 import com.google.api.client.googleapis.{GoogleTransport, GoogleHeaders}
@@ -30,7 +30,7 @@ import java.util.logging.{Logger, Level}
 import java.io.IOException
 
 
-final class Picasa(descriptor: ConnectionDescriptorNg) extends ConnectionNG(descriptor) {
+final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
 
     type F = PicasaFolder
 
@@ -107,9 +107,9 @@ object Picasa {
 
 
 
-final class PicasaFactrory extends ConnectionFactoryNg {
+final class PicasaFactrory extends ConnectionFactory {
 
-    def createConnection(descriptor: ConnectionDescriptorNg) = new Picasa(descriptor)
+    def createConnection(descriptor: ConnectionDescriptor) = new Picasa(descriptor)
 
 
     def getScheme() = Picasa.SCHEME

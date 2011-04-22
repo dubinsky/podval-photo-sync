@@ -17,13 +17,13 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.ConnectionDescriptorNg
+import org.podval.photo.ConnectionDescriptor
 
 
 object Main {
 
     def main(args: Array[String]) {
-        val descriptor = new ConnectionDescriptorNg(null, "leoniddubinsky", null, null, null)
+        val descriptor = new ConnectionDescriptor(null, "leoniddubinsky", null, null, null)
         val picasa = new Picasa(descriptor)
         picasa.open()
         val list = picasa.getRootFolder()

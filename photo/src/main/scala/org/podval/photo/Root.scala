@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait Root extends FolderNG {
+trait Root extends Folder {
 
     override final def getConnection(): C = connection
 

@@ -18,11 +18,12 @@
 package org.podval.photo
 
 
-final class ConnectionDescriptorNg(
-    val scheme: String,
-    val login: String,
-    val password: String,
-    val host: String,
-    val path: String)
-{
+abstract class ConnectionFactory {
+
+    // TODO do createConnection() and getScheme() through reflection?
+
+    def createConnection(descriptor: ConnectionDescriptor): Connection
+
+
+    def getScheme(): String
 }

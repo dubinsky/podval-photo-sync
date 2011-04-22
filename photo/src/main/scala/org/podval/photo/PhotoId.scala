@@ -17,13 +17,25 @@
 
 package org.podval.photo
 
-
-abstract class ConnectionFactoryNg {
-
-    // TODO do createConnection() and getScheme() through reflection?
-
-    def createConnection(descriptor: ConnectionDescriptorNg): ConnectionNG
+import java.util.Date
 
 
-    def getScheme(): String
+trait PhotoId {
+
+    def name(): String
+
+
+    def timestamp(): Date
+
+
+    def size(): Int
+
+
+    final def isIdentifiedBy(id: PhotoId): Boolean = {
+        val namesEqual = name() == id.name()
+        val timestampsEqual = timestamp() == id.timestamp()
+        val sizesEqual = size() == id.size();
+
+        timestampsEqual || (namesEqual && sizesEqual)
+    }
 }

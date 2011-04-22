@@ -22,16 +22,16 @@ import java.util.ServiceLoader
 
 object ConnectionFactories {
 
-    def getAll(): Seq[ConnectionFactoryNg] = {
+    def getAll(): Seq[ConnectionFactory] = {
         if (loader == null) {
-            loader = ServiceLoader.load(classOf[ConnectionFactoryNg])
+            loader = ServiceLoader.load(classOf[ConnectionFactory])
         }
 
-        loader.asInstanceOf[Seq[ConnectionFactoryNg]]
+        loader.asInstanceOf[Seq[ConnectionFactory]]
     }
 
 
-    def get(scheme: String): ConnectionFactoryNg = {
+    def get(scheme: String): ConnectionFactory = {
         val result = getAll().find(factory => factory.getScheme().equals(scheme))
 
         if (result.isEmpty) {
@@ -42,8 +42,8 @@ object ConnectionFactories {
     }
 
 
-    def getConnection(ticket: ConnectionDescriptorNg): ConnectionNG = get(ticket.scheme).createConnection(ticket)
+    def getConnection(ticket: ConnectionDescriptor): Connection = get(ticket.scheme).createConnection(ticket)
 
 
-    private var loader: ServiceLoader[ConnectionFactoryNg] = null
+    private var loader: ServiceLoader[ConnectionFactory] = null
 }

@@ -17,7 +17,7 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.PhotoNG
+import org.podval.photo.Photo
 
 import java.io.File
 
@@ -25,7 +25,7 @@ import java.util.Date
 
 
 final class FilesPhoto(parentArg: FilesFolder, name: String, files: Map[String, File])
-    extends PhotoNG
+    extends Photo
 {
 
     type F = FilesFolder
