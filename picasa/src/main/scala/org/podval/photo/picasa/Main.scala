@@ -22,8 +22,9 @@ import org.podval.photo.ConnectionDescriptor
 
 object Main {
 
+    // TODO fold into operations; just a different type of list...
     def main(args: Array[String]) {
-        val descriptor = new ConnectionDescriptor(null, Some("leoniddubinsky"), null, null, null)
+        val descriptor = new ConnectionDescriptor(null, Some("dub@podval.org"), None, null, null)
         val picasa = new Picasa(new PicasaConnector(), descriptor)
         picasa.open()
         val list = picasa.rootFolder

@@ -26,6 +26,9 @@ abstract class Connection[T](connector: Connector, descriptor: ConnectionDescrip
     type F <: Folder
 
 
+    type R = F with Root
+
+
     if (isLoginRequired && descriptor.login.isEmpty) {
         throw new PhotoException(scheme + " requires a login to be specified!")
     }
@@ -33,6 +36,7 @@ abstract class Connection[T](connector: Connector, descriptor: ConnectionDescrip
     if (!isHierarchySupported) {
         val path = descriptor.path
         if ((path != null) &&  !path.isEmpty() && !path.equals("/")) {
+          // TODO not really; one step is still allowed...
             throw new PhotoException(scheme + " does not support hierarchy; path must be empty!")
         }
     }
@@ -50,6 +54,9 @@ abstract class Connection[T](connector: Connector, descriptor: ConnectionDescrip
     def enableLowLevelLogging(): Unit
 
 
+    final def login: String = descriptor.login.get
+
+
     val transport: T = createTransport()
 
 
@@ -58,23 +65,47 @@ abstract class Connection[T](connector: Connector, descriptor: ConnectionDescrip
 
     final def open() { // TODO: throws
         if (descriptor.password.isDefined) {
-            login()
+            login(login, descriptor.password.get)
         }
+
+        root = Some(createRootFolder())
     }
 
 
-    protected def login()
+    protected def login(login: String, password: String)
 
 
-    def rootFolder: F
+    final def realRootFolder: R = {
+        if (root.isEmpty) {
+            throw new PhotoException("Connection is not open - no root folder!")
+        }
+
+        root.get
+    }
 
 
-    protected final def getSubFolderByPath(folder: F, path: String): F = {
+    private var root: Option[R] = _
+
+
+    protected def createRootFolder(): R
+
+
+    final def rootFolder: F =
+        if (isPathToRoot)
+            getSubFolderByPath(realRootFolder, descriptor.path) else
+            realRootFolder
+
+
+    protected def isPathToRoot: Boolean
+
+
+    private final def getSubFolderByPath(folder: F, path: String): F = {
         var result = folder
 
         if (path != null) {
             for (name <- path.split("/")) {
                 if (!name.isEmpty()) {
+                  // TODO checks
 ////                    result.getFolderType().checkCanHaveFolders(result);
                     result = result.getFolder(name).get.asInstanceOf[F];
                 }

@@ -56,27 +56,15 @@ final class Zenfolio(connector: ZenfolioConnector, descriptor: ConnectionDescrip
             case e: RemoteException => throw new PhotoException(e)
         }
     }
-    
-
-    override val rootFolder: F = getSubFolderByPath(getRealRootFolder(), descriptor.path)
 
 
-    private def getRealRootFolder(): F = {
+    protected override def login(login: String, password: String) {
         try {
-            new RootGroup(this, transport.loadGroupHierarchy(descriptor.login.get))
-        } catch {
-            case e: RemoteException => throw new PhotoException(e)
-        }
-    }
-
-
-    protected override def login() {
-        try {
-            val authChallenge: AuthChallenge = transport.getChallenge(descriptor.login.get)
+            val authChallenge: AuthChallenge = transport.getChallenge(login)
 
             val challenge: Array[Byte] = Bytes.readBytes(authChallenge.getChallenge())
             val passwordSalt: Array[Byte] = Bytes.readBytes(authChallenge.getPasswordSalt())
-            val passwordUtf8: Array[Byte] = descriptor.password.get.getBytes("UTF-8")
+            val passwordUtf8: Array[Byte] = password.getBytes("UTF-8")
             val passwordHash: Array[Byte] = Bytes.hash(Bytes.concatenate(passwordSalt, passwordUtf8))
             val proof: Array[Byte] = Bytes.hash(Bytes.concatenate(challenge, passwordHash))
 
@@ -103,6 +91,18 @@ final class Zenfolio(connector: ZenfolioConnector, descriptor: ConnectionDescrip
 
 
     private var authToken: String = null
+    
+
+    protected override def createRootFolder(): R = {
+        try {
+            new RootGroup(this, transport.loadGroupHierarchy(descriptor.login.get))
+        } catch {
+            case e: RemoteException => throw new PhotoException(e)
+        }
+    }
+
+
+    protected override def isPathToRoot: Boolean = true  
 }
 
 

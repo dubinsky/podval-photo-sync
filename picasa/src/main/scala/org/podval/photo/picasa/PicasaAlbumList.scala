@@ -47,7 +47,7 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
         val result = new ListBuffer[PicasaFolder]()
 
         try {
-            val url = PicasaUrl.relativeToRoot("feed/api/user/" + connection.getLogin())
+            val url = PicasaUrl.relativeToRoot("feed/api/user/" + connection.login)
 
             var nextUrl = url
             do {

@@ -17,7 +17,7 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.{Connection, ConnectionFactories, ConnectionDescriptor}
+import org.podval.photo.{Connector, ConnectionDescriptor, Connection}
 import org.podval.photo.{Folder, Photo, PhotoId, PhotoException}
 
 import java.util.logging.{Logger, Level, Handler}
@@ -81,9 +81,7 @@ object Main {
 
     private def printSchemes() {
         System.out.println("  Available schemes:")
-        for (connectionFactory <- ConnectionFactories.getAll()) {
-            System.out.println("    " + connectionFactory.scheme)
-        }
+        Connector.all.foreach(connector => System.out.println("    " + connector.scheme))
     }
 
 
@@ -146,7 +144,7 @@ object Main {
 
 
     private def run() {
-        val firstConnection: Connection = ConnectionFactories.getConnection(firstTicket)
+        val firstConnection: Connection[_] = Connector.getConnection(firstTicket)
 
         if (secondTicket == null) {
             list(firstConnection)
@@ -157,7 +155,7 @@ object Main {
     }
 
 
-    private def list(connection: Connection) {
+    private def list(connection: Connection[_]) {
         open(connection)
         val xml = listFolder(connection.rootFolder)
         // TODO prettyprint!
@@ -193,7 +191,7 @@ object Main {
 //    }
 
 
-    private def open(connection: Connection) {
+    private def open(connection: Connection[_]) {
         if (enableLowLevelLogging) {
             connection.enableLowLevelLogging()
         }

@@ -38,19 +38,29 @@ final class FilesConnection(connector: FilesConnector, descriptor: ConnectionDes
     }
 
 
-    protected override def login() {
-    }
-
-
     protected override def createTransport(): File = new File(descriptor.path)
 
 
-    override val rootFolder: F =  new RootFilesFolder(this, transport)
+    protected override def login(login: String, password: String) {
+    }
+
+
+    protected override def createRootFolder(): R =  new RootFilesFolder(this, transport)
+
+
+    protected override def isPathToRoot: Boolean = false
 }
 
 
 
-final class FilesConnector extends Connector("file") {
+final class FilesConnector extends Connector(FilesConnector.SCHEME) {
 
     override def connect(descriptor: ConnectionDescriptor) = new FilesConnection(this, descriptor)
+}
+
+
+
+object FilesConnector {
+
+    val SCHEME = "file"
 }

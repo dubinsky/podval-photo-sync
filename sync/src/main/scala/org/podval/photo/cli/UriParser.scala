@@ -17,7 +17,7 @@
 package org.podval.photo.cli
 
 import org.podval.photo.ConnectionDescriptor
-import org.podval.photo.files.FilesConnection
+import org.podval.photo.files.FilesConnector
 
 import org.kohsuke.args4j.CmdLineException
 
@@ -82,7 +82,7 @@ object UriParser {
 
 
     private def defaultScheme(scheme: String): String =
-        if (scheme == null) FilesConnection.SCHEME else scheme
+        if (scheme == null) FilesConnector.SCHEME else scheme
 
 
     private def addSuffix(what: String, suffix: String) =

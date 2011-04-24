@@ -65,15 +65,14 @@ final class Picasa(connector: PicasaConnector, descriptor: ConnectionDescriptor)
     }
 
 
-    def getLogin(): String = descriptor.login.get
-
-
-    override val rootFolder: F = new PicasaAlbumList(this)
-
-
-    protected override def login() {
+    @throws(classOf[PhotoException])
+    protected override def login(login: String, password: String) {
         try {
-            authenticate()
+            val authenticator = new ClientLogin()
+            authenticator.authTokenType = "lh2" //"ndev";
+            authenticator.username = login
+            authenticator.password = password
+            authenticator.authenticate().setAuthorizationHeader(transport)
         } catch {
             case e: HttpResponseException => throw new PhotoException(e)
             case e: IOException => throw new PhotoException(e)
@@ -81,13 +80,10 @@ final class Picasa(connector: PicasaConnector, descriptor: ConnectionDescriptor)
     }
 
 
-    private def authenticate() {
-        val authenticator = new ClientLogin()
-        authenticator.authTokenType = "lh2" //"ndev";
-        authenticator.username = getLogin()
-        authenticator.password = descriptor.password.get
-        authenticator.authenticate().setAuthorizationHeader(transport)
-    }
+    protected override def createRootFolder(): R = new PicasaAlbumList(this)
+
+
+    protected override def isPathToRoot: Boolean = true  
 }
 
 
