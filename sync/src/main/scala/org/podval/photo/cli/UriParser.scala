@@ -28,23 +28,9 @@ object UriParser {
 
     @throws(classOf[CmdLineException])
     def fromUri(uriStr: String, suffix: String): ConnectionDescriptor = {
-
         val uri: URI = toUri(uriStr)
 
-        val userInfo: String = getUserInfo(uri)
-
-        val (login: String, password: String) = 
-
-        if (userInfo == null) {
-            (null, null)
-        } else {
-            val colon = userInfo.indexOf(':')
-            if (colon == -1) {
-                (userInfo, null)
-            } else {
-                (userInfo.substring(0, colon), userInfo.substring(colon+1))
-            }
-        }
+        val (login: String, password: String) = splitUserInfo(getUserInfo(uri))
 
         new ConnectionDescriptor(
             defaultScheme(uri.getScheme()),
@@ -52,6 +38,15 @@ object UriParser {
             password,
             uri.getHost(),
             addSuffix(uri.getPath(), suffix));
+    }
+
+
+    private def toUri(uriStr: String) = {
+        try {
+            new URI(uriStr)
+        } catch {
+            case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
+        }
     }
 
 
@@ -72,11 +67,16 @@ object UriParser {
     }
 
 
-    private def toUri(uriStr: String) = {
-        try {
-            new URI(uriStr)
-        } catch {
-            case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
+    private def splitUserInfo(userInfo: String): (String, String) = {
+        if (userInfo == null) {
+            (null, null)
+        } else {
+            val colon = userInfo.indexOf(':')
+            if (colon == -1) {
+                (userInfo, null)
+            } else {
+                (userInfo.substring(0, colon), userInfo.substring(colon+1))
+            }
         }
     }
 
