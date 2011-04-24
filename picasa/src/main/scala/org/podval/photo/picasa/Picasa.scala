@@ -108,7 +108,7 @@ object Picasa {
 
 
 
-final class PicasaFactrory extends ConnectionFactory(Picasa.SCHEME) {
+final class PicasaFactory extends ConnectionFactory(Picasa.SCHEME) {
 
     def createConnection(descriptor: ConnectionDescriptor) = new Picasa(descriptor)
 }

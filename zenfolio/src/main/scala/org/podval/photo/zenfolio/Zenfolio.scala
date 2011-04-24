@@ -117,7 +117,7 @@ object Zenfolio {
 
 
 
-final class ZenfolioFactrory extends ConnectionFactory(Zenfolio.SCHEME) {
+final class ZenfolioFactory extends ConnectionFactory(Zenfolio.SCHEME) {
 
     def createConnection(descriptor: ConnectionDescriptor) = new Zenfolio(descriptor)
 }

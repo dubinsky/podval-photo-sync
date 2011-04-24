@@ -19,15 +19,23 @@ package org.podval.photo
 
 import java.util.ServiceLoader
 
+import scala.collection.mutable.ListBuffer
+
 
 object ConnectionFactories {
 
     def getAll(): Seq[ConnectionFactory] = {
-        if (loader == null) {
-            loader = ServiceLoader.load(classOf[ConnectionFactory])
+        if (factories.isEmpty) {
+            val loader: ServiceLoader[ConnectionFactory] = ServiceLoader.load(classOf[ConnectionFactory])
+            val all  = ListBuffer[ConnectionFactory]()
+            val iterator = loader.iterator()
+            while (iterator.hasNext()) {
+                all += iterator.next()
+            }
+            factories = Some(all)
         }
 
-        loader.asInstanceOf[Seq[ConnectionFactory]]
+        factories.get
     }
 
 
@@ -45,5 +53,5 @@ object ConnectionFactories {
     def getConnection(descriptor: ConnectionDescriptor): Connection = get(descriptor.scheme).createConnection(descriptor)
 
 
-    private var loader: ServiceLoader[ConnectionFactory] = _
+    private var factories: Option[Seq[ConnectionFactory]] = None
 }
