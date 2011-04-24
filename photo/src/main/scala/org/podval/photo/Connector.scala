@@ -19,28 +19,28 @@ package org.podval.photo
 
 import java.util.ServiceLoader
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.JavaConversions.asScalaIterable
 
 
-object ConnectionFactories {
+abstract class Connector(val scheme: String) {
 
-    def getAll(): Seq[ConnectionFactory] = {
-        if (factories.isEmpty) {
-            val loader: ServiceLoader[ConnectionFactory] = ServiceLoader.load(classOf[ConnectionFactory])
-            val all  = ListBuffer[ConnectionFactory]()
-            val iterator = loader.iterator()
-            while (iterator.hasNext()) {
-                all += iterator.next()
-            }
-            factories = Some(all)
-        }
+    // TODO do connect() through reflection?
 
-        factories.get
-    }
+    def connect(descriptor: ConnectionDescriptor): Connection[_]
+}
 
 
-    def get(scheme: String): ConnectionFactory = {
-        val result = getAll().find(_.scheme.equals(scheme))
+
+object Connector {
+
+    private val loader: ServiceLoader[Connector] = ServiceLoader.load(classOf[Connector])
+
+
+    val all: Seq[Connector] = Seq[Connector]() ++ asScalaIterable(loader)
+
+
+    def get(scheme: String): Connector = {
+        val result = all.find(_.scheme.equals(scheme))
 
         if (result.isEmpty) {
             throw new PhotoException("Unknown scheme: " + scheme)
@@ -50,8 +50,5 @@ object ConnectionFactories {
     }
 
 
-    def getConnection(descriptor: ConnectionDescriptor): Connection = get(descriptor.scheme).createConnection(descriptor)
-
-
-    private var factories: Option[Seq[ConnectionFactory]] = None
+    def getConnection(descriptor: ConnectionDescriptor): Connection[_] = get(descriptor.scheme).connect(descriptor)
 }

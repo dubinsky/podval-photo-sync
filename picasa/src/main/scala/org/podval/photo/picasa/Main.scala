@@ -24,7 +24,7 @@ object Main {
 
     def main(args: Array[String]) {
         val descriptor = new ConnectionDescriptor(null, Some("leoniddubinsky"), null, null, null)
-        val picasa = new Picasa(descriptor)
+        val picasa = new Picasa(new PicasaConnector(), descriptor)
         picasa.open()
         val list = picasa.rootFolder
         for (f: PicasaFolder <- list.folders) {

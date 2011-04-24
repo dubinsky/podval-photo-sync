@@ -17,20 +17,21 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor}
+import org.podval.photo.{Connector, ConnectionDescriptor, Connection}
 
 import java.io.File
 
 
-final class FilesConnection(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
+final class FilesConnection(connector: FilesConnector, descriptor: ConnectionDescriptor)
+    extends Connection[File](connector, descriptor) {
 
     type F = FilesFolder
 
 
-    override val rootFolder: F =  new RootFilesFolder(this, new File(descriptor.path))
+    override def isLoginRequired: Boolean = false
 
 
-    override def scheme = FilesConnection.SCHEME
+    override def isHierarchySupported: Boolean = true
 
 
     override def enableLowLevelLogging() {
@@ -39,17 +40,17 @@ final class FilesConnection(descriptor: ConnectionDescriptor) extends Connection
 
     protected override def login() {
     }
+
+
+    protected override def createTransport(): File = new File(descriptor.path)
+
+
+    override val rootFolder: F =  new RootFilesFolder(this, transport)
 }
 
 
 
-object FilesConnection {
+final class FilesConnector extends Connector("file") {
 
-    val SCHEME = "file"
-}
-
-
-final class FilesFactory extends ConnectionFactory(FilesConnection.SCHEME) {
-
-    override def createConnection(descriptor: ConnectionDescriptor) = new FilesConnection(descriptor)
+    override def connect(descriptor: ConnectionDescriptor) = new FilesConnection(this, descriptor)
 }

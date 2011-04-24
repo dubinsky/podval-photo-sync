@@ -17,7 +17,7 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor, PhotoException}
+import org.podval.photo.{Connector, ConnectionDescriptor, Connection, PhotoException}
 
 import com.zenfolio.www.api._1_1.{ZfApi, ZfApiStub, AuthChallenge}
 
@@ -33,26 +33,23 @@ import org.apache.commons.httpclient.Header
 import java.io.IOException
 
 
-final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
+final class Zenfolio(connector: ZenfolioConnector, descriptor: ConnectionDescriptor)
+    extends Connection[ZfApiStub](connector, descriptor) {
 
     type F = ZenfolioFolder[_]
 
 
-    override def scheme = Zenfolio.SCHEME
+    override def isLoginRequired: Boolean = true
 
 
-    if (descriptor.login.isEmpty) {
-        throw new PhotoException("Zenfolio requires a login to be specified!")
-    }
+    override def isHierarchySupported: Boolean = true
+
 
     override def enableLowLevelLogging() {
     }
 
 
-    val connection: ZfApi = createConnection()
-
-
-    private def createConnection() = {
+    protected override def createTransport(): ZfApiStub = {
         try {
             new ZfApiStub()
         } catch {
@@ -66,7 +63,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
     private def getRealRootFolder(): F = {
         try {
-            new RootGroup(this, connection.loadGroupHierarchy(descriptor.login.get))
+            new RootGroup(this, transport.loadGroupHierarchy(descriptor.login.get))
         } catch {
             case e: RemoteException => throw new PhotoException(e)
         }
@@ -75,7 +72,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
     protected override def login() {
         try {
-            val authChallenge: AuthChallenge = connection.getChallenge(descriptor.login.get)
+            val authChallenge: AuthChallenge = transport.getChallenge(descriptor.login.get)
 
             val challenge: Array[Byte] = Bytes.readBytes(authChallenge.getChallenge())
             val passwordSalt: Array[Byte] = Bytes.readBytes(authChallenge.getPasswordSalt())
@@ -83,7 +80,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
             val passwordHash: Array[Byte] = Bytes.hash(Bytes.concatenate(passwordSalt, passwordUtf8))
             val proof: Array[Byte] = Bytes.hash(Bytes.concatenate(challenge, passwordHash))
 
-            authToken = connection.authenticate(
+            authToken = transport.authenticate(
                     Bytes.wrapBytes(challenge),
                     Bytes.wrapBytes(proof))
 
@@ -93,7 +90,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
             case e: NoSuchAlgorithmException => throw new PhotoException(e)
         }
 
-        val options: Options = connection.asInstanceOf[Stub]._getServiceClient().getOptions()
+        val options: Options = transport.asInstanceOf[Stub]._getServiceClient().getOptions()
 
 //      options.setProperty(HTTPConstants.HEADER_COOKIE, "zf_token=" + authToken)
 
@@ -110,14 +107,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
 
 
-object Zenfolio {
+final class ZenfolioConnector extends Connector("zenfolio") {
 
-    val SCHEME = "zenfolio"
-}
-
-
-
-final class ZenfolioFactory extends ConnectionFactory(Zenfolio.SCHEME) {
-
-    def createConnection(descriptor: ConnectionDescriptor) = new Zenfolio(descriptor)
+    def connect(descriptor: ConnectionDescriptor) = new Zenfolio(this, descriptor)
 }

@@ -41,7 +41,7 @@ import java.io.{File, IOException}
 
         if (id != 0) {
             try {
-                element = (connection.connection.loadPhotoSet(id))
+                element = (transport.loadPhotoSet(id))
             } catch {
                 case e: RemoteException => throw new PhotoException(e)
             }
@@ -61,6 +61,9 @@ import java.io.{File, IOException}
         // TODO
         throw new UnsupportedOperationException()
     }
+
+
+    protected final def transport = connection.transport
 
 
 //    @Override

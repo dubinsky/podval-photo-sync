@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-abstract class Connection(descriptor: ConnectionDescriptor) {
+abstract class Connection[T](connector: Connector, descriptor: ConnectionDescriptor) {
 
     // TODO: check that login is present if required
 
@@ -26,10 +26,34 @@ abstract class Connection(descriptor: ConnectionDescriptor) {
     type F <: Folder
 
 
-    def scheme: String
+    if (isLoginRequired && descriptor.login.isEmpty) {
+        throw new PhotoException(scheme + " requires a login to be specified!")
+    }
+
+    if (!isHierarchySupported) {
+        val path = descriptor.path
+        if ((path != null) &&  !path.isEmpty() && !path.equals("/")) {
+            throw new PhotoException(scheme + " does not support hierarchy; path must be empty!")
+        }
+    }
+
+
+    final def scheme: String = connector.scheme
+
+
+    def isLoginRequired: Boolean
+
+
+    def isHierarchySupported: Boolean
 
 
     def enableLowLevelLogging(): Unit
+
+
+    val transport: T = createTransport()
+
+
+    protected def createTransport(): T
 
 
     final def open() { // TODO: throws
@@ -60,6 +84,7 @@ abstract class Connection(descriptor: ConnectionDescriptor) {
         result
     }
 }
+
 
 
 object Connection {

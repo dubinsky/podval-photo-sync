@@ -20,7 +20,7 @@ package org.podval.photo
 
 trait Folder {
 
-    type C <: Connection
+    type C <: Connection[_]
 
 
     type F <: Folder

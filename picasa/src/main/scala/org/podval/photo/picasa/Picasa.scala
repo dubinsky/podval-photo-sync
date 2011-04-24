@@ -17,7 +17,7 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor, PhotoException}
+import org.podval.photo.{Connector, ConnectionDescriptor, Connection, PhotoException}
 import org.podval.picasa.model.{Namespaces, PicasaUrl}
 
 import com.google.api.client.googleapis.{GoogleTransport, GoogleHeaders}
@@ -30,28 +30,16 @@ import java.util.logging.{Logger, Level}
 import java.io.IOException
 
 
-final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
+final class Picasa(connector: PicasaConnector, descriptor: ConnectionDescriptor)
+    extends Connection[HttpTransport](connector, descriptor) {
 
     type F = PicasaFolder
 
 
-    if (descriptor.login.isEmpty) {
-        throw new PhotoException("Picasa requires a login to be specified!")
-    }
-
-    private val path = descriptor.path
-    if ((path != null) &&  !path.isEmpty() && !path.equals("/")) {
-        throw new PhotoException("Picasa does not support hierarchy; path must be empty!")
-    }
+    override def isLoginRequired: Boolean = true
 
 
-    def getLogin(): String = descriptor.login.get
-
-
-    override val rootFolder: F = new PicasaAlbumList(this)
-
-
-    override def scheme = Picasa.SCHEME
+    override def isHierarchySupported: Boolean = false
 
 
     override def enableLowLevelLogging() {
@@ -62,14 +50,11 @@ final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descript
     }
 
 
-    val transport: HttpTransport = createTransport("Podval-PicasaSync/1.0")
-
-
-    private def createTransport(applicationName: String): HttpTransport = {
+    protected override def createTransport(): HttpTransport = {
         val result = GoogleTransport.create()
 
         val headers = result.defaultHeaders.asInstanceOf[GoogleHeaders]
-        headers.setApplicationName(applicationName)
+        headers.setApplicationName("Podval-PicasaSync/1.0")
         headers.gdataVersion = "2"
 
         val parser = new AtomParser()
@@ -78,6 +63,12 @@ final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descript
 
         result
     }
+
+
+    def getLogin(): String = descriptor.login.get
+
+
+    override val rootFolder: F = new PicasaAlbumList(this)
 
 
     protected override def login() {
@@ -101,14 +92,7 @@ final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descript
 
 
 
-object Picasa {
+final class PicasaConnector extends Connector("picasa") {
 
-    val SCHEME = "picasa"
-}
-
-
-
-final class PicasaFactory extends ConnectionFactory(Picasa.SCHEME) {
-
-    def createConnection(descriptor: ConnectionDescriptor) = new Picasa(descriptor)
+    def connect(descriptor: ConnectionDescriptor) = new Picasa(this, descriptor)
 }
