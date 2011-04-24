@@ -20,8 +20,8 @@ package org.podval.photo
 
 final class ConnectionDescriptor(
     val scheme: String,
-    val login: String,
-    val password: String,
+    val login: Option[String],
+    val password: Option[String],
     val host: String,
     val path: String)
 {

@@ -30,7 +30,7 @@ object UriParser {
     def fromUri(uriStr: String, suffix: String): ConnectionDescriptor = {
         val uri: URI = toUri(uriStr)
 
-        val (login: String, password: String) = splitUserInfo(getUserInfo(uri))
+        val (login: Option[String], password: Option[String]) = splitUserInfo(getUserInfo(uri))
 
         new ConnectionDescriptor(
             defaultScheme(uri.getScheme()),
@@ -67,15 +67,15 @@ object UriParser {
     }
 
 
-    private def splitUserInfo(userInfo: String): (String, String) = {
+    private def splitUserInfo(userInfo: String): (Option[String], Option[String]) = {
         if (userInfo == null) {
-            (null, null)
+            (None, None)
         } else {
             val colon = userInfo.indexOf(':')
             if (colon == -1) {
-                (userInfo, null)
+                (Some(userInfo), None)
             } else {
-                (userInfo.substring(0, colon), userInfo.substring(colon+1))
+                (Some(userInfo.substring(0, colon)), Some(userInfo.substring(colon+1)))
             }
         }
     }

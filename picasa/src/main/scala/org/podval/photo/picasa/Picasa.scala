@@ -35,13 +35,17 @@ final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descript
     type F = PicasaFolder
 
 
+    if (descriptor.login.isEmpty) {
+        throw new PhotoException("Picasa requires a login to be specified!")
+    }
+
     private val path = descriptor.path
     if ((path != null) &&  !path.isEmpty() && !path.equals("/")) {
         throw new PhotoException("Picasa does not support hierarchy; path must be empty!")
     }
 
 
-    def getLogin(): String = descriptor.login
+    def getLogin(): String = descriptor.login.get
 
 
     override val rootFolder: F = new PicasaAlbumList(this)
@@ -90,7 +94,7 @@ final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descript
         val authenticator = new ClientLogin()
         authenticator.authTokenType = "lh2" //"ndev";
         authenticator.username = getLogin()
-        authenticator.password = descriptor.password
+        authenticator.password = descriptor.password.get
         authenticator.authenticate().setAuthorizationHeader(transport)
     }
 }

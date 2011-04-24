@@ -20,6 +20,9 @@ package org.podval.photo
 
 abstract class Connection(descriptor: ConnectionDescriptor) {
 
+    // TODO: check that login is present if required
+
+
     type F <: Folder
 
 
@@ -30,7 +33,7 @@ abstract class Connection(descriptor: ConnectionDescriptor) {
 
 
     final def open() { // TODO: throws
-        if (descriptor.password != null) {
+        if (descriptor.password.isDefined) {
             login()
         }
     }

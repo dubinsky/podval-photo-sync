@@ -41,6 +41,10 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
     override def scheme = Zenfolio.SCHEME
 
 
+    if (descriptor.login.isEmpty) {
+        throw new PhotoException("Zenfolio requires a login to be specified!")
+    }
+
     override def enableLowLevelLogging() {
     }
 
@@ -62,7 +66,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
     private def getRealRootFolder(): F = {
         try {
-            new RootGroup(this, connection.loadGroupHierarchy(descriptor.login))
+            new RootGroup(this, connection.loadGroupHierarchy(descriptor.login.get))
         } catch {
             case e: RemoteException => throw new PhotoException(e)
         }
@@ -71,11 +75,11 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
     protected override def login() {
         try {
-            val authChallenge: AuthChallenge = connection.getChallenge(descriptor.login)
+            val authChallenge: AuthChallenge = connection.getChallenge(descriptor.login.get)
 
             val challenge: Array[Byte] = Bytes.readBytes(authChallenge.getChallenge())
             val passwordSalt: Array[Byte] = Bytes.readBytes(authChallenge.getPasswordSalt())
-            val passwordUtf8: Array[Byte] = descriptor.password.getBytes("UTF-8")
+            val passwordUtf8: Array[Byte] = descriptor.password.get.getBytes("UTF-8")
             val passwordHash: Array[Byte] = Bytes.hash(Bytes.concatenate(passwordSalt, passwordUtf8))
             val proof: Array[Byte] = Bytes.hash(Bytes.concatenate(challenge, passwordHash))
 

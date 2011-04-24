@@ -18,16 +18,16 @@ class UriParserTest {
 
     @Test @throws(classOf[CmdLineException])
     def loginPassword() {
-        loginPassword("http://a@b.c/d/e", "a", null)
-        loginPassword("http://a:b@b.c/d/e", "a", "b")
-        loginPassword("http://b.c/d/e", null, null)
-        loginPassword("http://a@/d/e", "a", null)
-        loginPassword("http://a:p@/d/e", "a", "p")
+        loginPassword("http://a@b.c/d/e", Some("a"), None)
+        loginPassword("http://a:b@b.c/d/e", Some("a"), Some("b"))
+        loginPassword("http://b.c/d/e", None, None)
+        loginPassword("http://a@/d/e", Some("a"), None)
+        loginPassword("http://a:p@/d/e", Some("a"), Some("p"))
     }
 
 
     @throws(classOf[CmdLineException])
-    private def loginPassword(uri: String, login: String, password: String) {
+    private def loginPassword(uri: String, login: Option[String], password: Option[String]) {
         val result = UriParser.fromUri(uri, null)
         Assert.assertEquals(login, result.login)
         Assert.assertEquals(password, result.password)
