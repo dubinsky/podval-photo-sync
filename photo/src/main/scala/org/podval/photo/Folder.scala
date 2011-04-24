@@ -17,12 +17,6 @@
 
 package org.podval.photo
 
-import scala.xml.{Elem}
-
-import java.io.{File, IOException}
-
-import org.apache.commons.logging.{LogFactory, Log};
-
 
 trait Folder {
 
@@ -35,58 +29,55 @@ trait Folder {
     type P <: Photo
 
 
-    def getConnection(): C
+    def connection: C
 
 
-    def getParent(): Option[F]
+    def parent: Option[F]
 
 
-    def name(): String
+    def name: String
 
 
-    def isPublic(): Boolean
+    var public: Boolean
 
 
-    def setPublic(value: Boolean)
+    def canHaveFolders: Boolean
 
 
-    def canHaveFolders(): Boolean
+    def hasFolders: Boolean
 
 
-    def hasFolders(): Boolean
-
-
-    def getFolders(): Seq[F]
+    def folders: Seq[F]
 
 
     def getFolder(name: String): Option[F]
 
 
-    def canHavePhotos(): Boolean
+    def canHavePhotos: Boolean
 
 
-    def hasPhotos(): Boolean
+    def hasPhotos: Boolean
 
 
-    def getPhotos(): Seq[P]
+    def photos: Seq[P]
 
 
     def getPhoto(name: String): Option[P]
 
 
-    final def getPhotos(id: PhotoId): Seq[P] = {
-        val photos: Seq[P] = getPhotos().filter(id.isIdentifiedBy)
-        val folders: Seq[P] = getFolders().flatMap(_.getPhotos(id)).asInstanceOf[Seq[P]]
-        photos ++ folders
-    }
+    final def getPhotos(id: PhotoId): Seq[P] =
+        photos.filter(id.isIdentifiedBy) ++ folders.flatMap(_.getPhotos(id)).asInstanceOf[Seq[P]]
 
 
-    def list(): Elem =
-        <folder>
-           <name>{name()}</name>
-           {getFolders() map (_.list())}
-           {getPhotos() map (_.list())}
-        </folder>
+    def update()
+
+
+//    def list(): Elem =
+//        <folder>
+//           <name>{name}</name>
+//           {folders map (_.list())}
+//           {photos map (_.list())}
+//        </folder>
 
 
 //    def syncFolderTo(toFolder: FolderNG) {
@@ -271,8 +262,5 @@ trait Folder {
 //    protected abstract void doAddFile(final String name, final File file) throws PhotoException;
 
 
-    def updateIfChanged()
-
-
-    private def getLog(): Log = LogFactory.getLog(Connection.LOG)
+//    private def getLog(): Log = LogFactory.getLog(Connection.LOG)
 }

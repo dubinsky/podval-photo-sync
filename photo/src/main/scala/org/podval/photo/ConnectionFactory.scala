@@ -18,12 +18,9 @@
 package org.podval.photo
 
 
-abstract class ConnectionFactory {
+abstract class ConnectionFactory(val scheme: String) {
 
-    // TODO do createConnection() and getScheme() through reflection?
+    // TODO do createConnection() through reflection?
 
     def createConnection(descriptor: ConnectionDescriptor): Connection
-
-
-    def getScheme(): String
 }

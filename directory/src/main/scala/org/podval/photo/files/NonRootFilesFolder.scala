@@ -22,7 +22,7 @@ import org.podval.photo.NonRoot
 import java.io.File
 
 
-final class NonRootFilesFolder(protected val parent: FilesFolder, directory: File)
+final class NonRootFilesFolder(protected val parentFolder: FilesFolder, directory: File)
 extends FilesFolder(directory) with NonRoot
 {
 }

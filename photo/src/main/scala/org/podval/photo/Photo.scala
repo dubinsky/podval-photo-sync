@@ -17,8 +17,6 @@
 
 package org.podval.photo
 
-import scala.xml.Elem
-
 import java.util.Date
 
 import java.io.File
@@ -29,32 +27,31 @@ trait Photo extends PhotoId {
     type F <: Folder
 
 
-    def getParent(): F = parent
+    val parent: F
 
 
-    override def name(): String
+    override def name: String
 
 
-    override def timestamp(): Date
+    override def timestamp: Date
 
 
-    override def size(): Int
+    override def size: Int
 
 
-    def rotation(): Rotation.Value
+    def rotation: Rotation.Value
 
 
-    def list(): Elem =
-        <photo
-            name={name()}
-            date={timestamp().toString}
-            size={size().toString}
-            rotation={rotation().toString}
-        />
+    def originalFile(): File
 
 
-    def getOriginalFile(): File
-
-
-    protected val parent: F
+//    def list(): Elem =
+//        <photo
+//            name={name()}
+//            date={timestamp().toString}
+//            size={size().toString}
+//            rotation={rotation().toString}
+//        />
+//
+//
 }

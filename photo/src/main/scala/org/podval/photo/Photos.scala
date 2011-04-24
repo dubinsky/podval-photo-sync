@@ -22,22 +22,22 @@ import scala.collection.mutable.ListBuffer
 
 trait Photos extends Folder {
 
-    override final def canHavePhotos(): Boolean = true
+    override final def canHavePhotos: Boolean = true
 
 
-    override final def hasPhotos(): Boolean = !photos.isEmpty
+    override final def hasPhotos: Boolean = !photos.isEmpty
 
 
     override final def getPhoto(name: String): Option[P] = photos.find(_.name == name)
 
 
-    override final def getPhotos(): Seq[P] = {
+    override final def photos: Seq[P] = {
         if (!isPopulated) {
-            photos ++= retrievePhotos()
+            photosList ++= retrievePhotos()
             isPopulated = true
         }
 
-        photos
+        photosList
     }
 
 
@@ -47,5 +47,5 @@ trait Photos extends Folder {
     protected def retrievePhotos(): Seq[P]
 
 
-    private val photos: ListBuffer[P] = new ListBuffer[P]()
+    private val photosList: ListBuffer[P] = new ListBuffer[P]()
 }

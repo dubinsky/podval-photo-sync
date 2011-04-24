@@ -24,11 +24,11 @@ trait NonRoot extends Folder {
     // I can't figure out a way to avoid this cast.
     // I hope that Scala type system has a way to eliminate the cast - I just
     // don't know it yet ;)
-    override final def getConnection(): C = getParent().get.getConnection().asInstanceOf[C]
+    override final def connection: C = parent.get.connection.asInstanceOf[C]
 
 
-    override final def getParent(): Option[F] = Some(parent)
+    override final def parent: Option[F] = Some(parentFolder)
 
 
-    protected val parent: F
+    protected val parentFolder: F
 }

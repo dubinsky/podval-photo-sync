@@ -26,9 +26,9 @@ object Main {
         val descriptor = new ConnectionDescriptor(null, "leoniddubinsky", null, null, null)
         val picasa = new Picasa(descriptor)
         picasa.open()
-        val list = picasa.getRootFolder()
-        for (f: PicasaFolder <- list.getFolders) {
-            Console.println(f.name())
+        val list = picasa.rootFolder
+        for (f: PicasaFolder <- list.folders) {
+            Console.println(f.name)
         }
     }
 }

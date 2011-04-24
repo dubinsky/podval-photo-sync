@@ -32,10 +32,7 @@ import java.util.Date
 import java.io.{File, IOException}
 
 
-/* package */ final class Gallery(parentArg: ZenfolioFolder[_], el: PhotoSet) extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum {
-
-    protected val parent = parentArg
-
+/* package */ final class Gallery(override val parentFolder: ZenfolioFolder[_], el: PhotoSet) extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum {
 
     protected override def retrievePhotos(): Seq[P] = { // throws PhotoException {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
@@ -44,7 +41,7 @@ import java.io.{File, IOException}
 
         if (id != 0) {
             try {
-                element = (getConnection().getConnection().loadPhotoSet(id))
+                element = (connection.connection.loadPhotoSet(id))
             } catch {
                 case e: RemoteException => throw new PhotoException(e)
             }
@@ -57,6 +54,12 @@ import java.io.{File, IOException}
         } else {
             Seq[P]()
         }
+    }
+
+
+    override def update() {
+        // TODO
+        throw new UnsupportedOperationException()
     }
 
 

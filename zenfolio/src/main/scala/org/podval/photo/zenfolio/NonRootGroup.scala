@@ -21,7 +21,5 @@ import org.podval.photo.NonRoot
 import com.zenfolio.www.api._1_1.{Group => ZGroup}
 
 
-final class NonRootGroup(parentArg: ZenfolioFolder[_], element: ZGroup) extends Group(element) with NonRoot {
-
-    protected val parent = parentArg
+final class NonRootGroup(override val parentFolder: ZenfolioFolder[_], element: ZGroup) extends Group(element) with NonRoot {
 }

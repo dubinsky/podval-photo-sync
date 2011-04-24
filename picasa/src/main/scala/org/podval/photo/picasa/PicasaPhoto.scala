@@ -26,21 +26,21 @@ import java.util.Date
 import java.io.{File, FileOutputStream, BufferedOutputStream, IOException}
 
 
-final class PicasaPhoto(protected val parent: PicasaAlbum, entry: PhotoEntry) extends Photo {
+final class PicasaPhoto(val parent: PicasaAlbum, entry: PhotoEntry) extends Photo {
 
     type F = PicasaAlbum
 
 
-    override def name() = entry.title
+    override def name = entry.title
 
 
-    override def timestamp() = new Date(entry.timestamp)
+    override def timestamp = new Date(entry.timestamp)
 
 
-    override def size() = entry.size
+    override def size = entry.size
 
 
-    override def rotation() = entry.rotation match {
+    override def rotation = entry.rotation match {
         // TODO deal with null...
         case   0 => Rotation.None
         case  90 => Rotation.Right
@@ -49,7 +49,7 @@ final class PicasaPhoto(protected val parent: PicasaAlbum, entry: PhotoEntry) ex
     }
 
 
-    override def getOriginalFile(): File = {
+    override def originalFile(): File = {
         val url = entry.getOriginalUrl()
 
         if (url == null) {
@@ -59,7 +59,7 @@ final class PicasaPhoto(protected val parent: PicasaAlbum, entry: PhotoEntry) ex
         try {
             val result = File.createTempFile("p-p-s-p", null, null)
             val out = new BufferedOutputStream(new FileOutputStream(result))
-            PhotoEntry.download(parent.getConnection().transport, url, out)
+            PhotoEntry.download(parent.transport, url, out)
             result
         } catch {
             case e: IOException => throw new PhotoException("Failed to retrieve original jpeg!", e)

@@ -27,10 +27,10 @@ final class FilesConnection(descriptor: ConnectionDescriptor) extends Connection
     type F = FilesFolder
 
 
-    private val rootFolder: F =  new RootFilesFolder(this, new File(descriptor.path))
+    override val rootFolder: F =  new RootFilesFolder(this, new File(descriptor.path))
 
 
-    override def getScheme() = FilesConnection.SCHEME
+    override def scheme = FilesConnection.SCHEME
 
 
     override def enableLowLevelLogging() {
@@ -39,9 +39,6 @@ final class FilesConnection(descriptor: ConnectionDescriptor) extends Connection
 
     protected override def login() {
     }
-
-
-    override def getRootFolder(): F = rootFolder
 }
 
 
@@ -52,10 +49,7 @@ object FilesConnection {
 }
 
 
-final class FilesFactory extends ConnectionFactory {
+final class FilesFactory extends ConnectionFactory(FilesConnection.SCHEME) {
 
     override def createConnection(descriptor: ConnectionDescriptor) = new FilesConnection(descriptor)
-
-
-    override def getScheme() = FilesConnection.SCHEME
 }

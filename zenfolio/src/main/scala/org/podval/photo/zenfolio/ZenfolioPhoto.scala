@@ -26,39 +26,41 @@ import java.io.File
 import java.util.{Date}
 
 
-final class ZenfolioPhoto(protected val parent: Gallery, var photo: ZPhoto) extends Photo {
+final class ZenfolioPhoto(val parent: Gallery, var photo: ZPhoto) extends Photo {
 
     // I do not deal with photos in the Groups; just in the Galleries.
 
-
-    override def name(): String = photo.getFileName()
-
-
-    override def timestamp(): Date = photo.getTakenOn().getTime()
+    type F = Gallery
 
 
-    override def size(): Int = photo.getSize()
+    override def name: String = photo.getFileName()
+
+
+    override def timestamp: Date = photo.getTakenOn().getTime()
+
+
+    override def size: Int = photo.getSize()
 
 
     // TODO: deal with null...
-    override def rotation(): Rotation.Value = ZenfolioPhoto.rotations.get(photo.getRotation()).get
+    override def rotation: Rotation.Value = ZenfolioPhoto.ROTATIONS.get(photo.getRotation()).get
 
 
-    override def getOriginalFile(): File = throw new UnsupportedOperationException("Not supported yet.")  // TODO: download
+    override def originalFile(): File = throw new UnsupportedOperationException("Not supported yet.")  // TODO: download
 }
 
 
 
 private object ZenfolioPhoto {
 
-    val rotations = Map[PhotoRotation, Rotation.Value](
+    val ROTATIONS = Map[PhotoRotation, Rotation.Value](
       PhotoRotation.None -> Rotation.None,
-//        rotations.put(PhotoRotation.Flip, Rotation.Flip);
+//        rotations.put(PhotoRotation.Flip, Rotation.Flip)
       PhotoRotation.Rotate180 -> Rotation.R180,
-//        rotations.put(PhotoRotation.Rotate180Flip, Rotation.Rotate180Flip);
+//        rotations.put(PhotoRotation.Rotate180Flip, Rotation.Rotate180Flip)
       PhotoRotation.Rotate270 -> Rotation.Left,
-//        rotations.put(PhotoRotation.Rotate270Flip, Rotation.Rotate270);
+//        rotations.put(PhotoRotation.Rotate270Flip, Rotation.Rotate270)
       PhotoRotation.Rotate90 -> Rotation.Right
-//        rotations.put(PhotoRotation.Rotate90Flip, Rotation.Rotate90Flip);
+//        rotations.put(PhotoRotation.Rotate90Flip, Rotation.Rotate90Flip)
     )
 }

@@ -26,7 +26,7 @@ import java.rmi.RemoteException
 import java.io.File
 
 
-/* package */ class Group(element: ZGroup) extends ZenfolioFolder[ZGroup](element) with AlbumList {
+/* package */ abstract class Group(element: ZGroup) extends ZenfolioFolder[ZGroup](element) with AlbumList {
 
     protected final override def retrieveFolders(): Seq[F] = {
         if ((element.getElements() != null) && (element.getElements().getArrayOfChoice1Choice() != null)) {
@@ -41,7 +41,12 @@ import java.io.File
     private def toFolder(what: ArrayOfChoice1Choice) =
         if (what.getGroup != null) new NonRootGroup(this, what.getGroup) else new Gallery(this, what.getPhotoSet())
 
-    
+
+    override def update() {
+        // TODO
+        throw new UnsupportedOperationException()
+    }
+
 //    @Override
 //    public GroupLike<?> doCreateFolder(
 //        final String name,

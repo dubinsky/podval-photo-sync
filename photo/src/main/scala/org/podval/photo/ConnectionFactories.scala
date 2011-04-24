@@ -32,7 +32,7 @@ object ConnectionFactories {
 
 
     def get(scheme: String): ConnectionFactory = {
-        val result = getAll().find(factory => factory.getScheme().equals(scheme))
+        val result = getAll().find(_.scheme.equals(scheme))
 
         if (result.isEmpty) {
             throw new PhotoException("Unknown scheme: " + scheme)
@@ -42,8 +42,8 @@ object ConnectionFactories {
     }
 
 
-    def getConnection(ticket: ConnectionDescriptor): Connection = get(ticket.scheme).createConnection(ticket)
+    def getConnection(descriptor: ConnectionDescriptor): Connection = get(descriptor.scheme).createConnection(descriptor)
 
 
-    private var loader: ServiceLoader[ConnectionFactory] = null
+    private var loader: ServiceLoader[ConnectionFactory] = _
 }

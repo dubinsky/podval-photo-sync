@@ -23,7 +23,7 @@ abstract class Connection(descriptor: ConnectionDescriptor) {
     type F <: Folder
 
 
-    def getScheme(): String
+    def scheme: String
 
 
     def enableLowLevelLogging(): Unit
@@ -39,10 +39,7 @@ abstract class Connection(descriptor: ConnectionDescriptor) {
     protected def login()
 
 
-    def getRootFolder(): F
-
-
-    var isReadOnly: Boolean = false
+    def rootFolder: F
 
 
     protected final def getSubFolderByPath(folder: F, path: String): F = {

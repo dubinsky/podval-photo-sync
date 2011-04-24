@@ -22,19 +22,19 @@ import java.util.Date
 
 trait PhotoId {
 
-    def name(): String
+    def name: String
 
 
-    def timestamp(): Date
+    def timestamp: Date
 
 
-    def size(): Int
+    def size: Int
 
 
     final def isIdentifiedBy(id: PhotoId): Boolean = {
-        val namesEqual = name() == id.name()
-        val timestampsEqual = timestamp() == id.timestamp()
-        val sizesEqual = size() == id.size();
+        val namesEqual = name == id.name
+        val timestampsEqual = timestamp == id.timestamp
+        val sizesEqual = size == id.size
 
         timestampsEqual || (namesEqual && sizesEqual)
     }

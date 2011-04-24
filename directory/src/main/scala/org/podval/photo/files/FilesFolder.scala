@@ -44,13 +44,13 @@ abstract class FilesFolder(directory: File) extends Mix {
     }
 
 
-    final override def name() = directory.getName()
+    final override def name = directory.getName()
 
 
-    final override def isPublic() = true
+    final override def public = true
 
 
-    final override def setPublic(value: Boolean) {
+    final override def public_=(value: Boolean) {
         if (!value) {
             throw new PhotoException("File system folders are always public!")
         }
@@ -70,6 +70,7 @@ abstract class FilesFolder(directory: File) extends Mix {
     }
 
 
+    // TODO: introduce builder
     private def register(bunches: mutable.Map[String, mutable.Map[String, File]], file: File) {
         val (name, extension) = splitName(file)
 
@@ -89,7 +90,7 @@ abstract class FilesFolder(directory: File) extends Mix {
     }
 
 
-    final override def updateIfChanged() {
+    final override def update() {
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }

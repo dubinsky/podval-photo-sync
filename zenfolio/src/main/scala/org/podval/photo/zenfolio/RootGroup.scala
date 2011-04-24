@@ -21,7 +21,5 @@ import org.podval.photo.Root
 import com.zenfolio.www.api._1_1.{Group => ZGroup}
 
 
-final class RootGroup(connectionArg: Zenfolio, element: ZGroup) extends Group(element) with Root {
-
-    protected val connection = connectionArg
+final class RootGroup(override val connection: Zenfolio, element: ZGroup) extends Group(element) with Root {
 }

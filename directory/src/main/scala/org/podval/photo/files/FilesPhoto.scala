@@ -24,29 +24,23 @@ import java.io.File
 import java.util.Date
 
 
-final class FilesPhoto(parentArg: FilesFolder, name: String, files: Map[String, File])
+final class FilesPhoto(override val parent: FilesFolder, override val name: String, files: Map[String, File])
     extends Photo
 {
 
     type F = FilesFolder
 
 
-    protected val parent = parentArg
+    override def timestamp = new Date(originalFile().lastModified())
 
 
-    override def name() = name
+    override def size = originalFile().length().toInt
 
 
-    override def timestamp() = new Date(getOriginalFile().lastModified())
+    override def rotation = throw new UnsupportedOperationException("Not supported yet.") // TODO
 
 
-    override def size() = getOriginalFile().length().toInt
-
-
-    override def rotation() = throw new UnsupportedOperationException("Not supported yet.") // TODO
-
-
-    def getOriginalFile() = get("jpg").get
+    def originalFile() = get("jpg").get
 
 
     def get(extension: String): Option[File] = files.get(extension)

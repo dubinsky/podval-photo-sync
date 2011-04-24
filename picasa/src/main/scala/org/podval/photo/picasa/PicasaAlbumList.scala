@@ -28,18 +28,15 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-final class PicasaAlbumList(connectionArg: Picasa) extends PicasaFolder with RootAlbumList {
+final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolder with RootAlbumList {
 
-    protected val connection = connectionArg
-
-
-    override def name(): String = "/"
+    override def name: String = "/"
 
 
-    override def isPublic() = true
+    override def public = true
 
 
-    override def setPublic(value: Boolean) {
+    override def public_=(value: Boolean) {
         if (!value) {
             throw new PhotoException("Picasa album list is always public!")
         }
@@ -50,11 +47,11 @@ final class PicasaAlbumList(connectionArg: Picasa) extends PicasaFolder with Roo
         val result = new ListBuffer[PicasaFolder]()
 
         try {
-            val url = PicasaUrl.relativeToRoot("feed/api/user/" + getConnection().getLogin())
+            val url = PicasaUrl.relativeToRoot("feed/api/user/" + connection.getLogin())
 
             var nextUrl = url
             do {
-                val chunk = UserFeed.executeGet(getConnection().transport, nextUrl)
+                val chunk = UserFeed.executeGet(transport, nextUrl)
 
                 if (feed == null) {
                     feed = chunk
@@ -77,7 +74,7 @@ final class PicasaAlbumList(connectionArg: Picasa) extends PicasaFolder with Roo
     }
 
 
-    override def updateIfChanged() {
+    override def update() {
         // TODO
     }
 

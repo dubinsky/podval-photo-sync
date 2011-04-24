@@ -20,11 +20,8 @@ package org.podval.photo
 
 trait Root extends Folder {
 
-    override final def getConnection(): C = connection
+    override val connection: C
 
 
-    override final def getParent(): Option[F] = scala.None
-
-
-    protected val connection: C
+    override final def parent: Option[F] = scala.None
 }

@@ -29,4 +29,7 @@ trait PicasaFolder extends Folder {
 
 
     type P = PicasaPhoto
+
+
+    def transport = connection.transport
 }

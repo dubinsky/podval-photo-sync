@@ -28,10 +28,7 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-final class PicasaAlbum(parentArg: PicasaFolder, private var entry: AlbumEntry) extends PicasaFolder with NonRootAlbum {
-
-    protected val parent = parentArg
-
+final class PicasaAlbum(protected override val parentFolder: PicasaFolder, private var entry: AlbumEntry) extends PicasaFolder with NonRootAlbum {
 
 //    public Album(final Picasa picasa, final String name) {
 //        this(picasa, new AlbumEntry());
@@ -40,14 +37,14 @@ final class PicasaAlbum(parentArg: PicasaFolder, private var entry: AlbumEntry) 
 //    }
 
 
-    override def name(): String = entry.title
+    override def name: String = entry.title
 
 
-    override def isPublic() = PicasaAlbum.access(entry.access)
+    override def public = PicasaAlbum.access(entry.access)
 
 
-    override def setPublic(value: Boolean) {
-        if (isPublic() != value) {
+    override def public_=(value: Boolean) {
+        if (public != value) {
             ensureOriginalSaved()
             entry.access = PicasaAlbum.access(value)
         }
@@ -63,7 +60,7 @@ final class PicasaAlbum(parentArg: PicasaFolder, private var entry: AlbumEntry) 
 
                 var nextUrl = url
                 do {
-                    val feed = AlbumFeed.executeGet(getConnection().transport, nextUrl)
+                    val feed = AlbumFeed.executeGet(transport, nextUrl)
 
                     val photos: Seq[PhotoEntry] = feed.photos
                     result ++= (photos map (new PicasaPhoto(this, _)))
@@ -87,10 +84,10 @@ final class PicasaAlbum(parentArg: PicasaFolder, private var entry: AlbumEntry) 
     }
 
 
-    override def updateIfChanged() {
+    override def update() {
         if (originalEntry != null) {
             try {
-                entry.executePatchRelativeToOriginal(getConnection().transport, originalEntry)
+                entry.executePatchRelativeToOriginal(transport, originalEntry)
             } catch {
                 case e: IOException => throw new PhotoException(e)
             }

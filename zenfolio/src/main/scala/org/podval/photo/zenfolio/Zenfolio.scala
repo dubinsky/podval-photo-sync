@@ -21,7 +21,7 @@ import org.podval.photo.{ConnectionFactory, Connection, ConnectionDescriptor, Ph
 
 import com.zenfolio.www.api._1_1.{ZfApi, ZfApiStub, AuthChallenge}
 
-import java.rmi.RemoteException;
+import java.rmi.RemoteException
 
 import java.security.NoSuchAlgorithmException
 
@@ -30,7 +30,7 @@ import org.apache.axis2.transport.http.HTTPConstants
 
 import org.apache.commons.httpclient.Header
 
-import java.io.IOException;
+import java.io.IOException
 
 
 final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descriptor) {
@@ -38,14 +38,14 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
     type F = ZenfolioFolder[_]
 
 
-    override def getScheme() = Zenfolio.SCHEME
+    override def scheme = Zenfolio.SCHEME
 
 
     override def enableLowLevelLogging() {
     }
 
 
-    private val connection: ZfApi = createConnection()
+    val connection: ZfApi = createConnection()
 
 
     private def createConnection() = {
@@ -57,10 +57,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
     }
     
 
-    override def getRootFolder(): F = rootFolder
-
-
-    private val rootFolder = getSubFolderByPath(getRealRootFolder(), descriptor.path)
+    override val rootFolder: F = getSubFolderByPath(getRealRootFolder(), descriptor.path)
 
 
     private def getRealRootFolder(): F = {
@@ -84,7 +81,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
             authToken = connection.authenticate(
                     Bytes.wrapBytes(challenge),
-                    Bytes.wrapBytes(proof));
+                    Bytes.wrapBytes(proof))
 
         } catch {
             case e: RemoteException => throw new PhotoException(e)
@@ -94,7 +91,7 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
         val options: Options = connection.asInstanceOf[Stub]._getServiceClient().getOptions()
 
-//      options.setProperty(HTTPConstants.HEADER_COOKIE, "zf_token=" + authToken);
+//      options.setProperty(HTTPConstants.HEADER_COOKIE, "zf_token=" + authToken)
 
         val headers = Seq(getAuthTokenHeader())
         options.setProperty(HTTPConstants.HTTP_HEADERS, headers)
@@ -102,9 +99,6 @@ final class Zenfolio(descriptor: ConnectionDescriptor) extends Connection(descri
 
 
     /* package */ def getAuthTokenHeader(): Header = new Header("X-Zenfolio-Token", authToken)
-
-
-    def getConnection(): ZfApi = connection
 
 
     private var authToken: String = null
@@ -119,10 +113,7 @@ object Zenfolio {
 
 
 
-final class ZenfolioFactrory extends ConnectionFactory {
+final class ZenfolioFactrory extends ConnectionFactory(Zenfolio.SCHEME) {
 
     def createConnection(descriptor: ConnectionDescriptor) = new Zenfolio(descriptor)
-
-
-    def getScheme() = Zenfolio.SCHEME
 }

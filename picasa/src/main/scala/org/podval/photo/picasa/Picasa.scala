@@ -44,13 +44,10 @@ final class Picasa(descriptor: ConnectionDescriptor) extends Connection(descript
     def getLogin(): String = descriptor.login
 
 
-    private val rootFolder: F = new PicasaAlbumList(this)
+    override val rootFolder: F = new PicasaAlbumList(this)
 
 
-    override def getRootFolder(): F = rootFolder
-
-
-    override def getScheme() = Picasa.SCHEME
+    override def scheme = Picasa.SCHEME
 
 
     override def enableLowLevelLogging() {
@@ -107,10 +104,7 @@ object Picasa {
 
 
 
-final class PicasaFactrory extends ConnectionFactory {
+final class PicasaFactrory extends ConnectionFactory(Picasa.SCHEME) {
 
     def createConnection(descriptor: ConnectionDescriptor) = new Picasa(descriptor)
-
-
-    def getScheme() = Picasa.SCHEME
 }
