@@ -17,21 +17,14 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.Connection;
-import org.podval.photo.ConnectionFactories
-import org.podval.photo.ConnectionDescriptor;
-//import org.podval.photo.Photo;
-//import org.podval.photo.Indenter;
-import org.podval.photo.PhotoException;
-//
-import java.util.logging.Logger;
-import java.util.logging.Level;
-//import java.util.logging.Handler;
-//
-import org.kohsuke.args4j.Option;
-import org.kohsuke.args4j.Argument;
-import org.kohsuke.args4j.CmdLineParser;
-import org.kohsuke.args4j.CmdLineException;
+import org.podval.photo.{Connection, ConnectionFactories, ConnectionDescriptor}
+import org.podval.photo.{Folder, Photo, PhotoId, PhotoException}
+
+import java.util.logging.{Logger, Level, Handler}
+
+import org.kohsuke.args4j.{Option, Argument, CmdLineParser, CmdLineException}
+
+import scala.xml.Elem
 
 
 object Main {
@@ -63,7 +56,7 @@ object Main {
 
 
     @Option(name="-h", aliases=Array("--help"), usage="display help message")
-    private var help: Boolean = false;
+    private var help: Boolean = false
 
 
     @Option(name="-d", aliases=Array("--dry-run"), usage="dry run")
@@ -76,41 +69,41 @@ object Main {
 
     @Argument(index=0, required=true)
     private def setFirstUri(value: String) {
-        firstTicket = UriParser.fromUri(value, suffix);
+        firstTicket = UriParser.fromUri(value, suffix)
     }
 
 
     @Argument(index=1, required=false)
     private def setSecondUri(value: String) {
-        secondTicket = UriParser.fromUri(value, suffix);
+        secondTicket = UriParser.fromUri(value, suffix)
     }
 
 
     private def printSchemes() {
-        System.out.println("  Available schemes:");
+        System.out.println("  Available schemes:")
         for (connectionFactory <- ConnectionFactories.getAll()) {
-            System.out.println("    " + connectionFactory.getScheme())
+            System.out.println("    " + connectionFactory.scheme)
         }
     }
 
 
     private def parse(args: Array[String]) {
-        val parser = new CmdLineParser(this);
+        val parser = new CmdLineParser(this)
         try {
-            parser.parseArgument(args);
+            parser.parseArgument(args: _*)
             // TODO: ?
 //            if (realArgs.length > 2) {
-//                throw new ParseException("Too many arguments");
+//                throw new ParseException("Too many arguments")
 //            }
         } catch {
             case e: CmdLineException =>
             System.err.println("Error: " + e.getMessage())
             printUsage(parser)
-            System.exit(1);
+            System.exit(1)
         }
         if (help) {
             printUsage(parser)
-            System.exit(0);
+            System.exit(0)
         }
     }
 
@@ -125,7 +118,7 @@ object Main {
         System.err.println(
             "\n" +
             "uri: scheme://[user:password@][host]/path\n"
-        );
+        )
 
         printSchemes()
     }
@@ -146,9 +139,9 @@ object Main {
                 Level.INFO
             }
 
-        val log = Logger.getLogger(Connection.LOG);
+        val log = Logger.getLogger(Connection.LOG)
 
-        log.setLevel(level);
+        log.setLevel(level)
     }
 
 
@@ -156,19 +149,36 @@ object Main {
         val firstConnection: Connection = ConnectionFactories.getConnection(firstTicket)
 
         if (secondTicket == null) {
-            list(firstConnection);
+            list(firstConnection)
         } else {
 //            val secondConnection = ConnectionFactories.getConnection(secondTicket)
-//            synchronize(firstConnection, secondConnection);
+//            synchronize(firstConnection, secondConnection)
         }
     }
 
 
     private def list(connection: Connection) {
-        open(connection);
-        val xml = connection.getRootFolder().list();
+        open(connection)
+        val xml = listFolder(connection.rootFolder)
         // TODO prettyprint!
     }
+
+
+    private def listFolder(folder: Folder): Elem =
+        <folder>
+           <name>{folder.name}</name>
+           {folder.folders map (listFolder(_))}
+           {folder.photos map (listPhoto(_))}
+        </folder>
+
+
+    private def listPhoto(photo: Photo): Elem =
+        <photo
+            name={photo.name}
+            date={photo.timestamp.toString}
+            size={photo.size.toString}
+            rotation={photo.rotation.toString}
+        />
 
 
 
@@ -176,10 +186,10 @@ object Main {
 //        final Connection<F> fromConnection,
 //        final Connection<T> toConnection) throws PhotoException
 //    {
-//        open(fromConnection);
-//        open(toConnection);
+//        open(fromConnection)
+//        open(toConnection)
 //
-//        fromConnection.getRootFolder().syncFolderTo(toConnection.getRootFolder());
+//        fromConnection.getRootFolder().syncFolderTo(toConnection.getRootFolder())
 //    }
 
 
@@ -187,8 +197,6 @@ object Main {
         if (enableLowLevelLogging) {
             connection.enableLowLevelLogging()
         }
-
-        connection.isReadOnly = isDryRun
 
         connection.open()
     }

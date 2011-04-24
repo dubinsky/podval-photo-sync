@@ -72,14 +72,6 @@ trait Folder {
     def update()
 
 
-//    def list(): Elem =
-//        <folder>
-//           <name>{name}</name>
-//           {folders map (_.list())}
-//           {photos map (_.list())}
-//        </folder>
-
-
 //    def syncFolderTo(toFolder: FolderNG) {
 //        getLog().debug("Synchronizing " + name());
 //

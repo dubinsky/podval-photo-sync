@@ -17,7 +17,7 @@
 package org.podval.photo.cli
 
 import org.podval.photo.ConnectionDescriptor
-import org.podval.directory.FileConnection
+import org.podval.photo.files.FilesConnection
 
 import org.kohsuke.args4j.CmdLineException
 
@@ -26,18 +26,10 @@ import java.net.{URI, URISyntaxException}
 
 object UriParser {
 
-    def fromUri(uriStr: String, suffix: String): ConnectionDescriptor = { // throws CmdLineException
+    @throws(classOf[CmdLineException])
+    def fromUri(uriStr: String, suffix: String): ConnectionDescriptor = {
 
         val uri: URI = toUri(uriStr)
-
-
-        def toUri(uriStr: String) = {
-            try {
-                new URI(uriStr)
-            } catch {
-                case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
-            }
-        }
 
         val userInfo: String = getUserInfo(uri)
 
@@ -80,8 +72,17 @@ object UriParser {
     }
 
 
+    private def toUri(uriStr: String) = {
+        try {
+            new URI(uriStr)
+        } catch {
+            case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
+        }
+    }
+
+
     private def defaultScheme(scheme: String): String =
-        if (scheme == null) FileConnection.SCHEME else scheme
+        if (scheme == null) FilesConnection.SCHEME else scheme
 
 
     private def addSuffix(what: String, suffix: String) =

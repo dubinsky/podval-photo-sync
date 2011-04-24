@@ -43,15 +43,4 @@ trait Photo extends PhotoId {
 
 
     def originalFile(): File
-
-
-//    def list(): Elem =
-//        <photo
-//            name={name()}
-//            date={timestamp().toString}
-//            size={size().toString}
-//            rotation={rotation().toString}
-//        />
-//
-//
 }
