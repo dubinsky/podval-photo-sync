@@ -83,6 +83,7 @@ abstract class FilesFolder(directory: File) extends Mix {
     }
 
 
+    // TODO: look for standard function
     private def splitName(file: File): (String, String) = {
         val filename = file.getName()
         val dot = filename.lastIndexOf('.')

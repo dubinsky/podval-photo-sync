@@ -132,10 +132,10 @@
 
     <modules>
         <module>photo</module>
-        <module>directory</module>
+        <module>files</module>
         <module>picasa</module>
         <module>zenfolio-api</module>
         <module>zenfolio</module>
-        <module>sync</module>
+        <module>cli</module>
     </modules>
 </project>
