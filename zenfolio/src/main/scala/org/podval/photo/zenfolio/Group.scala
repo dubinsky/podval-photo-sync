@@ -106,11 +106,4 @@ import java.io.File
 //    protected void checkFolderType(final FolderType folderType) {
 //        folderType.checkNotMixed();
 //    }
-//
-//
-//    @Override
-//    public void updateIfChanged() throws PhotoException {
-//        // TODO
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
 }
