@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-abstract class Connection[T](connector: Connector, descriptor: ConnectionDescriptor) {
+abstract class Connection[T](connector: Connector) {
 
     // TODO: check that login is present if required
 
@@ -29,91 +29,68 @@ abstract class Connection[T](connector: Connector, descriptor: ConnectionDescrip
     type R = F with Root
 
 
-    if (isLoginRequired && descriptor.login.isEmpty) {
-        throw new PhotoException(scheme + " requires a login to be specified!")
-    }
-
-    if (!isHierarchySupported) {
-        val path = descriptor.path
-        if ((path != null) &&  !path.isEmpty() && !path.equals("/")) {
-          // TODO not really; one step is still allowed...
-            throw new PhotoException(scheme + " does not support hierarchy; path must be empty!")
-        }
-    }
-
-
     final def scheme: String = connector.scheme
-
-
-    def isLoginRequired: Boolean
-
-
-    def isHierarchySupported: Boolean
 
 
     def enableLowLevelLogging(): Unit
 
 
-    final def login: String = descriptor.login.get
+    // TODO: throws
+    final def open(loginVal: Option[String], password: Option[String]) {
+        if (rootFolderVar.isDefined) {
+            throw new PhotoException("Connection is already open!")
+        }
 
+        loginVar = loginVal
 
-    val transport: T = createTransport()
+        if (isLoginRequired && loginVal.isEmpty) {
+            throw new PhotoException(scheme + " requires a login to be specified!")
+        }
+
+        transportVar = Some(createTransport())
+
+        if (password.isDefined) {
+            login(login, password.get)
+        }
+
+        rootFolderVar = Some(createRootFolder())
+    }
 
 
     protected def createTransport(): T
 
 
-    final def open() { // TODO: throws
-        if (descriptor.password.isDefined) {
-            login(login, descriptor.password.get)
-        }
-
-        root = Some(createRootFolder())
-    }
+    def transport: T = transportVar.get
 
 
-    protected def login(login: String, password: String)
+    def isLoginRequired: Boolean
 
 
-    final def realRootFolder: R = {
-        if (root.isEmpty) {
-            throw new PhotoException("Connection is not open - no root folder!")
-        }
-
-        root.get
-    }
+    final def login: String = loginVar.get
 
 
-    private var root: Option[R] = _
+    protected def login(login: String, password: String): Unit
 
 
     protected def createRootFolder(): R
 
 
-    final def rootFolder: F =
-        if (isPathToRoot)
-            getSubFolderByPath(realRootFolder, descriptor.path) else
-            realRootFolder
-
-
-    protected def isPathToRoot: Boolean
-
-
-    private final def getSubFolderByPath(folder: F, path: String): F = {
-        var result = folder
-
-        if (path != null) {
-            for (name <- path.split("/")) {
-                if (!name.isEmpty()) {
-                  // TODO checks
-////                    result.getFolderType().checkCanHaveFolders(result);
-                    result = result.getFolder(name).get.asInstanceOf[F];
-                }
-            }
+    final def rootFolder: R = {
+        if (rootFolderVar.isEmpty) {
+            throw new PhotoException("Connection is not open - no root folder!")
         }
 
-        result
+        rootFolderVar.get
     }
+
+
+    private var transportVar: Option[T] = None
+
+
+    private var loginVar: Option[String] = None
+
+
+    private var rootFolderVar: Option[R] = None
 }
 
 

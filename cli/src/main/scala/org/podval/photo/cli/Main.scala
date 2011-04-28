@@ -17,12 +17,12 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.{Connector, ConnectionDescriptor, Connection}
+import org.podval.photo.{Connector, Connection}
 import org.podval.photo.{Folder, Photo, PhotoId, PhotoException}
 
 import java.util.logging.{Logger, Level, Handler}
 
-import org.kohsuke.args4j.{Option, Argument, CmdLineParser, CmdLineException}
+import org.kohsuke.args4j.{Option => COption, Argument, CmdLineParser, CmdLineException}
 
 import scala.xml.Elem
 
@@ -50,32 +50,32 @@ object Main {
 //    private static enum LogLevel { INFO, DEBUG, TRACE }
 
 
-    @Option(name="-l", aliases=Array("--log-level"), usage="logging level")
+    @COption(name="-l", aliases=Array("--log-level"), usage="logging level")
 //    private var logLevel: LogLevel = LogLevel.INFO
     private var logLevel: String = "info"
 
 
-    @Option(name="-h", aliases=Array("--help"), usage="display help message")
+    @COption(name="-h", aliases=Array("--help"), usage="display help message")
     private var help: Boolean = false
 
 
-    @Option(name="-d", aliases=Array("--dry-run"), usage="dry run")
+    @COption(name="-d", aliases=Array("--dry-run"), usage="dry run")
     private var isDryRun: Boolean = false
 
 
-    @Option(name="-s", aliases=Array("--suffux"), usage="suffix that selects a subtree")
+    @COption(name="-s", aliases=Array("--suffux"), usage="suffix that selects a subtree")
     private var suffix: String = null
 
 
     @Argument(index=0, required=true)
-    private def setFirstUri(value: String) {
-        firstTicket = UriParser.fromUri(value, suffix)
+    private def setFirstUri(uri: String) {
+        firstUri = Some(uri)
     }
 
 
     @Argument(index=1, required=false)
-    private def setSecondUri(value: String) {
-        secondTicket = UriParser.fromUri(value, suffix)
+    private def setSecondUri(uri: String) {
+        secondUri = Some(uri)
     }
 
 
@@ -144,10 +144,12 @@ object Main {
 
 
     private def run() {
-        val firstConnection: Connection[_] = Connector.getConnection(firstTicket)
-
-        if (secondTicket == null) {
-            list(firstConnection)
+        if (secondUri.isEmpty) {
+            val folder = getFolder(firstUri.get)
+            new
+//            FolderList(folder)
+            XmlList(folder)
+            .run
         } else {
 //            val secondConnection = ConnectionFactories.getConnection(secondTicket)
 //            synchronize(firstConnection, secondConnection)
@@ -155,29 +157,7 @@ object Main {
     }
 
 
-    private def list(connection: Connection[_]) {
-        open(connection)
-        val xml = listFolder(connection.rootFolder)
-        // TODO prettyprint!
-    }
-
-
-    private def listFolder(folder: Folder): Elem =
-        <folder>
-           <name>{folder.name}</name>
-           {folder.folders map (listFolder(_))}
-           {folder.photos map (listPhoto(_))}
-        </folder>
-
-
-    private def listPhoto(photo: Photo): Elem =
-        <photo
-            name={photo.name}
-            date={photo.timestamp.toString}
-            size={photo.size.toString}
-            rotation={photo.rotation.toString}
-        />
-
+    private def getFolder(uri: String) = UriParser.uri2folder(uri, enableLowLevelLogging, suffix)
 
 
 //    private <F extends Photo, T extends Photo> void synchronize(
@@ -191,19 +171,10 @@ object Main {
 //    }
 
 
-    private def open(connection: Connection[_]) {
-        if (enableLowLevelLogging) {
-            connection.enableLowLevelLogging()
-        }
-
-        connection.open()
-    }
+    private var firstUri: Option[String] = None
 
 
-    private var firstTicket: ConnectionDescriptor = null
-
-
-    private var secondTicket: ConnectionDescriptor = null
+    private var secondUri: Option[String] = None
 
 
     private var enableLowLevelLogging = false

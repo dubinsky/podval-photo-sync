@@ -17,7 +17,7 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{Connector, ConnectionDescriptor, Connection, PhotoException}
+import org.podval.photo.{Connector, Connection, PhotoException}
 import org.podval.picasa.model.{Namespaces, PicasaUrl}
 
 import com.google.api.client.googleapis.{GoogleTransport, GoogleHeaders}
@@ -30,16 +30,9 @@ import java.util.logging.{Logger, Level}
 import java.io.IOException
 
 
-final class Picasa(connector: PicasaConnector, descriptor: ConnectionDescriptor)
-    extends Connection[HttpTransport](connector, descriptor) {
+final class Picasa(connector: PicasaConnector) extends Connection[HttpTransport](connector) {
 
     type F = PicasaFolder
-
-
-    override def isLoginRequired: Boolean = true
-
-
-    override def isHierarchySupported: Boolean = false
 
 
     override def enableLowLevelLogging() {
@@ -48,6 +41,9 @@ final class Picasa(connector: PicasaConnector, descriptor: ConnectionDescriptor)
 
         PicasaUrl.isLoggingEnabled = true;
     }
+
+
+    override def isLoginRequired: Boolean = true
 
 
     protected override def createTransport(): HttpTransport = {
@@ -81,14 +77,11 @@ final class Picasa(connector: PicasaConnector, descriptor: ConnectionDescriptor)
 
 
     protected override def createRootFolder(): R = new PicasaAlbumList(this)
-
-
-    protected override def isPathToRoot: Boolean = true  
 }
 
 
 
 final class PicasaConnector extends Connector("picasa") {
 
-    def connect(descriptor: ConnectionDescriptor) = new Picasa(this, descriptor)
+    def connect() = new Picasa(this)
 }

@@ -26,7 +26,7 @@ abstract class Connector(val scheme: String) {
 
     // TODO do connect() through reflection?
 
-    def connect(descriptor: ConnectionDescriptor): Connection[_]
+    def connect(): Connection[_]
 }
 
 
@@ -39,16 +39,7 @@ object Connector {
     val all: Seq[Connector] = Seq[Connector]() ++ asScalaIterable(loader)
 
 
-    def get(scheme: String): Connector = {
-        val result = all.find(_.scheme.equals(scheme))
-
-        if (result.isEmpty) {
-            throw new PhotoException("Unknown scheme: " + scheme)
-        }
-
-        result.get
+    def get(scheme: String): Option[Connector] = {
+        all.find(_.scheme.equals(scheme))
     }
-
-
-    def getConnection(descriptor: ConnectionDescriptor): Connection[_] = get(descriptor.scheme).connect(descriptor)
 }

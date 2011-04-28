@@ -17,28 +17,35 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.{Connector, ConnectionDescriptor, Connection}
+import org.podval.photo.{Connector, Connection, PhotoException}
 
 import java.io.File
 
 
-final class FilesConnection(connector: FilesConnector, descriptor: ConnectionDescriptor)
-    extends Connection[File](connector, descriptor) {
+final class FilesConnection(connector: FilesConnector) extends Connection[File](connector) {
 
     type F = FilesFolder
-
-
-    override def isLoginRequired: Boolean = false
-
-
-    override def isHierarchySupported: Boolean = true
 
 
     override def enableLowLevelLogging() {
     }
 
 
-    protected override def createTransport(): File = new File(descriptor.path)
+    def open(path: String, loginVal: Option[String], password: Option[String]) {
+        pathVar = Some(path)
+    }
+
+
+    protected override def createTransport(): File = {
+        if (pathVar.isEmpty) {
+            throw new PhotoException("Unknown path to root. Did you call the right open()?")
+        }
+
+        new File(pathVar.get)
+    }
+
+
+    override def isLoginRequired: Boolean = false
 
 
     protected override def login(login: String, password: String) {
@@ -48,14 +55,14 @@ final class FilesConnection(connector: FilesConnector, descriptor: ConnectionDes
     protected override def createRootFolder(): R =  new RootFilesFolder(this, transport)
 
 
-    protected override def isPathToRoot: Boolean = false
+    private var pathVar: Option[String] = None
 }
 
 
 
 final class FilesConnector extends Connector(FilesConnector.SCHEME) {
 
-    override def connect(descriptor: ConnectionDescriptor) = new FilesConnection(this, descriptor)
+    override def connect() = new FilesConnection(this)
 }
 
 

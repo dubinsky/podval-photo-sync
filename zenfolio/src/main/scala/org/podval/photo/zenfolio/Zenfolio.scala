@@ -17,7 +17,7 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.{Connector, ConnectionDescriptor, Connection, PhotoException}
+import org.podval.photo.{Connector, Connection, PhotoException}
 
 import com.zenfolio.www.api._1_1.{ZfApi, ZfApiStub, AuthChallenge}
 
@@ -33,16 +33,9 @@ import org.apache.commons.httpclient.Header
 import java.io.IOException
 
 
-final class Zenfolio(connector: ZenfolioConnector, descriptor: ConnectionDescriptor)
-    extends Connection[ZfApiStub](connector, descriptor) {
+final class Zenfolio(connector: ZenfolioConnector) extends Connection[ZfApiStub](connector) {
 
     type F = ZenfolioFolder[_]
-
-
-    override def isLoginRequired: Boolean = true
-
-
-    override def isHierarchySupported: Boolean = true
 
 
     override def enableLowLevelLogging() {
@@ -56,6 +49,9 @@ final class Zenfolio(connector: ZenfolioConnector, descriptor: ConnectionDescrip
             case e: RemoteException => throw new PhotoException(e)
         }
     }
+
+
+    override def isLoginRequired: Boolean = true
 
 
     protected override def login(login: String, password: String) {
@@ -95,19 +91,16 @@ final class Zenfolio(connector: ZenfolioConnector, descriptor: ConnectionDescrip
 
     protected override def createRootFolder(): R = {
         try {
-            new RootGroup(this, transport.loadGroupHierarchy(descriptor.login.get))
+            new RootGroup(this, transport.loadGroupHierarchy(login))
         } catch {
             case e: RemoteException => throw new PhotoException(e)
         }
     }
-
-
-    protected override def isPathToRoot: Boolean = true  
 }
 
 
 
 final class ZenfolioConnector extends Connector("zenfolio") {
 
-    def connect(descriptor: ConnectionDescriptor) = new Zenfolio(this, descriptor)
+    def connect() = new Zenfolio(this)
 }

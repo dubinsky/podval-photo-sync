@@ -16,8 +16,8 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.ConnectionDescriptor
-import org.podval.photo.files.FilesConnector
+import org.podval.photo.{Connector, Folder, PhotoException}
+import org.podval.photo.files.{FilesConnector, FilesConnection}
 
 import org.kohsuke.args4j.CmdLineException
 
@@ -27,26 +27,46 @@ import java.net.{URI, URISyntaxException}
 object UriParser {
 
     @throws(classOf[CmdLineException])
-    def fromUri(uriStr: String, suffix: String): ConnectionDescriptor = {
-        val uri: URI = toUri(uriStr)
+    def uri2folder(uriStr: String, enableLowLevelLogging: Boolean, suffix: String): Folder = {
+        val uri: URI = 
+            try {
+                new URI(uriStr)
+            } catch {
+                case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
+            }
 
-        val (login: Option[String], password: Option[String]) = splitUserInfo(getUserInfo(uri))
+        val scheme = defaultScheme(uri.getScheme())
 
-        new ConnectionDescriptor(
-            defaultScheme(uri.getScheme()),
-            login,
-            password,
-            uri.getHost(),
-            addSuffix(uri.getPath(), suffix));
-    }
-
-
-    private def toUri(uriStr: String) = {
-        try {
-            new URI(uriStr)
-        } catch {
-            case e: URISyntaxException =>  throw new CmdLineException(e.getMessage())
+        val connector = Connector.get(scheme)
+        if (connector.isEmpty) {
+            throw new CmdLineException("Unknown scheme: " + scheme)
         }
+
+        val connection = connector.get.connect()
+
+        if (enableLowLevelLogging) {
+            connection.enableLowLevelLogging
+        }
+
+        val isFilesConnection = connection.isInstanceOf[FilesConnection]
+
+        val (login: Option[String], password: Option[String]) = split(getUserInfo(uri), ':')
+
+        val (pathToRoot, pathAfterRoot) = split(uri.getPath(), '|')
+
+        if (pathAfterRoot.isDefined && !isFilesConnection) {
+            throw new CmdLineException("Only files connection can have path-to-root!")
+        }
+
+        val path = if (isFilesConnection) pathAfterRoot else pathToRoot
+
+        if (connection.isInstanceOf[FilesConnection]) {
+            connection.asInstanceOf[FilesConnection].open(pathToRoot.get, login, password)
+        } else {
+            connection.open(login, password)
+        }
+
+        getSubFolderByPath(connection.rootFolder, addSuffix(path.get, suffix))
     }
 
 
@@ -68,15 +88,15 @@ object UriParser {
 
 
     // TODO look for standard function
-    private def splitUserInfo(userInfo: String): (Option[String], Option[String]) = {
-        if (userInfo == null) {
+    private def split(what: String, where: Char): (Option[String], Option[String]) = {
+        if (what == null) {
             (None, None)
         } else {
-            val colon = userInfo.indexOf(':')
-            if (colon == -1) {
-                (Some(userInfo), None)
+            val index = what.indexOf(where)
+            if (index == -1) {
+                (Some(what), None)
             } else {
-                (Some(userInfo.substring(0, colon)), Some(userInfo.substring(colon+1)))
+                (Some(what.substring(0, index)), Some(what.substring(index+1)))
             }
         }
     }
@@ -88,4 +108,23 @@ object UriParser {
 
     private def addSuffix(what: String, suffix: String) =
         if ((what == null) || (suffix == null)) what else what + "/" + suffix
+
+
+    private final def getSubFolderByPath(folder: Folder, path: String): Folder = {
+        var result = folder
+
+        if (path != null) {
+            for (name <- path.split("/")) {
+                if (!name.isEmpty()) {
+                    if (!result.canHaveFolders) {
+                        throw new PhotoException("Folder " + result + " can not have subfoldrs!")
+                    }
+
+                    result = result.getFolder(name).get
+                }
+            }
+        }
+
+        result
+    }
 }

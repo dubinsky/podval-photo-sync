@@ -57,7 +57,11 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
                     feed = chunk
                 }
 
-                val albums: Seq[AlbumEntry] = chunk.albums
+                /* If 'albums' value is annotated with the Scala type Seq[AlbumEntry],
+                 * implicit conversion takes place, and nullness check (next line)
+                 * does not work: null is converted into a (empty?) collection...
+                 */
+                val albums = chunk.albums
 
                 if (albums != null) {
                     result ++= (albums map (new PicasaAlbum(this, _)))
