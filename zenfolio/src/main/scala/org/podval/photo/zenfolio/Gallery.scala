@@ -32,9 +32,11 @@ import java.util.Date
 import java.io.{File, IOException}
 
 
-/* package */ final class Gallery(override val parentFolder: ZenfolioFolder[_], el: PhotoSet) extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum {
+/* package */ final class Gallery(override val parentFolder: ZenfolioFolder[_], el: PhotoSet)
+extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum {
 
-    protected override def retrievePhotos(): Seq[P] = { // throws PhotoException {
+    @throws(classOf[PhotoException])
+    protected override def retrievePhotos(): Seq[P] = {
         // PhotoSet needs to be loaded, since in the "structure" it is not populated with the Photos.
 
         val id = element.getId()
@@ -66,42 +68,34 @@ import java.io.{File, IOException}
     protected final def transport = connection.transport
 
 
-    @Override
     @throws(classOf[PhotoException])
-    def doAddFile(name: String, file: File) {
+    private def postFile(name: String, file: File) {
         try {
-            val message = postFile(name, file);
-            if (message.isDefined) {
-                throw new PhotoException(message.get);
+            val url = "http://www.zenfolio.com" + element.getUploadUrl()
+            
+            val filePost = new PostMethod(url)
+            
+            filePost.setRequestHeader(connection.getAuthTokenHeader())
+            
+            val date = new Date(file.lastModified());
+            
+            val entity: RequestEntity =
+//                makeSimplifiedPost
+                makeMultiPartPost(filePost, name, file, date.toString)
+
+            filePost.setRequestEntity(entity);
+
+            val client = new HttpClient()
+            val status = client.executeMethod(filePost)
+
+            filePost.releaseConnection()
+
+            if (status != HttpStatus.SC_OK) {
+                throw new PhotoException(HttpStatus.getStatusText(status))
             }
         } catch {
             case e: IOException => throw new PhotoException(e)
         }
-    }
-
-
-    @throws(classOf[IOException]) 
-    private def postFile(name: String, file: File): Option[String] = {
-        val url = "http://www.zenfolio.com" + element.getUploadUrl()
-
-        val filePost = new PostMethod(url)
-
-        filePost.setRequestHeader(connection.getAuthTokenHeader())
-
-        val date = new Date(file.lastModified());
-
-        val entity: RequestEntity =
-//        makeSimplifiedPost
-        makeMultiPartPost(filePost, name, file, date.toString)
-
-        filePost.setRequestEntity(entity);
-
-        val client = new HttpClient()
-        val status: Int = client.executeMethod(filePost)
-
-        filePost.releaseConnection()
-
-        if (status == HttpStatus.SC_OK) None else Some(HttpStatus.getStatusText(status))
     }
 
 

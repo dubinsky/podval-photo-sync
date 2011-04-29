@@ -28,16 +28,24 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-final class PicasaAlbum(protected override val parentFolder: PicasaFolder, private var entry: AlbumEntry) extends PicasaFolder with NonRootAlbum {
+final class PicasaAlbum(protected override val parentFolder: PicasaFolder, private var entry: AlbumEntry)
+extends PicasaFolder with NonRootAlbum {
 
-//    public Album(final Picasa picasa, final String name) {
-//        this(picasa, new AlbumEntry());
-//
-//        this.albumEntry.title = name;
-//    }
+    def this(parentFolder: PicasaFolder) = {
+        this(parentFolder, new AlbumEntry())
+        isDetached = true
+    }
 
 
     override def name: String = entry.title
+
+
+    override def name_=(value: String) {
+        if (name != value) {
+            ensureOriginalSaved()
+            entry.title = name
+        }
+    }
 
 
     override def public = PicasaAlbum.access(entry.access)
@@ -78,9 +86,15 @@ final class PicasaAlbum(protected override val parentFolder: PicasaFolder, priva
 
 
     private def ensureOriginalSaved() {
+        // TODO only if already persistent!
         if (originalEntry == null) {
             originalEntry = entry.clone()
         }
+    }
+
+
+    def insert() {
+        root.asInstanceOf[PicasaAlbumList].insertAlbum(entry)
     }
 
 
@@ -95,43 +109,14 @@ final class PicasaAlbum(protected override val parentFolder: PicasaFolder, priva
     }
 
 
+    private var isDetached: Boolean = false
+
+
     private var originalEntry: AlbumEntry = null
-
-
-//    @Override
-//    protected void checkFolderType(final FolderType folderType) {
-//        // TODO?
-//    }
-//
-//
-//    @Override
-//    protected Album doCreateFolder(
-//        final String name,
-//        final FolderType folderType) throws PhotoException
-//    {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//
-//    @Override
-//    protected Album doCreateFakeFolder(
-//        final String name,
-//        final FolderType folderType) throws PhotoException
-//    {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//
-//    @Override
-//    protected void doAddFile(final String name, final File file) throws PhotoException {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
-//
-//
 }
 
 
-object PicasaAlbum {
+private object PicasaAlbum {
 
     private val PUBLIC_ACCESS = "public"
 

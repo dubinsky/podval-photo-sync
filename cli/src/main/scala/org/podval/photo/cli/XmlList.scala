@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Podval Group.
+ *  Copyright 2011 Leonid Dubinsky <dub@podval.org>.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.{Folder, Photo}
+import org.podval.photo.{Folder, Photo, Rotation}
 
-import scala.xml.{Elem, PrettyPrinter}
+import scala.xml.{Elem, Text, PrettyPrinter}
 
 
 final class XmlList(folder: Folder) {
@@ -38,11 +38,14 @@ final class XmlList(folder: Folder) {
         </folder>
 
 
-    private def listPhoto(photo: Photo): Elem =
+    private def listPhoto(photo: Photo): Elem = {
+        val rotationAttribute = if (photo.rotation == Rotation.None) None else Some(Text(photo.rotation.toString))
+
         <photo
-            name={photo.name}
-            date={photo.timestamp.toString}
+            rotation={rotationAttribute}
             size={photo.size.toString}
-            rotation={photo.rotation.toString}
+            date={photo.timestamp.toString}
+            name={photo.name}
         />
+    }
 }

@@ -40,13 +40,8 @@ final class PicasaPhoto(val parent: PicasaAlbum, entry: PhotoEntry) extends Phot
     override def size = entry.size
 
 
-    override def rotation = entry.rotation match {
-        // TODO deal with null...
-        case   0 => Rotation.None
-        case  90 => Rotation.Right
-        case 180 => Rotation.R180
-        case 270 => Rotation.Left
-    }
+    // TODO deal with null...
+    override def rotation = PicasaPhoto.ROTATIONS.get(entry.rotation).get
 
 
     override def originalFile(): File = {
@@ -65,4 +60,13 @@ final class PicasaPhoto(val parent: PicasaAlbum, entry: PhotoEntry) extends Phot
             case e: IOException => throw new PhotoException("Failed to retrieve original jpeg!", e)
         }
     }
+}
+
+
+private object PicasaPhoto {
+    val ROTATIONS = Map[Int, Rotation.Value](
+          0 -> Rotation.None,
+         90 -> Rotation.Right,
+        180 -> Rotation.R180,
+        270 -> Rotation.Left)
 }

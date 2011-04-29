@@ -34,16 +34,6 @@ object Bytes {
     }
 
 
-    def concatenate(first: Array[Byte], second: Array[Byte]): Array[Byte] = {
-        val result: Array[Byte] = new Array[Byte](first.length + second.length)
-
-        System.arraycopy(first, 0, result, 0, first.length)
-        System.arraycopy(second, 0, result, first.length, second.length)
-
-        result
-    }
-
-
     @throws(classOf[IOException])
     def readBytes(dataHandler: DataHandler): Array[Byte] = {
         val is: ByteArrayInputStream = dataHandler.getContent().asInstanceOf[ByteArrayInputStream]

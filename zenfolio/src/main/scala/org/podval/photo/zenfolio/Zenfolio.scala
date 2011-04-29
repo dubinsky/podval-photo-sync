@@ -19,7 +19,7 @@ package org.podval.photo.zenfolio
 
 import org.podval.photo.{Connector, Connection, PhotoException}
 
-import com.zenfolio.www.api._1_1.{ZfApi, ZfApiStub, AuthChallenge}
+import com.zenfolio.www.api._1_1.{ZfApiStub, AuthChallenge}
 
 import java.rmi.RemoteException
 
@@ -61,12 +61,12 @@ final class Zenfolio(connector: ZenfolioConnector) extends Connection[ZfApiStub]
             val challenge: Array[Byte] = Bytes.readBytes(authChallenge.getChallenge())
             val passwordSalt: Array[Byte] = Bytes.readBytes(authChallenge.getPasswordSalt())
             val passwordUtf8: Array[Byte] = password.getBytes("UTF-8")
-            val passwordHash: Array[Byte] = Bytes.hash(Bytes.concatenate(passwordSalt, passwordUtf8))
-            val proof: Array[Byte] = Bytes.hash(Bytes.concatenate(challenge, passwordHash))
+            val passwordHash: Array[Byte] = Bytes.hash(Array.concat(passwordSalt, passwordUtf8))
+            val proof: Array[Byte] = Bytes.hash(Array.concat(challenge, passwordHash))
 
             authToken = transport.authenticate(
-                    Bytes.wrapBytes(challenge),
-                    Bytes.wrapBytes(proof))
+                Bytes.wrapBytes(challenge),
+                Bytes.wrapBytes(proof))
 
         } catch {
             case e: RemoteException => throw new PhotoException(e)

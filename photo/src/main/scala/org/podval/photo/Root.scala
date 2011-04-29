@@ -24,4 +24,7 @@ trait Root extends Folder {
 
 
     override final def parent: Option[F] = scala.None
+
+
+    override final def root: F = this.asInstanceOf[F]    
 }

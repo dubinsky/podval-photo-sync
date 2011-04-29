@@ -33,6 +33,13 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
     override def name: String = "/"
 
 
+    override def name_=(value: String) {
+        if (name != value) {
+            throw new PhotoException("Can not change the name of the root folder!")
+        }
+    }
+
+
     override def public = true
 
 
@@ -83,44 +90,24 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
     }
 
 
+    def createFolder(
+        name: String,
+        canHaveFolders: Boolean,
+        canHavePhotos: Boolean): PicasaFolder = 
+    {
+        // TODO check type...
+        try {
+            val result = new PicasaAlbum(this)
+            result.name = name
+            result
+        } catch {
+            case e: IOException => throw new PhotoException(e)
+        }
+    }
+
+
+    def insertAlbum(albumEntry: AlbumEntry) = feed.insertAlbum(transport, albumEntry)
+
+
     private var feed: UserFeed = null
-
-
-//    @Override
-//    protected void checkFolderType(final FolderType folderType) {
-//        // TODO?
-//    }
-//
-//
-//    @Override
-//    protected Album doCreateFolder(
-//        final String name,
-//        final FolderType folderType) throws PhotoException
-//    {
-//        final Album result;
-//        ensureIsPopulated();
-//        try {
-//            result = new Album(getConnection(), name);
-//            feed.insertAlbum(getConnection().getTransport(), result.getAlbumEntry());
-//        } catch (final IOException e) {
-//            throw new PhotoException(e);
-//        }
-//
-//        return result;
-//    }
-//
-//
-//    @Override
-//    protected Album doCreateFakeFolder(
-//        final String name,
-//        final FolderType folderType) throws PhotoException
-//    {
-//        return new Album(getConnection(), name);
-//    }
-//
-//
-//    @Override
-//    protected void doAddFile(final String name, final File file) throws PhotoException {
-//        throw new UnsupportedOperationException("Not supported yet.");
-//    }
 }
