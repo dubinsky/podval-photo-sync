@@ -25,4 +25,10 @@ import java.io.File
 final class NonRootFilesFolder(protected val parentFolder: FilesFolder, directory: File)
 extends FilesFolder(directory) with NonRoot
 {
+    override def name = directory.getName()
+
+
+    override def name_=(value: String) = {
+        if (!directory.renameTo())
+    }
 }

@@ -29,9 +29,6 @@ abstract class FilesFolder(directory: File) extends Mix {
     type C = FilesConnection
 
 
-    type F = FilesFolder
-
-
     type P = FilesPhoto
 
 
@@ -42,9 +39,6 @@ abstract class FilesFolder(directory: File) extends Mix {
     if (!directory.isDirectory()) {
         throw new IllegalArgumentException("Not a directory: " + directory)
     }
-
-
-    final override def name = directory.getName()
 
 
     final override def public = true
@@ -59,6 +53,21 @@ abstract class FilesFolder(directory: File) extends Mix {
 
     protected final override def retrieveFolders(): Seq[FilesFolder] =
         directory.listFiles() filter(_.isDirectory) map(file => new NonRootFilesFolder(this, file))
+
+
+    final override def doCreateFolder(
+        name: String,
+        canHaveFolders: Boolean,
+        canHavePhotos: Boolean): F =
+    {
+        val subdirectory = new File(directory, name)
+
+        if (!subdirectory.mkdir()) {
+            throw new PhotoException("Failed to create folder " + name)
+        }
+
+        new NonRootFilesFolder(this, subdirectory).asInstanceOf[F]
+    }
 
 
     protected final override def retrievePhotos(): Seq[FilesPhoto] = {
@@ -88,12 +97,6 @@ abstract class FilesFolder(directory: File) extends Mix {
         val filename = file.getName()
         val dot = filename.lastIndexOf('.')
         if (dot == -1) (filename, "") else (filename.substring(0, dot), filename.substring(dot+1))
-    }
-
-
-    final override def update() {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
 
