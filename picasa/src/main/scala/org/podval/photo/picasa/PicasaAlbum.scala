@@ -19,7 +19,7 @@ package org.podval.photo.picasa
 
 import org.podval.photo.{NonRootAlbum, PhotoException}
 
-import org.podval.picasa.model.{PicasaUrl, AlbumEntry, AlbumFeed, PhotoEntry, Link}
+import org.podval.picasa.model.{PicasaUrl, UserFeed, AlbumEntry, AlbumFeed, PhotoEntry, Link}
 
 import scala.collection.mutable.ListBuffer
 
@@ -28,13 +28,16 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-final class PicasaAlbum(protected override val parentFolder: PicasaFolder, private var entry: AlbumEntry)
+final class PicasaAlbum(
+    protected override val parentFolder: PicasaFolder,
+    private var entry: AlbumEntry,
+    private var isDetached: Boolean)
 extends PicasaFolder with NonRootAlbum {
 
-    def this(parentFolder: PicasaFolder) = {
-        this(parentFolder, new AlbumEntry())
-        isDetached = true
-    }
+    def this(parentFolder: PicasaFolder) = this(parentFolder, new AlbumEntry(), true)
+
+
+    def this(parentFolder: PicasaFolder, entry: AlbumEntry) = this(parentFolder, entry, false)
 
 
     override def name: String = entry.title
@@ -93,12 +96,10 @@ extends PicasaFolder with NonRootAlbum {
     }
 
 
-    def insert() {
-        root.asInstanceOf[PicasaAlbumList].insertAlbum(entry)
-    }
+    def insert(feed: UserFeed) = feed.insertAlbum(transport, entry)
 
 
-    override def update() {
+    private def update() {
         if (originalEntry != null) {
             try {
                 entry.executePatchRelativeToOriginal(transport, originalEntry)
@@ -107,9 +108,6 @@ extends PicasaFolder with NonRootAlbum {
             }
         }
     }
-
-
-    private var isDetached: Boolean = false
 
 
     private var originalEntry: AlbumEntry = null

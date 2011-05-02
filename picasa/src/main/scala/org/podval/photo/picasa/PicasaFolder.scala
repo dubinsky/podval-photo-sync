@@ -25,9 +25,6 @@ trait PicasaFolder extends Folder {
     type C = Picasa
 
 
-    type F = PicasaFolder
-
-
     type P = PicasaPhoto
 
 

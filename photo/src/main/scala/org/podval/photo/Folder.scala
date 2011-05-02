@@ -23,7 +23,7 @@ trait Folder {
     type C <: Connection[_]
 
 
-    type F <: Folder
+    type F = C#F
 
 
     type P <: Photo
@@ -35,13 +35,16 @@ trait Folder {
     def parent: Option[F]
 
 
-    def root: F
+    def root: C#R
 
 
     def name: String
 
 
     def name_=(value: String)
+
+
+    // def path: String TODO: path
 
 
     def public: Boolean
@@ -62,6 +65,12 @@ trait Folder {
     def getFolder(name: String): Option[F]
 
 
+    def createFolder(
+        name: String,
+        canHaveFolders: Boolean,
+        canHavePhotos: Boolean): F
+
+
     def canHavePhotos: Boolean
 
 
@@ -76,7 +85,4 @@ trait Folder {
 
     final def getPhotos(id: PhotoId): Seq[P] =
         photos.filter(id.isIdentifiedBy) ++ folders.flatMap(_.getPhotos(id)).asInstanceOf[Seq[P]]
-
-
-    def update()
 }

@@ -22,16 +22,16 @@ import scala.collection.mutable.ListBuffer
 
 trait Folders extends Folder {
 
-    override final def canHaveFolders: Boolean = true
+    final override def canHaveFolders: Boolean = true
 
 
-    override final def hasFolders: Boolean = !folders.isEmpty
+    final override def hasFolders: Boolean = !folders.isEmpty
 
 
-    override final def getFolder(name: String): Option[F] = folders.find(_.name == name)
+    final override def getFolder(name: String): Option[F] = folders.find(_.name == name)
 
 
-    override final def folders: Seq[F] = {
+    final override def folders: Seq[F] = {
         if (!isPopulated) {
             foldersList ++= retrieveFolders()
             isPopulated = true
@@ -41,10 +41,27 @@ trait Folders extends Folder {
     }
 
 
+    final override def createFolder(
+        name: String,
+        canHaveFolders: Boolean,
+        canHavePhotos: Boolean): F = 
+    {
+        val result = doCreateFolder(name, canHaveFolders, canHavePhotos)
+        foldersList += result
+        result
+    }
+
+
     private var isPopulated: Boolean = false
 
 
     protected def retrieveFolders(): Seq[F]
+
+
+    protected def doCreateFolder(
+        name: String,
+        canHaveFolders: Boolean,
+        canHavePhotos: Boolean): F
 
 
     private val foldersList: ListBuffer[F] = new ListBuffer[F]()

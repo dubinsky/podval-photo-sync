@@ -30,7 +30,7 @@ trait NonRoot extends Folder {
     override final def parent: Option[F] = Some(parentFolder)
 
 
-    override final def root: F = parentFolder.root.asInstanceOf[F]
+    override final def root: C#R = parentFolder.root.asInstanceOf[C#R]
 
 
     protected val parentFolder: F

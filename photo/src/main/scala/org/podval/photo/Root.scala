@@ -23,8 +23,18 @@ trait Root extends Folder {
     override val connection: C
 
 
-    override final def parent: Option[F] = scala.None
+    final override def parent: Option[F] = scala.None
 
 
-    override final def root: F = this.asInstanceOf[F]    
+    final override def root: C#R = this.asInstanceOf[C#R]
+
+
+    final override def name: String = "/"
+
+
+    final override def name_=(value: String) {
+        if (name != value) {
+            throw new PhotoException("Can not change the name of the root folder!")
+        }
+    }
 }

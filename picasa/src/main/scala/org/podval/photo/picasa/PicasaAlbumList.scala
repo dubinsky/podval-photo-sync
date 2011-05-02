@@ -19,7 +19,7 @@ package org.podval.photo.picasa
 
 import org.podval.photo.{RootAlbumList, PhotoException}
 
-import org.podval.picasa.model.{PicasaUrl, UserFeed, AlbumEntry, Link}
+import org.podval.picasa.model.{PicasaUrl, UserFeed, Link}
 
 import scala.collection.mutable.ListBuffer
 
@@ -29,16 +29,6 @@ import java.io.IOException
 
 
 final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolder with RootAlbumList {
-
-    override def name: String = "/"
-
-
-    override def name_=(value: String) {
-        if (name != value) {
-            throw new PhotoException("Can not change the name of the root folder!")
-        }
-    }
-
 
     override def public = true
 
@@ -85,12 +75,7 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
     }
 
 
-    override def update() {
-        // TODO
-    }
-
-
-    def createFolder(
+    protected override def doCreateFolder(
         name: String,
         canHaveFolders: Boolean,
         canHavePhotos: Boolean): PicasaFolder = 
@@ -99,14 +84,12 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
         try {
             val result = new PicasaAlbum(this)
             result.name = name
+            result.insert(feed)
             result
         } catch {
             case e: IOException => throw new PhotoException(e)
         }
     }
-
-
-    def insertAlbum(albumEntry: AlbumEntry) = feed.insertAlbum(transport, albumEntry)
 
 
     private var feed: UserFeed = null

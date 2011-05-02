@@ -20,14 +20,20 @@ package org.podval.photo
 
 trait NoFolders extends Folder {
 
-    override final def canHaveFolders: Boolean = false
+    final override def canHaveFolders: Boolean = false
 
 
-    override final def hasFolders: Boolean = false
+    final override def hasFolders: Boolean = false
 
 
-    override final def folders: Seq[F] = List[F]() // TODO make "static"!
+    final override def folders: Seq[F] = List[F]() // TODO make "static"!
 
 
-    override final def getFolder(name: String): Option[F] = scala.None // TODO WTF do I need to prefix this?!
+    final override def getFolder(name: String): Option[F] = scala.None // TODO WTF do I need to prefix this?!
+
+
+    final override def createFolder(
+        name: String,
+        canHaveFolders: Boolean,
+        canHavePhotos: Boolean): F = throw new PhotoException("Folder can not contain folders")
 }
