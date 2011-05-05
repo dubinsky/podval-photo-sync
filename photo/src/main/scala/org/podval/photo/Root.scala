@@ -37,4 +37,7 @@ trait Root extends Folder {
             throw new PhotoException("Can not change the name of the root folder!")
         }
     }
+
+
+    final override def path: String = name
 }

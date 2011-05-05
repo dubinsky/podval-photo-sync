@@ -32,8 +32,6 @@ trait NoFolders extends Folder {
     final override def getFolder(name: String): Option[F] = scala.None // TODO WTF do I need to prefix this?!
 
 
-    final override def createFolder(
-        name: String,
-        canHaveFolders: Boolean,
-        canHavePhotos: Boolean): F = throw new PhotoException("Folder can not contain folders")
+    final override def createFolder(name: String, folderType: FolderType): F =
+        throw new PhotoException("Folder can not contain folders")
 }

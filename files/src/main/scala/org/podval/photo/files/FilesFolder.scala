@@ -17,14 +17,14 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.{Mix, PhotoException}
+import org.podval.photo.{Mix, FolderType, PhotoException}
 
 import java.io.File
 
 import scala.collection.mutable
 
 
-abstract class FilesFolder(directory: File) extends Mix {
+abstract class FilesFolder() extends Mix {
 
     type C = FilesConnection
 
@@ -32,13 +32,7 @@ abstract class FilesFolder(directory: File) extends Mix {
     type P = FilesPhoto
 
 
-    if (!directory.exists()) {
-        throw new IllegalArgumentException("Does not exist: " + directory)
-    }
-
-    if (!directory.isDirectory()) {
-        throw new IllegalArgumentException("Not a directory: " + directory)
-    }
+    protected final def directory: File = new File(connection.transport, path)
 
 
     final override def public = true
@@ -52,21 +46,17 @@ abstract class FilesFolder(directory: File) extends Mix {
 
 
     protected final override def retrieveFolders(): Seq[FilesFolder] =
-        directory.listFiles() filter(_.isDirectory) map(file => new NonRootFilesFolder(this, file))
+        directory.listFiles().filter(_.isDirectory).map(file => new NonRootFilesFolder(this, file.getName))
 
 
-    final override def doCreateFolder(
-        name: String,
-        canHaveFolders: Boolean,
-        canHavePhotos: Boolean): F =
-    {
+    final override def doCreateFolder(name: String, folderType: FolderType): F = {
         val subdirectory = new File(directory, name)
 
         if (!subdirectory.mkdir()) {
             throw new PhotoException("Failed to create folder " + name)
         }
 
-        new NonRootFilesFolder(this, subdirectory).asInstanceOf[F]
+        new NonRootFilesFolder(this, name).asInstanceOf[F]
     }
 
 
@@ -99,32 +89,3 @@ abstract class FilesFolder(directory: File) extends Mix {
         if (dot == -1) (filename, "") else (filename.substring(0, dot), filename.substring(dot+1))
     }
 }
-
-
-
-//    @Override
-//    protected void checkFolderType(final FolderType folderType) {
-//    }
-//
-//
-//    @Override
-//    protected FileFolder doCreateFolder(
-//        final String name, final FolderType folderType) throws PhotoException
-//    {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//
-//    @Override
-//    protected FileFolder doCreateFakeFolder(
-//        final String name, final FolderType folderType) throws PhotoException
-//    {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//
-//    @Override
-//    public void doAddFile(final String name, final File file) {
-//        // TODO implement
-//        throw new UnsupportedOperationException("Not implemented yet!!!");
-//    }

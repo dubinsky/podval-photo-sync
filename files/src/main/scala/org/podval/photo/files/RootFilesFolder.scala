@@ -19,10 +19,6 @@ package org.podval.photo.files
 
 import org.podval.photo.Root
 
-import java.io.File
 
-
-final class RootFilesFolder(val connection: FilesConnection, directory: File)
-extends FilesFolder(directory) with Root
-{
+final class RootFilesFolder(val connection: FilesConnection) extends FilesFolder with Root {
 }

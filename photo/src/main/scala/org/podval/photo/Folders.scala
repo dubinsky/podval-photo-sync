@@ -41,12 +41,8 @@ trait Folders extends Folder {
     }
 
 
-    final override def createFolder(
-        name: String,
-        canHaveFolders: Boolean,
-        canHavePhotos: Boolean): F = 
-    {
-        val result = doCreateFolder(name, canHaveFolders, canHavePhotos)
+    final override def createFolder(name: String, folderType: FolderType): F = {
+        val result = doCreateFolder(name, folderType)
         foldersList += result
         result
     }
@@ -58,10 +54,7 @@ trait Folders extends Folder {
     protected def retrieveFolders(): Seq[F]
 
 
-    protected def doCreateFolder(
-        name: String,
-        canHaveFolders: Boolean,
-        canHavePhotos: Boolean): F
+    protected def doCreateFolder(name: String, folderType: FolderType): F
 
 
     private val foldersList: ListBuffer[F] = new ListBuffer[F]()

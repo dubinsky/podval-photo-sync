@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait Folder {
+trait Folder extends FolderType {
 
     type C <: Connection[_]
 
@@ -44,16 +44,13 @@ trait Folder {
     def name_=(value: String)
 
 
-    // def path: String TODO: path
+    def path: String
 
 
     def public: Boolean
 
 
     def public_=(value: Boolean)
-
-
-    def canHaveFolders: Boolean
 
 
     def hasFolders: Boolean
@@ -65,13 +62,8 @@ trait Folder {
     def getFolder(name: String): Option[F]
 
 
-    def createFolder(
-        name: String,
-        canHaveFolders: Boolean,
-        canHavePhotos: Boolean): F
-
-
-    def canHavePhotos: Boolean
+    // TODO: do I even want it here, and not on Folders?
+    def createFolder(name: String, folderType: FolderType): F
 
 
     def hasPhotos: Boolean

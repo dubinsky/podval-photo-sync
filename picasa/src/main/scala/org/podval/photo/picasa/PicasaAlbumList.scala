@@ -17,7 +17,7 @@
 
 package org.podval.photo.picasa
 
-import org.podval.photo.{RootAlbumList, PhotoException}
+import org.podval.photo.{RootAlbumList, FolderType, PhotoException}
 
 import org.podval.picasa.model.{PicasaUrl, UserFeed, Link}
 
@@ -75,11 +75,7 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
     }
 
 
-    protected override def doCreateFolder(
-        name: String,
-        canHaveFolders: Boolean,
-        canHavePhotos: Boolean): PicasaFolder = 
-    {
+    protected override def doCreateFolder(name: String, folderType: FolderType): PicasaFolder = {
         // TODO check type...
         try {
             val result = new PicasaAlbum(this)

@@ -59,12 +59,6 @@ extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum {
     }
 
 
-    override def update() {
-        // TODO
-        throw new UnsupportedOperationException()
-    }
-
-
     protected final def transport = connection.transport
 
 

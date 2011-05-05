@@ -17,7 +17,7 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.{AlbumList, PhotoException}
+import org.podval.photo.{AlbumList, FolderType, PhotoException}
 
 import com.zenfolio.www.api._1_1.{ArrayOfChoice1Choice, GroupUpdater, PhotoSetType, PhotoSetUpdater, Group => ZGroup}
 
@@ -40,18 +40,8 @@ import java.rmi.RemoteException
         if (what.getGroup != null) new NonRootGroup(this, what.getGroup) else new Gallery(this, what.getPhotoSet())
 
 
-    override def update() {
-        // TODO
-        throw new UnsupportedOperationException()
-    }
-
-
     @throws(classOf[PhotoException])
-    override def createFolder(
-        name: String,
-        canHaveFolders: Boolean,
-        canHavePhotos: Boolean): ZenfolioFolder[_] = 
-    {
+    protected override def doCreateFolder(name: String, folderType: FolderType): ZenfolioFolder[_] = {
         try {
             if (canHaveFolders) {
                 val updater = new GroupUpdater()

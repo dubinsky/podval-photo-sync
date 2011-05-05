@@ -41,7 +41,12 @@ final class FilesConnection(connector: FilesConnector) extends Connection[File](
             throw new PhotoException("Unknown path to root. Did you call the right open()?")
         }
 
-        new File(pathVar.get)
+        val result = new File(pathVar.get)
+
+        // TODO: check that it exists and is a directory?
+        // Through a utility method that can be reused for subdirectories!
+
+        result
     }
 
 
@@ -52,7 +57,7 @@ final class FilesConnection(connector: FilesConnector) extends Connection[File](
     }
 
 
-    protected override def createRootFolder(): R =  new RootFilesFolder(this, transport)
+    protected override def createRootFolder(): R =  new RootFilesFolder(this)
 
 
     private var pathVar: Option[String] = None
