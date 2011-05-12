@@ -27,19 +27,13 @@ abstract class ZenfolioFolder[R <: GroupElement](var element: R) extends Folder 
     type C = Zenfolio
 
 
-    type F = ZenfolioFolder[_]
-
-
     type P = ZenfolioPhoto
 
 
-    override final def name: String = element.getTitle()
+    final override def public: Boolean = element.getAccessDescriptor().getAccessType() == AccessType.Public
 
 
-    override final def public: Boolean = element.getAccessDescriptor().getAccessType() == AccessType.Public
-
-
-    override final def public_=(value: Boolean) {
+    final override def public_=(value: Boolean) {
         element.getAccessDescriptor().setAccessType(if (value) AccessType.Public else AccessType.Private)
     }
 }

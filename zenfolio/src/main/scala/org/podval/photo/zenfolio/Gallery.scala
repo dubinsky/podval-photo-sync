@@ -33,7 +33,7 @@ import java.io.{File, IOException}
 
 
 /* package */ final class Gallery(override val parentFolder: ZenfolioFolder[_], el: PhotoSet)
-extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum {
+extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum with Named[PhotoSet] {
 
     @throws(classOf[PhotoException])
     protected override def retrievePhotos(): Seq[P] = {

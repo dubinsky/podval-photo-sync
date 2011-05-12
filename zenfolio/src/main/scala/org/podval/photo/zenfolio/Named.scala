@@ -16,11 +16,15 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.NonRoot
-
-import com.zenfolio.www.api._1_1.{Group => ZGroup}
+import com.zenfolio.www.api._1_1.GroupElement
 
 
-final class NonRootGroup(override val parentFolder: ZenfolioFolder[_], element: ZGroup)
-extends Group(element) with NonRoot with Named[ZGroup] {
+trait Named[R <: GroupElement] extends ZenfolioFolder[R] {
+
+    final override def name: String = element.getTitle()
+
+
+    final override def name_=(value: String) {
+        throw new UnsupportedOperationException("Did not boither implementing :)")
+    }
 }
