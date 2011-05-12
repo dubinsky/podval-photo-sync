@@ -35,6 +35,9 @@ trait Folder extends FolderType {
     def parent: Option[F]
 
 
+    def parent_=(value: F)
+
+
     def root: C#R
 
 
@@ -51,6 +54,18 @@ trait Folder extends FolderType {
 
 
     def public_=(value: Boolean)
+
+
+    def delete
+
+
+    def coverPhoto: Option[P]
+
+
+    def coverPhoto_=(value: P)
+
+
+    final def isEmpty = !hasFolders && !hasPhotos
 
 
     def hasFolders: Boolean

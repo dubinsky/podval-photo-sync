@@ -32,8 +32,21 @@ import java.util.Date
 import java.io.{File, IOException}
 
 
-/* package */ final class Gallery(override val parentFolder: ZenfolioFolder[_], el: PhotoSet)
+/* package */ final class Gallery(private val parentFolder: ZenfolioFolder[_], el: PhotoSet)
 extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum with Named[PhotoSet] {
+
+    parent = parentFolder
+
+
+    override def coverPhoto: Option[P] = {
+        throw new UnsupportedOperationException(); // TODO implement
+    }
+
+
+    protected override def setCoverPhoto(value: P) {
+        throw new UnsupportedOperationException(); // TODO implement
+    }
+
 
     @throws(classOf[PhotoException])
     protected override def retrievePhotos(): Seq[P] = {

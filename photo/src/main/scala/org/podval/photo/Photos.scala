@@ -41,6 +41,21 @@ trait Photos extends Folder {
     }
 
 
+    override def coverPhoto: Option[P]
+
+
+    final override def coverPhoto_=(value: P) {
+        if (value.parent != this) {
+            throw new PhotoException("Cover photo for an album has to be in the album!")
+        }
+
+        setCoverPhoto(value)
+    }
+
+
+    protected def setCoverPhoto(value: P)
+
+
     private var isPopulated: Boolean = false
 
 

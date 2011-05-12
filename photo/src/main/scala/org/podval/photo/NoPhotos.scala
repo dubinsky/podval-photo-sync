@@ -20,14 +20,20 @@ package org.podval.photo
 
 trait NoPhotos extends Folder {
 
-    override final def canHavePhotos: Boolean = false
+    final override def canHavePhotos: Boolean = false
 
 
-    override final def hasPhotos: Boolean = false
+    final override def hasPhotos: Boolean = false
 
 
-    override final def photos: Seq[P] = List[P]() // TODO make statisc...
+    final override def photos: Seq[P] = List[P]() // TODO make statisc...
 
 
-    override final def getPhoto(name: String): Option[P] = scala.None // TODO WTF do I need to prefix this?!
+    final override def getPhoto(name: String): Option[P] = scala.None // TODO WTF do I need to prefix this?!
+
+
+    final override def coverPhoto: Option[P] = None
+
+
+    final def coverPhoto_=(value: P) = throw new PhotoException("Cover photo can not be set for a folder without photos!")
 }

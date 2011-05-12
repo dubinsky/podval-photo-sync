@@ -30,11 +30,46 @@ trait NonRoot extends Folder {
     final override def parent: Option[F] = Some(parentFolder)
 
 
+    final override def parent_=(value: F) {
+        if (value.connection != this.connection) {
+            throw new PhotoException("Can't move a folder to a different connection")
+        }
+
+        if (value != parentFolder) {
+            if (parentFolder != null) {
+                moveToParent(value);
+
+                // TODO: remove from parentFolder
+            }
+
+            parentFolder = value
+
+            // TODO: add to new parentFolder
+        }
+    }
+
+
+    protected final def getParentFolder = parentFolder
+
+
+    protected def moveToParent(value: F)
+
+
+    final override def delete {
+        deleteFolder
+
+        // TODO: remove from parentFolder
+    }
+
+
+    protected def deleteFolder
+
+
     final override def root: C#R = parentFolder.root.asInstanceOf[C#R]
 
 
     final override def path: String = parentFolder.path + name + "/"
 
 
-    protected val parentFolder: F
+    private var parentFolder: F = _
 }

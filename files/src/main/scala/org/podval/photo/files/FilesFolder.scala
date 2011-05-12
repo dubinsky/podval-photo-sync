@@ -32,7 +32,8 @@ abstract class FilesFolder() extends Mix {
     type P = FilesPhoto
 
 
-    protected final def directory: File = new File(connection.transport, path)
+    // TODOD: tighter access?
+    private[files] final def directory: File = new File(connection.transport, path)
 
 
     final override def public = true
@@ -42,6 +43,18 @@ abstract class FilesFolder() extends Mix {
         if (!value) {
             throw new PhotoException("File system folders are always public!")
         }
+    }
+
+
+    final override def coverPhoto: Option[P] = {
+        throw new UnsupportedOperationException(); // TODO implement
+        // TODO: implement, using XML metadata
+    }
+
+
+    protected final override def setCoverPhoto(value: P) {
+        throw new UnsupportedOperationException(); // TODO implement
+        // TODO: implement, using XML metadata
     }
 
 
@@ -61,6 +74,8 @@ abstract class FilesFolder() extends Mix {
 
 
     protected final override def retrievePhotos(): Seq[FilesPhoto] = {
+        // TODO: use grouping of tuples from a list...
+
         val bunches = mutable.Map.empty[String, mutable.Map[String, File]]
 
         directory.listFiles() filter(_.isFile) foreach(register(bunches, _))

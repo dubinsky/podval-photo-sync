@@ -29,7 +29,7 @@ import java.io.IOException
 
 
 final class PicasaAlbum(
-    protected override val parentFolder: PicasaFolder,
+    private val parentFolder: PicasaFolder, // TODO: can I tighten this to PicasaAlbumList?
     private var entry: AlbumEntry,
     private var isDetached: Boolean)
 extends PicasaFolder with NonRootAlbum {
@@ -38,6 +38,9 @@ extends PicasaFolder with NonRootAlbum {
 
 
     def this(parentFolder: PicasaFolder, entry: AlbumEntry) = this(parentFolder, entry, false)
+
+
+    parent = parentFolder
 
 
     override def name: String = entry.title
@@ -59,6 +62,26 @@ extends PicasaFolder with NonRootAlbum {
             ensureOriginalSaved()
             entry.access = PicasaAlbum.access(value)
         }
+    }
+
+
+    protected def moveToParent(value: PicasaFolder) {
+        throw new PhotoException("Picasa folders can not be nested (bummer!)")
+    }
+
+
+    protected override def deleteFolder {
+        throw new UnsupportedOperationException(); // TODO implement
+    }
+
+
+    override def coverPhoto: Option[PicasaPhoto] = {
+        throw new UnsupportedOperationException(); // TODO implement
+    }
+
+
+    protected def setCoverPhoto(value: PicasaPhoto) {
+        throw new UnsupportedOperationException(); // TODO implement
     }
 
 

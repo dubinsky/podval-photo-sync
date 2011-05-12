@@ -16,15 +16,28 @@
 
 package org.podval.photo.zenfolio
 
+import org.podval.photo.NonRoot
+
 import com.zenfolio.www.api._1_1.GroupElement
 
 
-trait Named[R <: GroupElement] extends ZenfolioFolder[R] {
+// TODO: in reality, this is extension of NonRoot, and should be named appropriately!
+trait Named[R <: GroupElement] extends ZenfolioFolder[R] with NonRoot {
 
     final override def name: String = element.getTitle()
 
 
     final override def name_=(value: String) {
         throw new UnsupportedOperationException("Did not boither implementing :)")
+    }
+
+
+    final protected override def deleteFolder = {
+        throw new UnsupportedOperationException(""); // TODO: implement!
+    }
+
+
+    final protected override def moveToParent(value: ZenfolioFolder[_]) { // TODO can I tighten this up to Group - using covariance?!
+        throw new UnsupportedOperationException(""); // TODO: implement!
     }
 }
