@@ -65,6 +65,9 @@ trait NonRoot extends Folder {
     private var parentFolder: Option[F] = None
 
 
+    final override def path: String = getParentFolder.path + name + "/"
+
+
     final override def delete {
         deleteFolder
 
