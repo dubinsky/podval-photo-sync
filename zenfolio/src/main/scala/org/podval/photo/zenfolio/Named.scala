@@ -28,16 +28,16 @@ trait Named[R <: GroupElement] extends ZenfolioFolder[R] with NonRoot {
 
 
     final override def name_=(value: String) {
-        throw new UnsupportedOperationException("Did not boither implementing :)")
+        throw new UnsupportedOperationException("Did not bother implementing :)")
     }
 
 
     final protected override def deleteFolder = {
-        throw new UnsupportedOperationException(""); // TODO: implement!
+        throw new UnsupportedOperationException("Did not bother implementing :)"); // TODO: implement!
     }
 
 
     final protected override def moveToParent(value: ZenfolioFolder[_]) { // TODO can I tighten this up to Group - using covariance?!
-        throw new UnsupportedOperationException(""); // TODO: implement!
+        throw new UnsupportedOperationException("Did not bother implementing :)"); // TODO: implement!
     }
 }

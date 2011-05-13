@@ -27,10 +27,16 @@ trait Photo extends PhotoId {
     type F <: Folder
 
 
-    val parent: F
+    def parent: F
+
+
+    def parent_=(value: F)
 
 
     override def name: String
+
+
+    def name_=(value: String)
 
 
     override def timestamp: Date

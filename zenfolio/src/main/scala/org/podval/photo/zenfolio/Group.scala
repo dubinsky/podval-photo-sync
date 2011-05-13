@@ -36,22 +36,29 @@ import java.rmi.RemoteException
     }
 
 
-    private def toFolder(what: ArrayOfChoice1Choice) =
-        if (what.getGroup != null) new NonRootGroup(this, what.getGroup) else new Gallery(this, what.getPhotoSet())
+    private def toFolder(what: ArrayOfChoice1Choice) = {
+        val result = if (what.getGroup != null) new NonRootGroup(what.getGroup) else new Gallery(what.getPhotoSet())
+        result.parent = this
+        result
+    }
 
 
     @throws(classOf[PhotoException])
     protected override def doCreateFolder(name: String, folderType: FolderType): ZenfolioFolder[_] = {
         try {
-            if (canHaveFolders) {
+            val result = if (canHaveFolders) {
                 val updater = new GroupUpdater()
                 updater.setTitle(name)
-                new NonRootGroup(this, connection.transport.createGroup(element.getId(), updater))
+                new NonRootGroup(connection.transport.createGroup(element.getId(), updater))
             } else {
                 val updater = new PhotoSetUpdater()
                 updater.setTitle(name)
-                new Gallery(this, connection.transport.createPhotoSet(element.getId(), PhotoSetType.Gallery, updater))
+                new Gallery(connection.transport.createPhotoSet(element.getId(), PhotoSetType.Gallery, updater))
             }
+
+            result.parent = this
+            result
+
         } catch {
             case e: RemoteException => throw new PhotoException(e)
         }

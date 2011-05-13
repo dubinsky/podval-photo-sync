@@ -41,6 +41,7 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
 
 
     protected override def retrieveFolders(): Seq[PicasaFolder] = {
+        // TODO: abstract away the control structure to read a complete feed...
         val result = new ListBuffer[PicasaFolder]()
 
         try {
@@ -61,7 +62,9 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
                 val albums = chunk.albums
 
                 if (albums != null) {
-                    result ++= (albums map (new PicasaAlbum(this, _)))
+                    val picasaAlbums = albums map (new PicasaAlbum(_))
+                    picasaAlbums.foreach(_.parent = this)
+                    result ++= picasaAlbums
                 }
 
                 val next = Link.find(chunk.links, "next")
@@ -78,8 +81,9 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
     protected override def doCreateFolder(name: String, folderType: FolderType): PicasaFolder = {
         // TODO check type...
         try {
-            val result = new PicasaAlbum(this)
+            val result = new PicasaAlbum()
             result.name = name
+            result.parent = this
             result.insert(feed)
             result
         } catch {

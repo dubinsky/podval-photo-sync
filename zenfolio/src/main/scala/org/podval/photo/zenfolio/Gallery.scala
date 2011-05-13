@@ -32,11 +32,7 @@ import java.util.Date
 import java.io.{File, IOException}
 
 
-/* package */ final class Gallery(private val parentFolder: ZenfolioFolder[_], el: PhotoSet)
-extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum with Named[PhotoSet] {
-
-    parent = parentFolder
-
+/* package */ final class Gallery(el: PhotoSet) extends ZenfolioFolder[PhotoSet](el) with NonRootAlbum with Named[PhotoSet] {
 
     override def coverPhoto: Option[P] = {
         throw new UnsupportedOperationException(); // TODO implement

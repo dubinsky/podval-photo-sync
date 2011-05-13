@@ -58,8 +58,11 @@ abstract class FilesFolder() extends Mix {
     }
 
 
-    protected final override def retrieveFolders(): Seq[FilesFolder] =
-        directory.listFiles().filter(_.isDirectory).map(file => new NonRootFilesFolder(this, file.getName))
+    protected final override def retrieveFolders(): Seq[FilesFolder] = {
+        val result = directory.listFiles().filter(_.isDirectory).map(file => new NonRootFilesFolder(file.getName))
+        result.foreach(_.parent = this)
+        result
+    }
 
 
     final override def doCreateFolder(name: String, folderType: FolderType): F = {
@@ -69,7 +72,10 @@ abstract class FilesFolder() extends Mix {
             throw new PhotoException("Failed to create folder " + name)
         }
 
-        new NonRootFilesFolder(this, name).asInstanceOf[F]
+        val result = new NonRootFilesFolder(name)
+        result.parent = this
+
+        result.asInstanceOf[F]
     }
 
 

@@ -24,10 +24,10 @@ trait NonRoot extends Folder {
     // I can't figure out a way to avoid this cast.
     // I hope that Scala type system has a way to eliminate the cast - I just
     // don't know it yet ;)
-    final override def connection: C = parentFolder.connection.asInstanceOf[C]
+    final override def connection: C = getParentFolder.connection.asInstanceOf[C]
 
 
-    final override def parent: Option[F] = Some(parentFolder)
+    final override def parent: Option[F] = Some(getParentFolder)
 
 
     final override def parent_=(value: F) {
@@ -35,24 +35,34 @@ trait NonRoot extends Folder {
             throw new PhotoException("Can't move a folder to a different connection")
         }
 
-        if (value != parentFolder) {
+        val newValue = Some (value)
+        if (newValue != parentFolder) {
             if (parentFolder != null) {
                 moveToParent(value);
 
                 // TODO: remove from parentFolder
             }
 
-            parentFolder = value
+            parentFolder = newValue
 
             // TODO: add to new parentFolder
         }
     }
 
 
-    protected final def getParentFolder = parentFolder
+    protected final def getParentFolder = {
+        if (parentFolder.isEmpty) {
+            throw new PhotoException("Parent has not been set after creation?")
+        }
+
+        parentFolder.get
+    }
 
 
     protected def moveToParent(value: F)
+
+
+    private var parentFolder: Option[F] = None
 
 
     final override def delete {
@@ -65,11 +75,5 @@ trait NonRoot extends Folder {
     protected def deleteFolder
 
 
-    final override def root: C#R = parentFolder.root.asInstanceOf[C#R]
-
-
-    final override def path: String = parentFolder.path + name + "/"
-
-
-    private var parentFolder: F = _
+    final override def root: C#R = getParentFolder.root.asInstanceOf[C#R]
 }

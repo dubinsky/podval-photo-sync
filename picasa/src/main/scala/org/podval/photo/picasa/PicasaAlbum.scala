@@ -29,18 +29,14 @@ import java.io.IOException
 
 
 final class PicasaAlbum(
-    private val parentFolder: PicasaFolder, // TODO: can I tighten this to PicasaAlbumList?
     private var entry: AlbumEntry,
-    private var isDetached: Boolean)
+    private var isDetached: Boolean) // TODO: do I really need this isDetached?
 extends PicasaFolder with NonRootAlbum {
 
-    def this(parentFolder: PicasaFolder) = this(parentFolder, new AlbumEntry(), true)
+    def this() = this(new AlbumEntry(), true)
 
 
-    def this(parentFolder: PicasaFolder, entry: AlbumEntry) = this(parentFolder, entry, false)
-
-
-    parent = parentFolder
+    def this(entry: AlbumEntry) = this(entry, false)
 
 
     override def name: String = entry.title

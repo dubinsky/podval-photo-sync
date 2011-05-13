@@ -22,13 +22,7 @@ import org.podval.photo.{NonRoot, PhotoException}
 import java.io.File
 
 
-final class NonRootFilesFolder(protected val parentFolder: FilesFolder, namePar: String) extends FilesFolder with NonRoot {
-
-    nameVar = namePar
-
-
-    parent = parentFolder
-
+final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder with NonRoot {
 
     override def name = nameVar
 
@@ -69,7 +63,4 @@ final class NonRootFilesFolder(protected val parentFolder: FilesFolder, namePar:
             throw new PhotoException("Failed to delete file!")
         }
     }
-
-
-    private var nameVar: String = null
 }
