@@ -17,32 +17,12 @@
 
 package org.podval.photo
 
-import java.util.Date
-
 import java.io.File
 
 
-trait Photo extends PhotoId {
+trait Photo extends NonRootThing with PhotoId {
 
-    type F <: Folder
-
-
-    def parent: F
-
-
-    def parent_=(value: F)
-
-
-    override def name: String
-
-
-    def name_=(value: String)
-
-
-    override def timestamp: Date
-
-
-    override def size: Int
+    final override def path: String = parent.path + name
 
 
     def rotation: Rotation.Value

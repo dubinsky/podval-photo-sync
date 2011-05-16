@@ -17,14 +17,14 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.{Mix, FolderType, PhotoException}
+import org.podval.photo.{MixedFolder, FolderType, PhotoException}
 
 import java.io.File
 
 import scala.collection.mutable
 
 
-abstract class FilesFolder() extends Mix {
+abstract class FilesFolder() extends MixedFolder {
 
     type C = FilesConnection
 
@@ -86,7 +86,15 @@ abstract class FilesFolder() extends Mix {
 
         directory.listFiles() filter(_.isFile) foreach(register(bunches, _))
 
-        bunches.keys.map(name => new FilesPhoto(this, name, Map.empty ++ bunches(name))).toSeq
+        val result = bunches.keys.map(name => {
+                val result = new FilesPhoto(Map.empty ++ bunches(name))
+                result.name = name
+                result
+            }).toSeq
+
+        result.foreach(_.asInstanceOf[F].parent = this)
+
+        result
     }
 
 

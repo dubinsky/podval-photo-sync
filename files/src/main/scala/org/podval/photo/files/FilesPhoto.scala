@@ -17,18 +17,45 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.Photo
+import org.podval.photo.{Photo, PhotoException}
 
 import java.io.File
 
 import java.util.Date
 
 
-final class FilesPhoto(override val parent: FilesFolder, override val name: String, files: Map[String, File])
-    extends Photo
-{
+final class FilesPhoto(files: Map[String, File]) extends Photo {
 
-    type F = FilesFolder
+    protected override def setParent(value: F) = {
+        // TODO move all the files
+    }
+
+
+    override def name = {
+        if (nameVar.isEmpty) {
+            throw new PhotoException("Name not set?!")
+        }
+
+        nameVar.get
+    }
+
+
+    override def name_=(value: String) = {
+        val newValue = Some(value)
+
+        if (nameVar != newValue) {
+            // TODO rename all the files with the name nameVar in my directory
+            nameVar = newValue
+        }
+    }
+
+
+    private var nameVar: Option[String] = None
+
+
+    protected override def doDelete = {
+        // TODO delete all the files!
+    }
 
 
     override def timestamp = new Date(originalFile().lastModified())

@@ -17,50 +17,30 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.{NonRoot, PhotoException}
+import org.podval.photo.NonRootFolder
 
 import java.io.File
 
 
-final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder with NonRoot {
+final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder with NonRootFolder {
 
     override def name = nameVar
 
 
+    // TODO push this method up (in part)
     override def name_=(value: String) = {
         if (nameVar != value) {
             val from = directory
             nameVar = value
             val to = directory
 
-            if (!from.renameTo(to)) {
-                throw new PhotoException("Rename failed")
-            }
+            Files.rename(from, to)
         }
     }
 
 
-    protected override def moveToParent(value: FilesFolder) {
-        val result = directory.renameTo(new File(getParentFolder.directory, name))
-
-        if (!result) {
-            throw new PhotoException("Failed to move folder!")
-        }
-    }
+    protected override def setParent(value: FilesFolder) = Files.rename(directory, new File(parent.directory, name))
 
 
-    override def deleteFolder = deleteFile(directory)
-
-
-    private def deleteFile(file: File) {
-        if (file.isDirectory) {
-            directory.listFiles.foreach(deleteFile)
-        }
-
-        val result = file.delete
-
-        if (!result) {
-            throw new PhotoException("Failed to delete file!")
-        }
-    }
+    protected override def doDelete = Files.delete(directory)
 }

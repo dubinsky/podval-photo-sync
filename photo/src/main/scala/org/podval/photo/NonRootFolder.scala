@@ -18,5 +18,7 @@
 package org.podval.photo
 
 
-trait AlbumList extends Folder with FoldersFolder with NoPhotosFolder {
+trait NonRootFolder extends Folder with NonRootThing {
+
+    final override def path: String = parent.path + name + "/"
 }

@@ -26,7 +26,7 @@ abstract class Connection[T](connector: Connector) {
     type F <: Folder
 
 
-    type R = F with Root
+    type R = F with RootFolder
 
 
     final def scheme: String = connector.scheme

@@ -14,8 +14,35 @@
  * limitations under the License.
  */
 
-package org.podval.photo
+package org.podval.photo.files
+
+import org.podval.photo.PhotoException
+
+import java.io.File
 
 
-trait NonRootAlbumList extends AlbumList with NonRootFolder {
+object Files {
+
+    def delete(file: File) {
+        if (file.isDirectory) {
+            file.listFiles.foreach(delete)
+        }
+
+        val result = file.delete
+
+        if (!result) {
+            throw new PhotoException("Failed to delete file!")
+        }
+    }
+
+
+    // TODO split into rename and move?
+    def rename(from: File, to: File) {
+        val result = from.renameTo(to)
+
+        if (!result) {
+            throw new PhotoException("Failed to rename!")
+        }
+
+    }
 }

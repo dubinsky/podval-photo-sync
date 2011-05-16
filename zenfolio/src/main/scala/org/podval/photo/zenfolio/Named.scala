@@ -16,13 +16,13 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.NonRoot
+import org.podval.photo.NonRootFolder
 
 import com.zenfolio.www.api._1_1.GroupElement
 
 
 // TODO: in reality, this is extension of NonRoot, and should be named appropriately!
-trait Named[R <: GroupElement] extends ZenfolioFolder[R] with NonRoot {
+trait Named[R <: GroupElement] extends ZenfolioFolder[R] with NonRootFolder {
 
     final override def name: String = element.getTitle()
 

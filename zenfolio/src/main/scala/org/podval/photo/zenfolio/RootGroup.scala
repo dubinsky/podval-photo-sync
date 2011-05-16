@@ -16,10 +16,10 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.Root
+import org.podval.photo.RootFolder
 
 import com.zenfolio.www.api._1_1.{Group => ZGroup}
 
 
-final class RootGroup(override val connection: Zenfolio, element: ZGroup) extends Group(element) with Root {
+final class RootGroup(override val connection: Zenfolio, element: ZGroup) extends Group(element) with RootFolder {
 }

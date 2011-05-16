@@ -18,5 +18,5 @@
 package org.podval.photo
 
 
-trait RootAlbumList extends AlbumList with Root {
+trait RootAlbumList extends AlbumList with RootFolder {
 }

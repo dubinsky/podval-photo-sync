@@ -17,5 +17,37 @@
 package org.podval.photo
 
 
-trait NonRootAlbumList extends AlbumList with NonRootFolder {
+trait Thing {
+
+    type C <: Connection[_]
+
+
+    final type F = C#F
+
+
+    def connection: C
+
+
+    def isRoot: Boolean
+
+
+    def parent: F
+
+
+    def parent_=(value: F)
+
+
+    def root: C#R
+
+
+    def name: String
+
+
+    def name_=(value: String)
+
+
+    def path: String
+
+
+    def delete
 }

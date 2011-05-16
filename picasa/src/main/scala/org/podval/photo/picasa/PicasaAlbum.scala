@@ -61,12 +61,12 @@ extends PicasaFolder with NonRootAlbum {
     }
 
 
-    protected def moveToParent(value: PicasaFolder) {
+    protected def setParent(value: PicasaFolder) {
         throw new PhotoException("Picasa folders can not be nested (bummer!)")
     }
 
 
-    protected override def deleteFolder {
+    protected override def doDelete {
         throw new UnsupportedOperationException(); // TODO implement
     }
 

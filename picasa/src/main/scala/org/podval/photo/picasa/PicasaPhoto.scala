@@ -28,9 +28,6 @@ import java.io.{File, FileOutputStream, BufferedOutputStream, IOException}
 
 final class PicasaPhoto(val parent: PicasaAlbum, entry: PhotoEntry) extends Photo {
 
-    type F = PicasaAlbum
-
-
     override def name = entry.title
 
 

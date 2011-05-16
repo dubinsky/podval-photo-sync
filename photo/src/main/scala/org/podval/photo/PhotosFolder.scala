@@ -20,42 +20,47 @@ package org.podval.photo
 import scala.collection.mutable.ListBuffer
 
 
-trait Folders extends Folder {
+trait PhotosFolder extends Folder {
 
-    final override def canHaveFolders: Boolean = true
-
-
-    final override def hasFolders: Boolean = !folders.isEmpty
+    override final def canHavePhotos: Boolean = true
 
 
-    final override def getFolder(name: String): Option[F] = folders.find(_.name == name)
+    override final def hasPhotos: Boolean = !photos.isEmpty
 
 
-    final override def folders: Seq[F] = {
+    override final def getPhoto(name: String): Option[P] = photos.find(_.name == name)
+
+
+    override final def photos: Seq[P] = {
         if (!isPopulated) {
-            foldersList ++= retrieveFolders()
+            photosList ++= retrievePhotos()
             isPopulated = true
         }
 
-        foldersList
+        photosList
     }
 
 
-    final override def createFolder(name: String, folderType: FolderType): F = {
-        val result = doCreateFolder(name, folderType)
-        foldersList += result
-        result
+    override def coverPhoto: Option[P]
+
+
+    final override def coverPhoto_=(value: P) {
+        if (value.parent != this) {
+            throw new PhotoException("Cover photo for an album has to be in the album!")
+        }
+
+        setCoverPhoto(value)
     }
+
+
+    protected def setCoverPhoto(value: P)
 
 
     private var isPopulated: Boolean = false
 
 
-    protected def retrieveFolders(): Seq[F]
+    protected def retrievePhotos(): Seq[P]
 
 
-    protected def doCreateFolder(name: String, folderType: FolderType): F
-
-
-    private val foldersList: ListBuffer[F] = new ListBuffer[F]()
+    private val photosList: ListBuffer[P] = new ListBuffer[P]()
 }

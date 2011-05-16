@@ -18,32 +18,5 @@
 package org.podval.photo
 
 
-trait Root extends Folder {
-
-    override val connection: C
-
-
-    final override def parent: Option[F] = scala.None
-
-
-    final override def parent_=(value: F) = throw new PhotoException("Parent of a root folder can not be set!")
-
-
-    final override def root: C#R = this.asInstanceOf[C#R]
-
-
-    final override def name: String = "/"
-
-
-    final override def name_=(value: String) {
-        if (name != value) {
-            throw new PhotoException("Can not change the name of the root folder!")
-        }
-    }
-
-
-    final override def delete = throw new PhotoException("Root folder can not be deleted!")
-
-
-    final override def path: String = name
+trait RootFolder extends Folder with RootThing {
 }

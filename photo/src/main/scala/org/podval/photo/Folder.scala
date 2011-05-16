@@ -18,45 +18,15 @@
 package org.podval.photo
 
 
-trait Folder extends FolderType {
-
-    type C <: Connection[_]
-
-
-    type F = C#F
-
+trait Folder extends Thing with FolderType {
 
     type P <: Photo
-
-
-    def connection: C
-
-
-    def parent: Option[F]
-
-
-    def parent_=(value: F)
-
-
-    def root: C#R
-
-
-    def name: String
-
-
-    def name_=(value: String)
-
-
-    def path: String
 
 
     def public: Boolean
 
 
     def public_=(value: Boolean)
-
-
-    def delete
 
 
     def coverPhoto: Option[P]

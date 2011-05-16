@@ -18,5 +18,5 @@
 package org.podval.photo
 
 
-trait NonRootAlbum extends Album with NonRoot {
+trait NonRootAlbum extends Album with NonRootFolder {
 }

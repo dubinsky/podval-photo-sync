@@ -16,10 +16,10 @@
 
 package org.podval.photo.zenfolio
 
-import org.podval.photo.NonRoot
+import org.podval.photo.NonRootFolder
 
 import com.zenfolio.www.api._1_1.{Group => ZGroup}
 
 
-final class NonRootGroup(element: ZGroup) extends Group(element) with NonRoot with Named[ZGroup] {
+final class NonRootGroup(element: ZGroup) extends Group(element) with NonRootFolder with Named[ZGroup] {
 }
