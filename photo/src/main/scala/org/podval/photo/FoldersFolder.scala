@@ -20,7 +20,7 @@ package org.podval.photo
 import scala.collection.mutable.ListBuffer
 
 
-trait FoldersFolder extends Folder {
+trait FoldersFolder[C <: Connection] extends Folder[C] {
 
     final override def canHaveFolders: Boolean = true
 

@@ -17,22 +17,22 @@
 package org.podval.photo
 
 
-trait AlbumList extends FoldersFolder with NoPhotosFolder
+trait AlbumList[C <: Connection] extends FoldersFolder[C] with NoPhotosFolder[C]
 
 
-trait Album extends NoFoldersFolder with PhotosFolder
+trait Album[C <: Connection] extends NoFoldersFolder[C] with PhotosFolder[C]
 
 
-trait MixedFolder extends FoldersFolder with PhotosFolder
+trait MixedFolder[C <: Connection] extends FoldersFolder[C] with PhotosFolder[C]
 
 
-trait RootFolder extends Folder with RootThing
+trait RootFolder[C <: Connection] extends Folder[C] with RootThing[C]
 
 
-trait NonRootAlbum extends Album with NonRootFolder
+trait NonRootAlbum[C <: Connection] extends Album[C] with NonRootFolder[C]
 
 
-trait RootAlbumList extends AlbumList with RootFolder
+trait RootAlbumList[C <: Connection] extends AlbumList[C] with RootFolder[C]
 
 
-trait NonRootAlbumList extends AlbumList with NonRootFolder
+trait NonRootAlbumList[C <: Connection] extends AlbumList[C] with NonRootFolder[C]

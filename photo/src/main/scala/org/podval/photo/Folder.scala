@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait Folder extends Thing with FolderType {
+trait Folder[C <: Connection] extends Thing[C] with FolderType {
 
     def public: Boolean
 
@@ -72,10 +72,4 @@ trait Folder extends Thing with FolderType {
 
     final def getPhotos(id: PhotoId): Seq[P] =
         photos.filter(id.isIdentifiedBy) ++ folders.flatMap(_.getPhotos(id)).asInstanceOf[Seq[P]]
-
-
-    protected final override def addToParent = parent.addFolder(this)
-
-
-    protected final override def removeFromParent = parent.removeFolder(this.asInstanceOf[F])
 }

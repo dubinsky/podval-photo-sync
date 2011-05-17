@@ -27,7 +27,13 @@ final class FilesConnection(connector: FilesConnector) extends Connection(connec
     type T = File
 
 
+    type C = FilesConnection
+
+
     type F = FilesFolder
+
+
+    type P = FilesPhoto
 
 
     override def enableLowLevelLogging() {

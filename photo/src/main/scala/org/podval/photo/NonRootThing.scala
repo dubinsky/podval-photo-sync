@@ -17,7 +17,7 @@
 package org.podval.photo
 
 
-trait NonRootThing extends Thing {
+trait NonRootThing[C <: Connection] extends Thing[C] {
 
     // TODO When I use abstract type members instead of type parameters,
     // I can't figure out a way to avoid this cast.

@@ -24,13 +24,7 @@ import java.io.File
 import scala.collection.mutable
 
 
-abstract class FilesFolder() extends MixedFolder {
-
-    type C = FilesConnection
-
-
-    type P = FilesPhoto
-
+abstract class FilesFolder extends MixedFolder[FilesConnection] {
 
     // TODOD: tighter access?
     private[files] final def directory: File = new File(connection.transport, path)

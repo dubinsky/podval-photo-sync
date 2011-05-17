@@ -17,10 +17,7 @@
 package org.podval.photo
 
 
-trait Thing {
-
-    type C <: Connection
-
+trait Thing[C <: Connection] {
 
     final type F = C#F
 

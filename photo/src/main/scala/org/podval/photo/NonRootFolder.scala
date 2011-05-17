@@ -18,7 +18,13 @@
 package org.podval.photo
 
 
-trait NonRootFolder extends Folder with NonRootThing {
+trait NonRootFolder[C <: Connection] extends Folder[C] with NonRootThing[C] {
 
     final override def path: String = parent.path + name + "/"
+
+
+    protected final override def addToParent = parent.addFolder(this.asInstanceOf[C#C#F])
+
+
+    protected final override def removeFromParent = parent.removeFolder(this.asInstanceOf[C#C#F])
 }

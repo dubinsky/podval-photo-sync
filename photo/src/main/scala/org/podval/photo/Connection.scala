@@ -25,13 +25,16 @@ abstract class Connection(connector: Connector) {
     type T
 
 
-    type F <: Folder
+    type C <: Connection
 
 
-    type R = F with RootFolder
+    type F <: Folder[C]
 
 
-    type P <: Photo
+    final type R = F with RootFolder[C]
+
+
+    type P <: Photo[C]
 
 
     final def scheme: String = connector.scheme

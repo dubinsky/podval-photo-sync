@@ -24,7 +24,7 @@ import java.io.File
 import java.util.Date
 
 
-final class FilesPhoto(files: Map[String, File]) extends Photo {
+final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection] {
 
     protected override def setParent(value: F) = {
         // TODO move all the files
