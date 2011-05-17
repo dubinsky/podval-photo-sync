@@ -28,10 +28,23 @@ trait PhotosFolder extends Folder {
     override final def hasPhotos: Boolean = !photos.isEmpty
 
 
-    override final def getPhoto(name: String): Option[P] = photos.find(_.name == name)
+    final override def addPhoto(value: P) {
+        // TODO check that the connection is the same
+        // TODO check that this folder is already the parent
+        photosList += value
+    }
 
 
-    override final def photos: Seq[P] = {
+    def removePhoto(value: P) {
+        // TODO check that the photo is in this folder
+        photosList -= value
+    }
+
+
+    final override def getPhoto(name: String): Option[P] = photos.find(_.name == name)
+
+
+    final override def photos: Seq[P] = {
         if (!isPopulated) {
             photosList ++= retrievePhotos()
             isPopulated = true
@@ -48,6 +61,8 @@ trait PhotosFolder extends Folder {
         if (value.parent != this) {
             throw new PhotoException("Cover photo for an album has to be in the album!")
         }
+
+        // TODOD ignore if idempotent
 
         setCoverPhoto(value)
     }

@@ -29,7 +29,16 @@ trait NoPhotosFolder extends Folder {
     final override def photos: Seq[P] = List[P]() // TODO make statisc...
 
 
+    final override def addPhoto(value: P) = noPhotos
+
+
+    final override def removePhoto(value: P) = noPhotos
+
+
     final override def getPhoto(name: String): Option[P] = scala.None // TODO WTF do I need to prefix this?!
+
+
+    private def noPhotos = throw new PhotoException("Folder can not contain photos")
 
 
     final override def coverPhoto: Option[P] = None

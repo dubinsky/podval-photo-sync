@@ -26,12 +26,20 @@ trait NoFoldersFolder extends Folder {
     final override def hasFolders: Boolean = false
 
 
-    final override def folders: Seq[F] = List[F]() // TODO make "static"!
+    final override def folders: Seq[F] = List[F]()
 
 
-    final override def getFolder(name: String): Option[F] = scala.None // TODO WTF do I need to prefix this?!
+    final override def addFolder(value: F) = noFolders
 
 
-    final override def createFolder(name: String, folderType: FolderType): F =
-        throw new PhotoException("Folder can not contain folders")
+    final override def removeFolder(value: F) = noFolders
+
+
+    final override def getFolder(name: String): Option[F] = None
+
+
+    final override def createFolder(name: String, folderType: FolderType): F = noFolders
+
+
+    private def noFolders = throw new PhotoException("Folder can not contain folders")
 }

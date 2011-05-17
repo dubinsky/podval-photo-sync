@@ -29,4 +29,10 @@ trait Photo extends NonRootThing with PhotoId {
 
 
     def originalFile(): File
+
+
+    protected final override def addToParent = parent.addPhoto(this)
+
+
+    protected final override def removeFromParent = parent.removePhoto(this.asInstanceOf[F])
 }

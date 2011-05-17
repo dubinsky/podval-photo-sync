@@ -20,9 +20,6 @@ package org.podval.photo
 
 trait Folder extends Thing with FolderType {
 
-    type P <: Photo
-
-
     def public: Boolean
 
 
@@ -41,6 +38,13 @@ trait Folder extends Thing with FolderType {
     def hasFolders: Boolean
 
 
+    // TODO tighten access rights on the add/remove Folder/Photo
+    def addFolder(value: F)
+
+
+    def removeFolder(value: F)
+
+
     def folders: Seq[F]
 
 
@@ -57,9 +61,21 @@ trait Folder extends Thing with FolderType {
     def photos: Seq[P]
 
 
+    def addPhoto(value: P)
+
+
+    def removePhoto(value: P)
+
+
     def getPhoto(name: String): Option[P]
 
 
     final def getPhotos(id: PhotoId): Seq[P] =
         photos.filter(id.isIdentifiedBy) ++ folders.flatMap(_.getPhotos(id)).asInstanceOf[Seq[P]]
+
+
+    protected final override def addToParent = parent.addFolder(this)
+
+
+    protected final override def removeFromParent = parent.removeFolder(this.asInstanceOf[F])
 }

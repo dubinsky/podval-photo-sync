@@ -18,15 +18,20 @@
 package org.podval.photo
 
 
-abstract class Connection[T](connector: Connector) {
+abstract class Connection(connector: Connector) {
 
     // TODO: check that login is present if required
+
+    type T
 
 
     type F <: Folder
 
 
     type R = F with RootFolder
+
+
+    type P <: Photo
 
 
     final def scheme: String = connector.scheme

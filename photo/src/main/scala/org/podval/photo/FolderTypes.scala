@@ -17,5 +17,22 @@
 package org.podval.photo
 
 
-trait NonRootAlbumList extends AlbumList with NonRootFolder {
-}
+trait AlbumList extends FoldersFolder with NoPhotosFolder
+
+
+trait Album extends NoFoldersFolder with PhotosFolder
+
+
+trait MixedFolder extends FoldersFolder with PhotosFolder
+
+
+trait RootFolder extends Folder with RootThing
+
+
+trait NonRootAlbum extends Album with NonRootFolder
+
+
+trait RootAlbumList extends AlbumList with RootFolder
+
+
+trait NonRootAlbumList extends AlbumList with NonRootFolder

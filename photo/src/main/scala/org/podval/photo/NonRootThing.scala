@@ -40,26 +40,24 @@ trait NonRootThing extends Thing {
 
 
     final override def parent_=(value: F) {
-        val newValue = Some (value)
-        if (newValue != parentVar) {
+        if (parentVar.isEmpty || value != parent) {
             if (parentVar.isDefined) {
                 if (value.connection != this.connection) {
                     throw new PhotoException("Can't move a folder to a different connection")
                 }
 
-                setParent(value);
+                removeFromParent
 
-                // TODO: remove from parentFolder
+                setParent(value)
             }
 
-            parentVar = newValue
+            parentVar = Some (value)
 
-            // TODO: add to new parentFolder
+            addToParent
         }
     }
 
 
-    // TODO introduce (properly access-restricted) add/remove on the Folder; review "retrieve" (-> "populate"?)
     protected def setParent(value: F)
 
 
@@ -72,8 +70,16 @@ trait NonRootThing extends Thing {
     final override def delete {
         doDelete
 
-        // TODO: remove from parentFolder
+        if (parentVar.isDefined) {
+            removeFromParent
+        }
     }
+
+
+    protected def addToParent
+
+
+    protected def removeFromParent
 
 
     protected def doDelete

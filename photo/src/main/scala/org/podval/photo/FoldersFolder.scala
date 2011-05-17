@@ -28,6 +28,19 @@ trait FoldersFolder extends Folder {
     final override def hasFolders: Boolean = !folders.isEmpty
 
 
+    final override def addFolder(value: F) {
+        // TODO check that the connection is the same
+        // TODO check that this folder is already the parent
+        foldersList += value
+    }
+
+
+    def removeFolder(value: F) {
+        // TODO check that the folder is in this folder
+        foldersList -= value
+    }
+
+
     final override def getFolder(name: String): Option[F] = folders.find(_.name == name)
 
 

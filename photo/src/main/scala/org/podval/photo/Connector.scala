@@ -19,14 +19,14 @@ package org.podval.photo
 
 import java.util.ServiceLoader
 
-import scala.collection.JavaConversions.asScalaIterable
+import scala.collection.JavaConversions.iterableAsScalaIterable
 
 
 abstract class Connector(val scheme: String) {
 
     // TODO do connect() through reflection?
 
-    def connect(): Connection[_]
+    def connect(): Connection
 }
 
 
@@ -36,7 +36,7 @@ object Connector {
     private val loader: ServiceLoader[Connector] = ServiceLoader.load(classOf[Connector])
 
 
-    val all: Seq[Connector] = Seq[Connector]() ++ asScalaIterable(loader)
+    val all: Seq[Connector] = Seq[Connector]() ++ iterableAsScalaIterable(loader)
 
 
     def get(scheme: String): Option[Connector] = {

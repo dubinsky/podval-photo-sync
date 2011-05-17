@@ -22,7 +22,10 @@ import org.podval.photo.{Connector, Connection, PhotoException}
 import java.io.File
 
 
-final class FilesConnection(connector: FilesConnector) extends Connection[File](connector) {
+final class FilesConnection(connector: FilesConnector) extends Connection(connector) {
+
+    type T = File
+
 
     type F = FilesFolder
 

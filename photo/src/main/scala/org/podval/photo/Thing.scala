@@ -19,10 +19,13 @@ package org.podval.photo
 
 trait Thing {
 
-    type C <: Connection[_]
+    type C <: Connection
 
 
     final type F = C#F
+
+
+    final type P = C#P
 
 
     def connection: C
@@ -34,6 +37,7 @@ trait Thing {
     def parent: F
 
 
+    // TODO: would be nice to have FoldersFolder as parent for a folder, and PhotosFolder - for Photos...
     def parent_=(value: F)
 
 
@@ -50,4 +54,12 @@ trait Thing {
 
 
     def delete
+
+
+    def isPresistent: Boolean
+
+
+    def insert
+
+    // TODO add: startChanges()/commitChanges() and autocommit
 }
