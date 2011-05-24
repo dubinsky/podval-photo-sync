@@ -74,4 +74,16 @@ final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection] 
 
 
     def exists(extension: String): Boolean = get(extension).isDefined
+
+
+    final override def isPresistent: Boolean = {
+        // TODO
+        throw new UnsupportedOperationException("")
+    }
+
+
+    protected final override def doInsert {
+        // TODO
+        throw new UnsupportedOperationException("")
+    }
 }

@@ -76,6 +76,19 @@ trait NonRootThing[C <: Connection] extends Thing[C] {
     }
 
 
+    final def insert {
+        if (isPresistent) {
+            throw new PhotoException("Already persistent!")
+        }
+
+        if (!parent.isPresistent) {
+            throw new PhotoException("Parent is not persistent!")
+        }
+
+        doInsert
+    }
+
+
     protected def addToParent
 
 
@@ -83,4 +96,7 @@ trait NonRootThing[C <: Connection] extends Thing[C] {
 
 
     protected def doDelete
+
+    
+    protected def doInsert
 }

@@ -16,14 +16,9 @@
 
 package org.podval.picasa.model;
 
-import com.google.api.client.googleapis.xml.atom.AtomPatchRelativeToOriginalContent;
-import com.google.api.client.googleapis.xml.atom.GData;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.util.DataUtil;
 import com.google.api.client.util.Key;
+import com.google.api.client.util.Data;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -64,48 +59,18 @@ public class Entry implements Cloneable {
 
     @Override
     protected Entry clone() {
-        return DataUtil.clone(this);
+        try {
+            @SuppressWarnings("unchecked")
+            Entry result = (Entry) super.clone();
+            Data.deepCopy(this, result);
+            return result;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
 
-    public final void executeDelete(final HttpTransport transport) throws IOException {
-        final HttpRequest request = transport.buildDeleteRequest();
-        request.setUrl(getEditLink());
-        request.headers.ifMatch = etag;
-        request.execute().ignore();
-    }
-
-
-    protected static Entry executeGet(
-        final HttpTransport transport,
-        final PicasaUrl url,
-        final Class<? extends Entry> entryClass) throws IOException
-    {
-        url.fields = GData.getFieldsFor(entryClass);
-        final HttpRequest request = transport.buildGetRequest();
-        request.url = url;
-        return request.execute().parseAs(entryClass);
-    }
-
-
-    protected Entry executePatchRelativeToOriginal(
-        final HttpTransport transport,
-        final Entry original) throws IOException
-    {
-        final HttpRequest request = transport.buildPatchRequest();
-        request.setUrl(getEditLink());
-        request.headers.ifMatch = etag;
-        final AtomPatchRelativeToOriginalContent content =
-            new AtomPatchRelativeToOriginalContent();
-        content.namespaceDictionary = Namespaces.DICTIONARY;
-        content.originalEntry = original;
-        content.patchedEntry = this;
-        request.content = content;
-        return request.execute().parseAs(getClass());
-    }
-
-
-    private String getEditLink() {
+    /* package */ String getEditLink() {
         return Link.find(links, "edit");
     }
 }

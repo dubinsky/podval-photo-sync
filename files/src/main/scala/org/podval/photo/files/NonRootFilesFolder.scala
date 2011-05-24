@@ -17,7 +17,7 @@
 
 package org.podval.photo.files
 
-import org.podval.photo.NonRootFolder
+import org.podval.photo.{NonRootFolder, PhotoException}
 
 import java.io.File
 
@@ -43,4 +43,20 @@ final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder 
 
 
     protected override def doDelete = Files.delete(directory)
+
+
+    override def isPresistent: Boolean = directory.exists
+
+
+    protected override def doInsert {
+        val result = directory.mkdir
+
+        if (!result) {
+            throw new PhotoException("Can not create diectory!")
+        }
+
+        if (!parent.isPresistent) {
+            throw new PhotoException("Parent is not persistent!")
+        }
+    }
 }

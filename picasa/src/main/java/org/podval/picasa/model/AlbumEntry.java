@@ -16,10 +16,7 @@
 
 package org.podval.picasa.model;
 
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
-
-import java.io.IOException;
 
 
 /**
@@ -42,22 +39,5 @@ public final class AlbumEntry extends Entry {
     @Override
     public AlbumEntry clone() {
         return (AlbumEntry) super.clone();
-    }
-
-
-    public static AlbumEntry executeGet(
-        final HttpTransport transport,
-        final String link) throws IOException
-    {
-        final PicasaUrl url = new PicasaUrl(link);
-        return (AlbumEntry) Entry.executeGet(transport, url, AlbumEntry.class);
-    }
-
-
-    public AlbumEntry executePatchRelativeToOriginal(
-        final HttpTransport transport,
-        final AlbumEntry original) throws IOException
-    {
-        return (AlbumEntry) super.executePatchRelativeToOriginal(transport, original);
     }
 }

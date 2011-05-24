@@ -16,10 +16,8 @@
 
 package org.podval.picasa.model;
 
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.util.Key;
 
-import java.io.IOException;
 import java.util.List;
 
 
@@ -30,14 +28,4 @@ public final class AlbumFeed extends Feed {
 
     @Key("entry")
     public List<PhotoEntry> photos;
-
-
-    public static AlbumFeed executeGet(
-        final HttpTransport transport,
-        final PicasaUrl url) throws IOException
-    {
-        url.kinds = "photo";
-        url.maxResults = 100;
-        return (AlbumFeed) Feed.executeGet(transport, url, AlbumFeed.class);
-    }
 }

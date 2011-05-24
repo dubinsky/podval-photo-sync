@@ -76,7 +76,121 @@ final class Picasa(connector: PicasaConnector) extends Connection[HttpTransport]
     }
 
 
+    // TPDP: transport.shutdown()
+
+
     protected override def createRootFolder(): R = new PicasaAlbumList(this)
+
+
+
+
+
+
+
+
+
+
+    @Throws(classOf[IOException])
+    def executeDeleteEntry(entry: Entry) {
+        val request = requestFactory.buildDeleteRequest(new GenericUrl(entry.getEditLink()))
+        request.headers.ifMatch = entry.etag
+        request.execute().ignore()
+    }
+
+
+    @Throws(classOf[IOException])
+  def executeGetEntry(url: PicasaUrl, <? extends Entry> entryClass){
+    url.fields = GoogleAtom.getFieldsFor(entryClass);
+    HttpRequest request = requestFactory.buildGetRequest(url);
+    return request.execute().parseAs(entryClass);
+  }
+
+    @Throws(classOf[IOException])
+  Entry executePatchEntryRelativeToOriginal(Entry updated, Entry original)  {
+    AtomPatchRelativeToOriginalContent content = new AtomPatchRelativeToOriginalContent();
+    content.namespaceDictionary = DICTIONARY;
+    content.originalEntry = original;
+    content.patchedEntry = updated;
+    HttpRequest request =
+        requestFactory.buildPatchRequest(new GenericUrl(updated.getEditLink()), content);
+    request.headers.ifMatch = updated.etag;
+    return request.execute().parseAs(updated.getClass());
+  }
+
+    @Throws(classOf[IOException])
+  public AlbumEntry executeGetAlbum(String link){
+    PicasaUrl url = new PicasaUrl(link);
+    return (AlbumEntry) executeGetEntry(url, AlbumEntry.class);
+  }
+
+    @Throws(classOf[IOException])
+  public AlbumEntry executePatchAlbumRelativeToOriginal(AlbumEntry updated, AlbumEntry original)
+      {
+    return (AlbumEntry) executePatchEntryRelativeToOriginal(updated, original);
+  }
+
+    @Throws(classOf[IOException])
+  <F extends Feed> F executeGetFeed(PicasaUrl url, Class<F> feedClass)
+      {
+    url.fields = GoogleAtom.getFieldsFor(feedClass);
+    HttpRequest request = requestFactory.buildGetRequest(url);
+    return request.execute().parseAs(feedClass);
+  }
+
+    @Throws(classOf[IOException])
+  Entry executeInsert(Feed feed, Entry entry){
+    AtomContent content = new AtomContent();
+    content.namespaceDictionary = DICTIONARY;
+    content.entry = entry;
+    HttpRequest request =
+        requestFactory.buildPostRequest(new GenericUrl(feed.getPostLink()), content);
+    return request.execute().parseAs(entry.getClass());
+  }
+
+    @Throws(classOf[IOException])
+  public AlbumFeed executeGetAlbumFeed(PicasaUrl url) {
+    url.kinds = "photo";
+    url.maxResults = 5;
+    return executeGetFeed(url, AlbumFeed.class);
+  }
+
+    @Throws(classOf[IOException])
+  public UserFeed executeGetUserFeed(PicasaUrl url) {
+    url.kinds = "album";
+    url.maxResults = 3;
+    return executeGetFeed(url, UserFeed.class);
+  }
+
+    @Throws(classOf[IOException])
+  public AlbumEntry insertAlbum(UserFeed userFeed, AlbumEntry entry) {
+    return (AlbumEntry) executeInsert(userFeed, entry);
+  }
+
+    @Throws(classOf[IOException])
+    def executeInsertPhotoEntry(
+      String albumFeedLink, InputStreamContent content, String fileName): PhotoEntry = {
+        val request = requestFactory.buildPostRequest(new GenericUrl(albumFeedLink), content)
+        GoogleHeaders headers = (GoogleHeaders) request.headers;
+    headers.setSlugFromFileName(fileName);
+    return request.execute().parseAs(PhotoEntry.class);
+  }
+
+    @Throws(classOf[IOException])
+    def executeInsertPhotoEntryWithMetadata(
+        photo: PhotoEntry,
+        albumFeedLink: String,
+        content: AbstractInputStreamContent): PhotoEntry =
+    {
+        val request = requestFactory.buildPostRequest(new GenericUrl(albumFeedLink), null)
+        val atomContent = new AtomContent()
+        atomContent.namespaceDictionary = DICTIONARY
+        atomContent.entry = photo
+        val multiPartContent = MultipartRelatedContent.forRequest(request)
+        multiPartContent.parts.add(atomContent)
+        multiPartContent.parts.add(content)
+        request.content = multiPartContent
+        return request.execute().parseAs(PhotoEntry.class)
+  }
 }
 
 

@@ -100,7 +100,6 @@
                         <arg>-target:jvm-1.5</arg>
                         <arg>-g:vars</arg>
                         <arg>-deprecation</arg>
-                        <arg>-make:transitivenocp</arg>
                         <arg>-dependencyfile</arg>
                         <arg>${project.build.directory}/.scala_dependencies</arg>
                     </args>
@@ -131,11 +130,13 @@
     </dependencies>
 
     <modules>
+        <module>cli</module>
         <module>photo</module>
         <module>files</module>
         <module>picasa</module>
+<!--
         <module>zenfolio-api</module>
         <module>zenfolio</module>
-        <module>cli</module>
+-->
     </modules>
 </project>
