@@ -17,5 +17,7 @@
 package org.podval.photo
 
 
-final class PhotoException(message: String = null, cause: Throwable = null) extends Exception(message, cause) {
+final class PhotoException(message: String, cause: Throwable = null) extends Exception(message, cause) {
+
+    def this(cause: Throwable) = this(null, cause)
 }

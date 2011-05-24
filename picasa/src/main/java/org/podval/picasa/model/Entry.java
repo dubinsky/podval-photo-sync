@@ -70,7 +70,7 @@ public class Entry implements Cloneable {
     }
 
 
-    /* package */ String getEditLink() {
+    public String getEditLink() {
         return Link.find(links, "edit");
     }
 }

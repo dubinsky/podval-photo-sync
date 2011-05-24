@@ -38,7 +38,7 @@ public class Feed {
     public List<Link> links;
 
 
-    private String getPostLink() {
+    public String getPostLink() {
         return Link.find(links, "http://schemas.google.com/g/2005#post");
     }
 }

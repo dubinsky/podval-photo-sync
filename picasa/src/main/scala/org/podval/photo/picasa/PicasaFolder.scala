@@ -20,7 +20,7 @@ package org.podval.photo.picasa
 import org.podval.photo.Folder
 
 
-trait PicasaFolder extends Folder {
+trait PicasaFolder extends Folder[Picasa] {
 
     type C = Picasa
 

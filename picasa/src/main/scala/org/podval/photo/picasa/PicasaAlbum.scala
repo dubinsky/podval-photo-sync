@@ -31,7 +31,7 @@ import java.io.IOException
 final class PicasaAlbum(
     private var entry: AlbumEntry,
     private var isDetached: Boolean) // TODO: do I really need this isDetached?
-extends PicasaFolder with NonRootAlbum {
+extends PicasaFolder with NonRootAlbum[Picasa] {
 
     def this() = this(new AlbumEntry(), true)
 

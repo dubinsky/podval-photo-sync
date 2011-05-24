@@ -18,19 +18,44 @@
 package org.podval.photo.picasa
 
 import org.podval.photo.{Connector, Connection, PhotoException}
-import org.podval.picasa.model.{Namespaces, PicasaUrl}
+import org.podval.picasa.model.{Feed, Entry, UserFeed, AlbumFeed, AlbumEntry, PhotoEntry,  Namespaces, PicasaUrl}
 
-import com.google.api.client.googleapis.{GoogleTransport, GoogleHeaders}
+import com.google.api.client.googleapis.GoogleHeaders
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin
+import com.google.api.client.googleapis.GoogleHeaders;
+import com.google.api.client.googleapis.MethodOverride;
+import com.google.api.client.googleapis.xml.atom.AtomPatchRelativeToOriginalContent;
+import com.google.api.client.googleapis.xml.atom.GoogleAtom;
+
+import com.google.api.client.http.AbstractInputStreamContent;
+import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpExecuteInterceptor;
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpRequestFactory;
+import com.google.api.client.http.HttpRequestInitializer;
+import com.google.api.client.http.HttpTransport;
+import com.google.api.client.http.InputStreamContent;
+import com.google.api.client.http.MultipartRelatedContent;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.http.xml.atom.AtomContent;
+import com.google.api.client.http.xml.atom.AtomParser;
+
+import com.google.api.client.xml.XmlNamespaceDictionary;
+
 import com.google.api.client.http.{HttpTransport, HttpResponseException}
-import com.google.api.client.xml.atom.AtomParser
 
 import java.util.logging.{Logger, Level}
 
 import java.io.IOException
 
 
-final class Picasa(connector: PicasaConnector) extends Connection[HttpTransport](connector) {
+final class Picasa(connector: PicasaConnector) extends Connection(connector) {
+
+    type T = HttpTransport
+
+
+    type C = Picasa
+
 
     type F = PicasaFolder
 
@@ -47,7 +72,7 @@ final class Picasa(connector: PicasaConnector) extends Connection[HttpTransport]
 
 
     protected override def createTransport(): HttpTransport = {
-        val result = GoogleTransport.create()
+        val result = new NetHttpTransport()
 
         val headers = result.defaultHeaders.asInstanceOf[GoogleHeaders]
         headers.setApplicationName("Podval-PicasaSync/1.0")
@@ -82,115 +107,124 @@ final class Picasa(connector: PicasaConnector) extends Connection[HttpTransport]
     protected override def createRootFolder(): R = new PicasaAlbumList(this)
 
 
+    private def getRequestFactory = {
+        if (requestFactory.isEmpty) {
+            requestFactory = Some(transport.createRequestFactory())
+        }
+
+        requestFactory.get
+    }
 
 
+    private var requestFactory: Option[HttpRequestFactory] = None
 
 
-
-
-
-
-    @Throws(classOf[IOException])
+    @throws(classOf[IOException])
     def executeDeleteEntry(entry: Entry) {
-        val request = requestFactory.buildDeleteRequest(new GenericUrl(entry.getEditLink()))
+        val request = getRequestFactory.buildDeleteRequest(new GenericUrl(entry.getEditLink()))
         request.headers.ifMatch = entry.etag
         request.execute().ignore()
     }
 
 
-    @Throws(classOf[IOException])
-  def executeGetEntry(url: PicasaUrl, <? extends Entry> entryClass){
-    url.fields = GoogleAtom.getFieldsFor(entryClass);
-    HttpRequest request = requestFactory.buildGetRequest(url);
-    return request.execute().parseAs(entryClass);
-  }
+    @throws(classOf[IOException])
+    def executeGetEntry(url: PicasaUrl, entryClass: Class[_ <: Entry]){
+        url.fields = GoogleAtom.getFieldsFor(entryClass)
+        val request = getRequestFactory.buildGetRequest(url)
+        request.execute().parseAs(entryClass)
+    }
 
-    @Throws(classOf[IOException])
-  Entry executePatchEntryRelativeToOriginal(Entry updated, Entry original)  {
-    AtomPatchRelativeToOriginalContent content = new AtomPatchRelativeToOriginalContent();
-    content.namespaceDictionary = DICTIONARY;
-    content.originalEntry = original;
-    content.patchedEntry = updated;
-    HttpRequest request =
-        requestFactory.buildPatchRequest(new GenericUrl(updated.getEditLink()), content);
-    request.headers.ifMatch = updated.etag;
-    return request.execute().parseAs(updated.getClass());
-  }
 
-    @Throws(classOf[IOException])
-  public AlbumEntry executeGetAlbum(String link){
-    PicasaUrl url = new PicasaUrl(link);
-    return (AlbumEntry) executeGetEntry(url, AlbumEntry.class);
-  }
+    @throws(classOf[IOException])
+    def executePatchEntryRelativeToOriginal(updated: Entry, original: Entry): Entry = {
+        val content = new AtomPatchRelativeToOriginalContent()
+        content.namespaceDictionary = Namespaces.DICTIONARY
+        content.originalEntry = original
+        content.patchedEntry = updated
+        val request = getRequestFactory.buildPatchRequest(new GenericUrl(updated.getEditLink()), content)
+        request.headers.ifMatch = updated.etag
+        request.execute().parseAs(classOf[Entry])
+    }
 
-    @Throws(classOf[IOException])
-  public AlbumEntry executePatchAlbumRelativeToOriginal(AlbumEntry updated, AlbumEntry original)
-      {
-    return (AlbumEntry) executePatchEntryRelativeToOriginal(updated, original);
-  }
 
-    @Throws(classOf[IOException])
-  <F extends Feed> F executeGetFeed(PicasaUrl url, Class<F> feedClass)
-      {
-    url.fields = GoogleAtom.getFieldsFor(feedClass);
-    HttpRequest request = requestFactory.buildGetRequest(url);
-    return request.execute().parseAs(feedClass);
-  }
+    @throws(classOf[IOException])
+    def executeGetAlbum(link: String): AlbumEntry = {
+        val url = new PicasaUrl(link)
+        executeGetEntry(url, classOf[AlbumEntry]).asInstanceOf[AlbumEntry]
+    }
 
-    @Throws(classOf[IOException])
-  Entry executeInsert(Feed feed, Entry entry){
-    AtomContent content = new AtomContent();
-    content.namespaceDictionary = DICTIONARY;
-    content.entry = entry;
-    HttpRequest request =
-        requestFactory.buildPostRequest(new GenericUrl(feed.getPostLink()), content);
-    return request.execute().parseAs(entry.getClass());
-  }
 
-    @Throws(classOf[IOException])
-  public AlbumFeed executeGetAlbumFeed(PicasaUrl url) {
-    url.kinds = "photo";
-    url.maxResults = 5;
-    return executeGetFeed(url, AlbumFeed.class);
-  }
+    @throws(classOf[IOException])
+    def executePatchAlbumRelativeToOriginal(updated: AlbumEntry, original: AlbumEntry): AlbumEntry =
+        executePatchEntryRelativeToOriginal(updated, original).asInstanceOf[AlbumEntry]
 
-    @Throws(classOf[IOException])
-  public UserFeed executeGetUserFeed(PicasaUrl url) {
-    url.kinds = "album";
-    url.maxResults = 3;
-    return executeGetFeed(url, UserFeed.class);
-  }
 
-    @Throws(classOf[IOException])
-  public AlbumEntry insertAlbum(UserFeed userFeed, AlbumEntry entry) {
-    return (AlbumEntry) executeInsert(userFeed, entry);
-  }
+    @throws(classOf[IOException])
+    def executeGetFeed[F <: Feed](url: PicasaUrl, feedClass: Class[F]): F = {
+        url.fields = GoogleAtom.getFieldsFor(feedClass)
+        val request = getRequestFactory.buildGetRequest(url)
+        request.execute().parseAs(feedClass)
+    }
 
-    @Throws(classOf[IOException])
+
+    @throws(classOf[IOException])
+    def executeInsert(feed: Feed, entry: Entry): Entry = {
+        val content = new AtomContent()
+        content.namespaceDictionary = Namespaces.DICTIONARY
+        content.entry = entry
+        val request = getRequestFactory.buildPostRequest(new GenericUrl(feed.getPostLink()), content)
+        request.execute().parseAs(classOf[Entry])
+    }
+
+
+    @throws(classOf[IOException])
+    def executeGetAlbumFeed(url: PicasaUrl): AlbumFeed = {
+        url.kinds = "photo"
+        url.maxResults = 5
+        executeGetFeed(url, classOf[AlbumFeed])
+    }
+
+
+    @throws(classOf[IOException])
+    def executeGetUserFeed(url: PicasaUrl): UserFeed = {
+        url.kinds = "album"
+        url.maxResults = 3
+        executeGetFeed(url, classOf[UserFeed])
+    }
+
+
+    @throws(classOf[IOException])
+    def insertAlbum(userFeed: UserFeed, entry: AlbumEntry): AlbumEntry =
+        executeInsert(userFeed, entry).asInstanceOf[AlbumEntry]
+
+
+    @throws(classOf[IOException])
     def executeInsertPhotoEntry(
-      String albumFeedLink, InputStreamContent content, String fileName): PhotoEntry = {
-        val request = requestFactory.buildPostRequest(new GenericUrl(albumFeedLink), content)
-        GoogleHeaders headers = (GoogleHeaders) request.headers;
-    headers.setSlugFromFileName(fileName);
-    return request.execute().parseAs(PhotoEntry.class);
-  }
+        albumFeedLink: String, content: InputStreamContent, fileName: String): PhotoEntry =
+    {
+        val request = getRequestFactory.buildPostRequest(new GenericUrl(albumFeedLink), content)
+        val headers = request.headers.asInstanceOf[GoogleHeaders]
+        headers.setSlugFromFileName(fileName)
+        request.execute().parseAs(classOf[PhotoEntry])
+    }
 
-    @Throws(classOf[IOException])
+
+    @throws(classOf[IOException])
     def executeInsertPhotoEntryWithMetadata(
         photo: PhotoEntry,
         albumFeedLink: String,
         content: AbstractInputStreamContent): PhotoEntry =
     {
-        val request = requestFactory.buildPostRequest(new GenericUrl(albumFeedLink), null)
+        val request = getRequestFactory.buildPostRequest(new GenericUrl(albumFeedLink), null)
         val atomContent = new AtomContent()
-        atomContent.namespaceDictionary = DICTIONARY
+        atomContent.namespaceDictionary = Namespaces.DICTIONARY
         atomContent.entry = photo
         val multiPartContent = MultipartRelatedContent.forRequest(request)
         multiPartContent.parts.add(atomContent)
         multiPartContent.parts.add(content)
         request.content = multiPartContent
-        return request.execute().parseAs(PhotoEntry.class)
-  }
+        request.execute().parseAs(classOf[PhotoEntry])
+    }
 }
 
 
