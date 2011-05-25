@@ -49,7 +49,7 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
 
             var nextUrl = url
             do {
-                val chunk = UserFeed.executeGet(transport, nextUrl)
+                val chunk = executeGetUserFeed(nextUrl)
 
                 if (feed == null) {
                     feed = chunk
@@ -75,6 +75,14 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
         }
 
         result
+    }
+
+
+    @throws(classOf[IOException])
+    private def executeGetUserFeed(url: PicasaUrl): UserFeed = {
+        url.kinds = "album"
+        url.maxResults = 3
+        connection.executeGetFeed(url, classOf[UserFeed])
     }
 
 

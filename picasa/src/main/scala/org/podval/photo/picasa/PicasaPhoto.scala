@@ -51,7 +51,7 @@ final class PicasaPhoto(val parent: PicasaAlbum, entry: PhotoEntry) extends Phot
         try {
             val result = File.createTempFile("p-p-s-p", null, null)
             val out = new BufferedOutputStream(new FileOutputStream(result))
-            PhotoEntry.download(parent.transport, url, out)
+            PhotoEntry.download(parent.transport.transport, url, out)
             result
         } catch {
             case e: IOException => throw new PhotoException("Failed to retrieve original jpeg!", e)

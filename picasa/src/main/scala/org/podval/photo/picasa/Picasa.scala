@@ -18,14 +18,18 @@
 package org.podval.photo.picasa
 
 import org.podval.photo.{Connector, Connection, PhotoException}
-import org.podval.picasa.model.{Feed, Entry, UserFeed, AlbumFeed, AlbumEntry, PhotoEntry,  Namespaces, PicasaUrl}
+import org.podval.picasa.model.{Feed, Entry, UserFeed, AlbumFeed, AlbumEntry, PhotoEntry,  PicasaUrl}
 
-import com.google.api.client.googleapis.GoogleHeaders
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin
+
 import com.google.api.client.googleapis.GoogleHeaders;
 import com.google.api.client.googleapis.MethodOverride;
+
 import com.google.api.client.googleapis.xml.atom.AtomPatchRelativeToOriginalContent;
 import com.google.api.client.googleapis.xml.atom.GoogleAtom;
+import com.google.api.client.http.xml.atom.AtomContent;
+import com.google.api.client.http.xml.atom.AtomParser;
+import com.google.api.client.xml.XmlNamespaceDictionary;
 
 import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.client.http.GenericUrl;
@@ -33,16 +37,11 @@ import com.google.api.client.http.HttpExecuteInterceptor;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestFactory;
 import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.http.MultipartRelatedContent;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.http.xml.atom.AtomContent;
-import com.google.api.client.http.xml.atom.AtomParser;
-
-import com.google.api.client.xml.XmlNamespaceDictionary;
-
 import com.google.api.client.http.{HttpTransport, HttpResponseException}
+
+import com.google.api.client.http.javanet.NetHttpTransport;
 
 import java.util.logging.{Logger, Level}
 
@@ -51,7 +50,7 @@ import java.io.IOException
 
 final class Picasa(connector: PicasaConnector) extends Connection(connector) {
 
-    type T = HttpTransport
+    type T = HttpRequestFactory
 
 
     type C = Picasa
@@ -71,18 +70,19 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
     override def isLoginRequired: Boolean = true
 
 
-    protected override def createTransport(): HttpTransport = {
-        val result = new NetHttpTransport()
+    protected override def createTransport(): HttpRequestFactory = {
+        new NetHttpTransport().createRequestFactory(new HttpRequestInitializer() {
+            @throws(classOf[IOException])
+            def initialize(request: HttpRequest) {
+                val headers = request.headers.asInstanceOf[GoogleHeaders]
+                headers.setApplicationName("Podval-Photo-Sync/1.0")
+                headers.gdataVersion = "2"
 
-        val headers = result.defaultHeaders.asInstanceOf[GoogleHeaders]
-        headers.setApplicationName("Podval-PicasaSync/1.0")
-        headers.gdataVersion = "2"
-
-        val parser = new AtomParser()
-        parser.namespaceDictionary = Namespaces.DICTIONARY
-        result.addParser(parser)
-
-        result
+                val parser = new AtomParser()
+                parser.namespaceDictionary = Picasa.DICTIONARY
+                request.addParser(parser)
+            }
+        })
     }
 
 
@@ -93,7 +93,8 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
             authenticator.authTokenType = "lh2" //"ndev";
             authenticator.username = login
             authenticator.password = password
-            authenticator.authenticate().setAuthorizationHeader(transport)
+            // TODO deprecated; use Response directly?!
+            authenticator.authenticate().setAuthorizationHeader(transport.transport)
         } catch {
             case e: HttpResponseException => throw new PhotoException(e)
             case e: IOException => throw new PhotoException(e)
@@ -107,21 +108,9 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
     protected override def createRootFolder(): R = new PicasaAlbumList(this)
 
 
-    private def getRequestFactory = {
-        if (requestFactory.isEmpty) {
-            requestFactory = Some(transport.createRequestFactory())
-        }
-
-        requestFactory.get
-    }
-
-
-    private var requestFactory: Option[HttpRequestFactory] = None
-
-
     @throws(classOf[IOException])
     def executeDeleteEntry(entry: Entry) {
-        val request = getRequestFactory.buildDeleteRequest(new GenericUrl(entry.getEditLink()))
+        val request = transport.buildDeleteRequest(new GenericUrl(entry.getEditLink()))
         request.headers.ifMatch = entry.etag
         request.execute().ignore()
     }
@@ -130,7 +119,7 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
     @throws(classOf[IOException])
     def executeGetEntry(url: PicasaUrl, entryClass: Class[_ <: Entry]){
         url.fields = GoogleAtom.getFieldsFor(entryClass)
-        val request = getRequestFactory.buildGetRequest(url)
+        val request = transport.buildGetRequest(url)
         request.execute().parseAs(entryClass)
     }
 
@@ -138,10 +127,10 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
     @throws(classOf[IOException])
     def executePatchEntryRelativeToOriginal(updated: Entry, original: Entry): Entry = {
         val content = new AtomPatchRelativeToOriginalContent()
-        content.namespaceDictionary = Namespaces.DICTIONARY
+        content.namespaceDictionary = Picasa.DICTIONARY
         content.originalEntry = original
         content.patchedEntry = updated
-        val request = getRequestFactory.buildPatchRequest(new GenericUrl(updated.getEditLink()), content)
+        val request = transport.buildPatchRequest(new GenericUrl(updated.getEditLink()), content)
         request.headers.ifMatch = updated.etag
         request.execute().parseAs(classOf[Entry])
     }
@@ -155,14 +144,9 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
 
 
     @throws(classOf[IOException])
-    def executePatchAlbumRelativeToOriginal(updated: AlbumEntry, original: AlbumEntry): AlbumEntry =
-        executePatchEntryRelativeToOriginal(updated, original).asInstanceOf[AlbumEntry]
-
-
-    @throws(classOf[IOException])
     def executeGetFeed[F <: Feed](url: PicasaUrl, feedClass: Class[F]): F = {
         url.fields = GoogleAtom.getFieldsFor(feedClass)
-        val request = getRequestFactory.buildGetRequest(url)
+        val request = transport.buildGetRequest(url)
         request.execute().parseAs(feedClass)
     }
 
@@ -170,39 +154,18 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
     @throws(classOf[IOException])
     def executeInsert(feed: Feed, entry: Entry): Entry = {
         val content = new AtomContent()
-        content.namespaceDictionary = Namespaces.DICTIONARY
+        content.namespaceDictionary = Picasa.DICTIONARY
         content.entry = entry
-        val request = getRequestFactory.buildPostRequest(new GenericUrl(feed.getPostLink()), content)
+        val request = transport.buildPostRequest(new GenericUrl(feed.getPostLink()), content)
         request.execute().parseAs(classOf[Entry])
     }
-
-
-    @throws(classOf[IOException])
-    def executeGetAlbumFeed(url: PicasaUrl): AlbumFeed = {
-        url.kinds = "photo"
-        url.maxResults = 5
-        executeGetFeed(url, classOf[AlbumFeed])
-    }
-
-
-    @throws(classOf[IOException])
-    def executeGetUserFeed(url: PicasaUrl): UserFeed = {
-        url.kinds = "album"
-        url.maxResults = 3
-        executeGetFeed(url, classOf[UserFeed])
-    }
-
-
-    @throws(classOf[IOException])
-    def insertAlbum(userFeed: UserFeed, entry: AlbumEntry): AlbumEntry =
-        executeInsert(userFeed, entry).asInstanceOf[AlbumEntry]
 
 
     @throws(classOf[IOException])
     def executeInsertPhotoEntry(
         albumFeedLink: String, content: InputStreamContent, fileName: String): PhotoEntry =
     {
-        val request = getRequestFactory.buildPostRequest(new GenericUrl(albumFeedLink), content)
+        val request = transport.buildPostRequest(new GenericUrl(albumFeedLink), content)
         val headers = request.headers.asInstanceOf[GoogleHeaders]
         headers.setSlugFromFileName(fileName)
         request.execute().parseAs(classOf[PhotoEntry])
@@ -215,9 +178,9 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
         albumFeedLink: String,
         content: AbstractInputStreamContent): PhotoEntry =
     {
-        val request = getRequestFactory.buildPostRequest(new GenericUrl(albumFeedLink), null)
+        val request = transport.buildPostRequest(new GenericUrl(albumFeedLink), null)
         val atomContent = new AtomContent()
-        atomContent.namespaceDictionary = Namespaces.DICTIONARY
+        atomContent.namespaceDictionary = Picasa.DICTIONARY
         atomContent.entry = photo
         val multiPartContent = MultipartRelatedContent.forRequest(request)
         multiPartContent.parts.add(atomContent)
@@ -225,6 +188,26 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
         request.content = multiPartContent
         request.execute().parseAs(classOf[PhotoEntry])
     }
+}
+
+
+
+import com.google.api.client.xml.XmlNamespaceDictionary
+
+
+object Picasa {
+
+    val DICTIONARY = new XmlNamespaceDictionary()
+        .set("", "http://www.w3.org/2005/Atom")
+        .set("exif", "http://schemas.google.com/photos/exif/2007")
+        .set("gd", "http://schemas.google.com/g/2005")
+        .set("geo", "http://www.w3.org/2003/01/geo/wgs84_pos#")
+        .set("georss", "http://www.georss.org/georss")
+        .set("gml", "http://www.opengis.net/gml")
+        .set("gphoto", "http://schemas.google.com/photos/2007")
+        .set("media", "http://search.yahoo.com/mrss/")
+        .set("openSearch", "http://a9.com/-/spec/opensearch/1.1/")
+        .set("xml", "http://www.w3.org/XML/1998/namespace")
 }
 
 

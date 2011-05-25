@@ -90,7 +90,7 @@ extends PicasaFolder with NonRootAlbum[Picasa] {
 
                 var nextUrl = url
                 do {
-                    val feed = AlbumFeed.executeGet(transport, nextUrl)
+                    val feed = executeGetAlbumFeed(nextUrl)
 
                     val photos: Seq[PhotoEntry] = feed.photos
                     result ++= (photos map (new PicasaPhoto(this, _)))
@@ -107,6 +107,14 @@ extends PicasaFolder with NonRootAlbum[Picasa] {
     }
 
 
+    @throws(classOf[IOException])
+    private def executeGetAlbumFeed(url: PicasaUrl): AlbumFeed = {
+        url.kinds = "photo"
+        url.maxResults = 5
+        connection.executeGetFeed(url, classOf[AlbumFeed])
+    }
+
+
     private def ensureOriginalSaved() {
         // TODO only if already persistent!
         if (originalEntry == null) {
@@ -115,13 +123,15 @@ extends PicasaFolder with NonRootAlbum[Picasa] {
     }
 
 
-    def insert(feed: UserFeed) = feed.insertAlbum(transport, entry)
+    @throws(classOf[IOException])
+    def insert(feed: UserFeed) = connection.executeInsert(feed, entry).asInstanceOf[AlbumEntry]
 
 
+    @throws(classOf[IOException])
     private def update() {
         if (originalEntry != null) {
             try {
-                entry.executePatchRelativeToOriginal(transport, originalEntry)
+                connection.executePatchEntryRelativeToOriginal(entry, originalEntry).asInstanceOf[AlbumEntry]
             } catch {
                 case e: IOException => throw new PhotoException(e)
             }
