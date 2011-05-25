@@ -93,7 +93,7 @@ extends PicasaFolder with NonRootAlbum[Picasa] {
                     val feed = executeGetAlbumFeed(nextUrl)
 
                     val photos: Seq[PhotoEntry] = feed.photos
-                    result ++= (photos map (new PicasaPhoto(this, _)))
+                    result ++= (photos map (new PicasaPhoto(_)))
 
                     val next = Link.find(feed.links, "next")
                     nextUrl = if (next == null) null else new PicasaUrl(next) // TODO standard function?

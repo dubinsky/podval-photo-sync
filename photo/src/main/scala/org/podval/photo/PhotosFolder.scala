@@ -46,7 +46,7 @@ trait PhotosFolder[C <: Connection] extends Folder[C] {
 
     final override def photos: Seq[P] = {
         if (!isPopulated) {
-            photosList ++= retrievePhotos()
+            retrievePhotos().foreach(_.parent = this.asInstanceOf[C#C#F])
             isPopulated = true
         }
 
