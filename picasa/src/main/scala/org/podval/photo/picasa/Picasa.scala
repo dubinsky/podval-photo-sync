@@ -73,15 +73,7 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
     protected override def createTransport(): HttpRequestFactory = {
         new NetHttpTransport().createRequestFactory(new HttpRequestInitializer() {
             @throws(classOf[IOException])
-            def initialize(request: HttpRequest) {
-                val headers = request.headers.asInstanceOf[GoogleHeaders]
-                headers.setApplicationName("Podval-Photo-Sync/1.0")
-                headers.gdataVersion = "2"
-
-                val parser = new AtomParser()
-                parser.namespaceDictionary = Picasa.DICTIONARY
-                request.addParser(parser)
-            }
+            def initialize(request: HttpRequest) = initializeRequest(request)
         })
     }
 
@@ -93,11 +85,29 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
             authenticator.authTokenType = "lh2" //"ndev";
             authenticator.username = login
             authenticator.password = password
-            // TODO deprecated; use Response directly?!
-            authenticator.authenticate().setAuthorizationHeader(transport.transport)
+            authorizationHeaderValue = Some(authenticator.authenticate().getAuthorizationHeaderValue())
         } catch {
             case e: HttpResponseException => throw new PhotoException(e)
             case e: IOException => throw new PhotoException(e)
+        }
+    }
+
+
+    private var authorizationHeaderValue: Option[String] = None
+
+
+    @throws(classOf[IOException])
+    private def initializeRequest(request: HttpRequest) {
+        val headers = request.headers.asInstanceOf[GoogleHeaders]
+        headers.setApplicationName("Podval-Photo-Sync/1.0")
+        headers.gdataVersion = "2"
+        
+        val parser = new AtomParser()
+        parser.namespaceDictionary = Picasa.DICTIONARY
+        request.addParser(parser)
+
+        if (authorizationHeaderValue.isDefined) {
+            request.headers.authorization = authorizationHeaderValue.get
         }
     }
 

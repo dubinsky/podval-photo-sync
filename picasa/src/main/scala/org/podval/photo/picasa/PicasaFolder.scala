@@ -22,11 +22,5 @@ import org.podval.photo.Folder
 
 trait PicasaFolder extends Folder[Picasa] {
 
-    type C = Picasa
-
-
-    type P = PicasaPhoto
-
-
     final def transport = connection.transport
 }
