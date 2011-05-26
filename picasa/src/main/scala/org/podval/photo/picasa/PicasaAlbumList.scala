@@ -19,7 +19,7 @@ package org.podval.photo.picasa
 
 import org.podval.photo.{RootAlbumList, FolderType, PhotoException}
 
-import org.podval.photo.picasa.model.{PicasaUrl, UserFeed, Link}
+import org.podval.photo.picasa.model.{PicasaUrl, UserFeed, Link, AlbumEntry}
 
 import scala.collection.mutable.ListBuffer
 
@@ -42,47 +42,23 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
 
 
     protected override def retrieveFolders(): Seq[PicasaFolder] = {
-        // TODO: abstract away the control structure to read a complete feed...
-        val result = new ListBuffer[PicasaFolder]()
+        val result = Util.readFeed[UserFeed, AlbumEntry](
+            feedUrl,
+            (url => executeGetUserFeed(url, 100)),
+            (chunk => chunk.albums))
 
-        try {
-            val url = PicasaUrl.relativeToRoot("feed/api/user/" + connection.login)
-
-            var nextUrl = url
-            do {
-                val chunk = executeGetUserFeed(nextUrl)
-
-                if (feed == null) {
-                    feed = chunk
-                }
-
-                /* If 'albums' value is annotated with the Scala type Seq[AlbumEntry],
-                 * implicit conversion takes place, and nullness check (next line)
-                 * does not work: null is converted into a (empty?) collection...
-                 */
-                val albums = chunk.albums
-
-                if (albums != null) {
-                    val picasaAlbums = albums map (new PicasaAlbum(_))
-                    picasaAlbums.foreach(_.parent = this)
-                    result ++= picasaAlbums
-                }
-
-                val next = Link.find(chunk.links, "next")
-                nextUrl = if (next == null) null else new PicasaUrl(next) // TODO standard function?
-            } while (nextUrl != null)
-        } catch {
-            case e: IOException => throw new PhotoException(e)
-        }
-
-        result
+        
+        result map (new PicasaAlbum(_))
     }
 
 
+    private def feedUrl = PicasaUrl.relativeToRoot("feed/api/user/" + connection.login)
+
+
     @throws(classOf[IOException])
-    private def executeGetUserFeed(url: PicasaUrl): UserFeed = {
+    private def executeGetUserFeed(url: PicasaUrl, maxResults: Int): UserFeed = {
         url.kinds = "album"
-        url.maxResults = 3
+        url.maxResults = maxResults
         connection.executeGetFeed(url, classOf[UserFeed])
     }
 
@@ -93,7 +69,7 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
             val result = new PicasaAlbum()
             result.name = name
             result.parent = this
-            result.insert(feed)
+            result.insert(getFeed)
             result
         } catch {
             case e: IOException => throw new PhotoException(e)
@@ -101,5 +77,14 @@ final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolde
     }
 
 
-    private var feed: UserFeed = null
+    private def getFeed: UserFeed = {
+        if (feed.isEmpty) {
+            feed = Some(executeGetUserFeed(feedUrl, 0))
+        }
+
+        feed.get
+    }
+
+
+    private var feed: Option[UserFeed] = None
 }

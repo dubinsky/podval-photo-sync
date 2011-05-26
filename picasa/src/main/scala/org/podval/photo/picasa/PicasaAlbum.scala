@@ -90,28 +90,13 @@ extends PicasaFolder with NonRootAlbum[Picasa, PicasaFolder, PicasaPhoto] {
 
 
     protected override def retrievePhotos(): Seq[PicasaPhoto] = {
-        val result = new ListBuffer[PicasaPhoto]()
+//        if ((entry != null) && (entry.numPhotos != 0)) { // TODO
+        val result = Util.readFeed[AlbumFeed, PhotoEntry](
+            new PicasaUrl(entry.getFeedLink()),
+            (url => executeGetAlbumFeed(url)),
+            (chunk => chunk.photos))
 
-        try {
-            if ((entry != null) && (entry.numPhotos != 0)) {
-                val url = new PicasaUrl(entry.getFeedLink())
-
-                var nextUrl = url
-                do {
-                    val feed = executeGetAlbumFeed(nextUrl)
-
-                    val photos: Seq[PhotoEntry] = feed.photos
-                    result ++= (photos map (new PicasaPhoto(_)))
-
-                    val next = Link.find(feed.links, "next")
-                    nextUrl = if (next == null) null else new PicasaUrl(next) // TODO standard function?
-                } while (nextUrl != null)
-            }
-        } catch {
-            case e: IOException => throw new PhotoException(e)
-        }
-
-        result
+        result map (new PicasaPhoto(_))
     }
 
 
