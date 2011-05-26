@@ -19,7 +19,7 @@ package org.podval.photo.picasa
 
 import org.podval.photo.{NonRootAlbum, PhotoException}
 
-import org.podval.picasa.model.{PicasaUrl, UserFeed, AlbumEntry, AlbumFeed, PhotoEntry, Link}
+import org.podval.photo.picasa.model.{PicasaUrl, UserFeed, AlbumEntry, AlbumFeed, PhotoEntry, Link}
 
 import scala.collection.mutable.ListBuffer
 
@@ -67,6 +67,14 @@ extends PicasaFolder with NonRootAlbum[Picasa] {
 
 
     protected override def doDelete {
+        throw new UnsupportedOperationException(); // TODO implement
+    }
+
+
+    override def isPersistent: Boolean = throw new UnsupportedOperationException(); // TODO implement
+
+
+    protected override def doInsert {
         throw new UnsupportedOperationException(); // TODO implement
     }
 
@@ -141,6 +149,7 @@ extends PicasaFolder with NonRootAlbum[Picasa] {
 
     private var originalEntry: AlbumEntry = null
 }
+
 
 
 private object PicasaAlbum {

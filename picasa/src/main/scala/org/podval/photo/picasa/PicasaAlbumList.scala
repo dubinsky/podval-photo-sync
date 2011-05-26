@@ -19,7 +19,7 @@ package org.podval.photo.picasa
 
 import org.podval.photo.{RootAlbumList, FolderType, PhotoException}
 
-import org.podval.picasa.model.{PicasaUrl, UserFeed, Link}
+import org.podval.photo.picasa.model.{PicasaUrl, UserFeed, Link}
 
 import scala.collection.mutable.ListBuffer
 

@@ -19,7 +19,7 @@ package org.podval.photo.picasa
 
 import org.podval.photo.{Photo, Rotation, PhotoException}
 
-import org.podval.picasa.model.PhotoEntry
+import org.podval.photo.picasa.model.PhotoEntry
 
 import java.util.Date
 
@@ -27,6 +27,17 @@ import java.io.{File, FileOutputStream, BufferedOutputStream, IOException}
 
 
 final class PicasaPhoto(entry: PhotoEntry) extends Photo[Picasa] {
+
+    override def name_=(value: String) = {
+        throw new UnsupportedOperationException() // TODO
+    }
+
+
+    protected override def setParent(value: F) = {
+        // TODO move all the files
+        throw new UnsupportedOperationException() // TODO
+    }
+
 
     override def name = entry.title
 
@@ -51,11 +62,27 @@ final class PicasaPhoto(entry: PhotoEntry) extends Photo[Picasa] {
         try {
             val result = File.createTempFile("p-p-s-p", null, null)
             val out = new BufferedOutputStream(new FileOutputStream(result))
-            PhotoEntry.download(parent.transport.transport, url, out)
+            PhotoEntry.download(parent.transport, url, out)
             result
         } catch {
             case e: IOException => throw new PhotoException("Failed to retrieve original jpeg!", e)
         }
+    }
+
+
+    protected override def doInsert = {
+        throw new UnsupportedOperationException() // TODO
+    }
+
+
+    protected override def doDelete = {
+        throw new UnsupportedOperationException() // TODO
+    }
+
+
+    override def isPersistent: Boolean = {
+        // TODO
+        throw new UnsupportedOperationException("")
     }
 }
 

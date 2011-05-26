@@ -18,7 +18,7 @@
 package org.podval.photo.picasa
 
 import org.podval.photo.{Connector, Connection, PhotoException}
-import org.podval.picasa.model.{Feed, Entry, UserFeed, AlbumFeed, AlbumEntry, PhotoEntry,  PicasaUrl}
+import org.podval.photo.picasa.model.{Feed, Entry, UserFeed, AlbumFeed, AlbumEntry, PhotoEntry,  PicasaUrl}
 
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin
 

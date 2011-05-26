@@ -28,6 +28,7 @@ final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection] 
 
     protected override def setParent(value: F) = {
         // TODO move all the files
+        throw new UnsupportedOperationException() // TODO
     }
 
 
@@ -45,6 +46,7 @@ final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection] 
 
         if (nameVar != newValue) {
             // TODO rename all the files with the name nameVar in my directory
+            throw new UnsupportedOperationException() // TODO
             nameVar = newValue
         }
     }
@@ -54,6 +56,7 @@ final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection] 
 
 
     protected override def doDelete = {
+        throw new UnsupportedOperationException() // TODO
         // TODO delete all the files!
     }
 
@@ -76,13 +79,13 @@ final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection] 
     def exists(extension: String): Boolean = get(extension).isDefined
 
 
-    final override def isPresistent: Boolean = {
+    override def isPersistent: Boolean = {
         // TODO
         throw new UnsupportedOperationException("")
     }
 
 
-    protected final override def doInsert {
+    protected override def doInsert {
         // TODO
         throw new UnsupportedOperationException("")
     }
