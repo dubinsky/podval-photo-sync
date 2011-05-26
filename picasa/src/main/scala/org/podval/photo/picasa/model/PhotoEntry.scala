@@ -26,7 +26,7 @@ import java.io.{OutputStream, IOException}
 final class PhotoEntry extends Entry {
 
     @Key
-    var category: Category = Category.newKind("photo")
+    var category: Category = Category("photo")
 
 
     @Key("media:group")

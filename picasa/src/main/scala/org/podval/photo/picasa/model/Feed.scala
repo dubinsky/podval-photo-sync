@@ -35,5 +35,5 @@ class Feed {
     var links: List[Link] = null
 
 
-    def getPostLink(): String = Link.find(links, "http://schemas.google.com/g/2005#post")
+    final def getPostLink(): String = Link.find(links, "http://schemas.google.com/g/2005#post")
 }

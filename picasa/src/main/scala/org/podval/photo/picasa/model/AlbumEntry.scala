@@ -26,7 +26,7 @@ final class AlbumEntry extends Entry {
 
 
     @Key
-    var category: Category = Category.newKind("album")
+    var category: Category = Category("album")
 
 
     @Key("gphoto:numphotos")

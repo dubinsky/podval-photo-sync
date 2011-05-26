@@ -20,7 +20,7 @@ import com.google.api.client.util.Key
 
 import java.util.List
 
-import scala.collection.JavaConversions.iterableAsScalaIterable
+import scala.collection.JavaConversions.collectionAsScalaIterable
 
 
 final class Link {
@@ -37,9 +37,7 @@ final class Link {
 object Link {
 
     def find(links: List[Link], rel: String): String = {
-        if (links == null) null else {
-            val result: Option[Link] = iterableAsScalaIterable(links).find(_.rel == rel)
-            if (result.isEmpty) null else result.get.href
-        }
+        val result: Option[Link] = if (links == null) None else links.find(_.rel == rel)
+        if (result.isEmpty) null else result.get.href
     }
 }

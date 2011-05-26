@@ -30,9 +30,10 @@ final class Category {
 }
 
 
+
 object Category {
     
-    def newKind(kind: String): Category = {
+    def apply(kind: String): Category = {
         val category = new Category()
         category.scheme = "http://schemas.google.com/g/2005#kind"
         category.term = "http://schemas.google.com/photos/2007#" + kind
