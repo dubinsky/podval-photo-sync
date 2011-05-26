@@ -50,7 +50,7 @@ trait RootThing[C <: Connection] extends Thing[C] {
     final override def delete = throw new PhotoException("Root can not be deleted!")
 
 
-    final def isPresistent: Boolean = true
+    final def isPersistent: Boolean = true
 
 
     final def insert = throw new PhotoException("Root can not be inserted!")

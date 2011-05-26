@@ -45,7 +45,7 @@ final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder 
     protected override def doDelete = Files.delete(directory)
 
 
-    override def isPresistent: Boolean = directory.exists
+    override def isPersistent: Boolean = directory.exists
 
 
     protected override def doInsert {
@@ -55,7 +55,7 @@ final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder 
             throw new PhotoException("Can not create diectory!")
         }
 
-        if (!parent.isPresistent) {
+        if (!parent.isPersistent) {
             throw new PhotoException("Parent is not persistent!")
         }
     }

@@ -53,7 +53,7 @@ trait Thing[C <: Connection] {
     def delete
 
 
-    def isPresistent: Boolean
+    def isPersistent: Boolean
 
 
     def insert

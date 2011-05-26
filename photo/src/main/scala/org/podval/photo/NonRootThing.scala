@@ -77,11 +77,11 @@ trait NonRootThing[C <: Connection] extends Thing[C] {
 
 
     final def insert {
-        if (isPresistent) {
+        if (isPersistent) {
             throw new PhotoException("Already persistent!")
         }
 
-        if (!parent.isPresistent) {
+        if (!parent.isPersistent) {
             throw new PhotoException("Parent is not persistent!")
         }
 
