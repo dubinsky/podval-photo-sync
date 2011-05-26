@@ -17,7 +17,7 @@
 package org.podval.photo
 
 
-trait RootThing[C <: Connection] extends Thing[C] {
+trait RootThing[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Thing[C,F,P] {
 
     override val connection: C
 

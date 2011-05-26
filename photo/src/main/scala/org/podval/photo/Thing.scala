@@ -17,13 +17,7 @@
 package org.podval.photo
 
 
-trait Thing[C <: Connection] {
-
-    final type F = C#F
-
-
-    final type P = C#P
-
+trait Thing[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] {
 
     def connection: C
 

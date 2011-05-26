@@ -26,7 +26,7 @@ abstract class Connector(val scheme: String) {
 
     // TODO do connect() through reflection?
 
-    def connect(): Connection
+    def connect(): Connection[_,_,_]
 }
 
 
@@ -39,7 +39,5 @@ object Connector {
     val all: Seq[Connector] = Seq[Connector]() ++ iterableAsScalaIterable(loader)
 
 
-    def get(scheme: String): Option[Connector] = {
-        all.find(_.scheme.equals(scheme))
-    }
+    def get(scheme: String): Option[Connector] = all.find(_.scheme == scheme)
 }

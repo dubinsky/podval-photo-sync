@@ -20,7 +20,10 @@ package org.podval.photo
 import java.io.File
 
 
-trait Photo[C <: Connection] extends NonRootThing[C] with PhotoId {
+trait Photo[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends NonRootThing[C,F,P] with PhotoId {
+
+    self: P =>
+
 
     final override def path: String = parent.path + name
 
@@ -31,8 +34,8 @@ trait Photo[C <: Connection] extends NonRootThing[C] with PhotoId {
     def originalFile(): File
 
 
-    protected final override def addToParent = parent.addPhoto(this.asInstanceOf[C#C#P])
+    protected final override def addToParent = parent.addPhoto(this)
 
 
-    protected final override def removeFromParent = parent.removePhoto(this.asInstanceOf[C#C#P])
+    protected final override def removeFromParent = parent.removePhoto(this)
 }

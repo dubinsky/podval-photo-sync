@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait Folder[C <: Connection] extends Thing[C] with FolderType {
+trait Folder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Thing[C,F,P] with FolderType {
 
     def public: Boolean
 

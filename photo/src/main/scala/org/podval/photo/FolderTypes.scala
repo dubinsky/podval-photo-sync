@@ -17,22 +17,22 @@
 package org.podval.photo
 
 
-trait AlbumList[C <: Connection] extends FoldersFolder[C] with NoPhotosFolder[C]
+trait AlbumList[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends FoldersFolder[C,F,P] with NoPhotosFolder[C,F,P]
 
 
-trait Album[C <: Connection] extends NoFoldersFolder[C] with PhotosFolder[C]
+trait Album[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends NoFoldersFolder[C,F,P] with PhotosFolder[C,F,P]
 
 
-trait MixedFolder[C <: Connection] extends FoldersFolder[C] with PhotosFolder[C]
+trait MixedFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends FoldersFolder[C,F,P] with PhotosFolder[C,F,P]
 
 
-trait RootFolder[C <: Connection] extends Folder[C] with RootThing[C]
+trait RootFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Folder[C,F,P] with RootThing[C,F,P]
 
 
-trait NonRootAlbum[C <: Connection] extends Album[C] with NonRootFolder[C]
+trait NonRootAlbum[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Album[C,F,P] with NonRootFolder[C,F,P]
 
 
-trait RootAlbumList[C <: Connection] extends AlbumList[C] with RootFolder[C]
+trait RootAlbumList[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends AlbumList[C,F,P] with RootFolder[C,F,P]
 
 
-trait NonRootAlbumList[C <: Connection] extends AlbumList[C] with NonRootFolder[C]
+trait NonRootAlbumList[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends AlbumList[C,F,P] with NonRootFolder[C,F,P]

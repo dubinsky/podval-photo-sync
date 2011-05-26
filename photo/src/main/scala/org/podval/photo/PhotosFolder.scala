@@ -20,7 +20,7 @@ package org.podval.photo
 import scala.collection.mutable.ListBuffer
 
 
-trait PhotosFolder[C <: Connection] extends Folder[C] {
+trait PhotosFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Folder[C,F,P] {
 
     override final def canHavePhotos: Boolean = true
 
@@ -46,7 +46,7 @@ trait PhotosFolder[C <: Connection] extends Folder[C] {
 
     final override def photos: Seq[P] = {
         if (!isPopulated) {
-            retrievePhotos().foreach(_.parent = this.asInstanceOf[C#C#F])
+            retrievePhotos().foreach(_.parent = this.asInstanceOf[F])
             isPopulated = true
         }
 

@@ -26,14 +26,14 @@ import java.util.Date
 import java.io.{File, FileOutputStream, BufferedOutputStream, IOException}
 
 
-final class PicasaPhoto(entry: PhotoEntry) extends Photo[Picasa] {
+final class PicasaPhoto(entry: PhotoEntry) extends Photo[Picasa, PicasaFolder, PicasaPhoto] {
 
     override def name_=(value: String) = {
         throw new UnsupportedOperationException() // TODO
     }
 
 
-    protected override def setParent(value: F) = {
+    protected override def setParent(value: PicasaFolder) = {
         // TODO move all the files
         throw new UnsupportedOperationException() // TODO
     }

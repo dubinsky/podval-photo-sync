@@ -18,7 +18,7 @@
 package org.podval.photo
 
 
-trait NoPhotosFolder[C <: Connection] extends Folder[C] {
+trait NoPhotosFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Folder[C,F,P] {
 
     final override def canHavePhotos: Boolean = false
 

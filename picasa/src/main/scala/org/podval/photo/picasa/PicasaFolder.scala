@@ -20,7 +20,7 @@ package org.podval.photo.picasa
 import org.podval.photo.Folder
 
 
-trait PicasaFolder extends Folder[Picasa] {
+trait PicasaFolder extends Folder[Picasa, PicasaFolder, PicasaPhoto] {
 
     final def transport = connection.transport
 }

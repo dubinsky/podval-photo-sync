@@ -22,18 +22,9 @@ import org.podval.photo.{Connector, Connection, PhotoException}
 import java.io.File
 
 
-final class FilesConnection(connector: FilesConnector) extends Connection(connector) {
+final class FilesConnection(connector: FilesConnector) extends Connection[FilesConnection, FilesFolder, FilesPhoto](connector) {
 
     type T = File
-
-
-    type C = FilesConnection
-
-
-    type F = FilesFolder
-
-
-    type P = FilesPhoto
 
 
     override def enableLowLevelLogging() {
@@ -66,7 +57,7 @@ final class FilesConnection(connector: FilesConnector) extends Connection(connec
     }
 
 
-    protected override def createRootFolder(): R =  new RootFilesFolder(this)
+    protected override def createRootFolder(): R =  new RootFilesFolder(this).asInstanceOf[R]
 
 
     private var pathVar: Option[String] = None

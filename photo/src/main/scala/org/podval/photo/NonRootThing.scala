@@ -17,13 +17,13 @@
 package org.podval.photo
 
 
-trait NonRootThing[C <: Connection] extends Thing[C] {
+trait NonRootThing[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Thing[C,F,P] {
 
     // TODO When I use abstract type members instead of type parameters,
     // I can't figure out a way to avoid this cast.
     // I hope that Scala type system has a way to eliminate the cast - I just
     // don't know it yet ;)
-    final override def connection: C = parent.connection.asInstanceOf[C]
+    final override def connection: C = parent.connection
 
 
     final override def isRoot: Boolean = false

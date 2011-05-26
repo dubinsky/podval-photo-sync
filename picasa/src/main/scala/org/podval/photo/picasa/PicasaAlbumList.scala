@@ -28,7 +28,8 @@ import scala.collection.JavaConversions._
 import java.io.IOException
 
 
-final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolder with RootAlbumList[Picasa] {
+final class PicasaAlbumList(override val connection: Picasa) extends PicasaFolder with
+    RootAlbumList[Picasa, PicasaFolder, PicasaPhoto] {
 
     override def public = true
 

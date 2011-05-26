@@ -22,7 +22,8 @@ import org.podval.photo.{NonRootFolder, PhotoException}
 import java.io.File
 
 
-final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder with NonRootFolder[FilesConnection] {
+final class NonRootFilesFolder(private var nameVar: String) extends FilesFolder
+    with NonRootFolder[FilesConnection, FilesFolder, FilesPhoto] {
 
     override def name = nameVar
 

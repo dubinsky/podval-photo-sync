@@ -24,7 +24,7 @@ import java.io.File
 import scala.collection.mutable
 
 
-abstract class FilesFolder extends MixedFolder[FilesConnection] {
+abstract class FilesFolder extends MixedFolder[FilesConnection, FilesFolder, FilesPhoto] {
 
     // TODOD: tighter access?
     private[files] final def directory: File = new File(connection.transport, path)
@@ -40,13 +40,13 @@ abstract class FilesFolder extends MixedFolder[FilesConnection] {
     }
 
 
-    final override def coverPhoto: Option[P] = {
+    final override def coverPhoto: Option[FilesPhoto] = {
         throw new UnsupportedOperationException(); // TODO implement
         // TODO: implement, using XML metadata
     }
 
 
-    protected final override def setCoverPhoto(value: P) {
+    protected final override def setCoverPhoto(value: FilesPhoto) {
         throw new UnsupportedOperationException(); // TODO implement
         // TODO: implement, using XML metadata
     }
@@ -59,7 +59,7 @@ abstract class FilesFolder extends MixedFolder[FilesConnection] {
     }
 
 
-    final override def doCreateFolder(name: String, folderType: FolderType): F = {
+    final override def doCreateFolder(name: String, folderType: FolderType): FilesFolder = {
         val subdirectory = new File(directory, name)
 
         if (!subdirectory.mkdir()) {
@@ -69,7 +69,7 @@ abstract class FilesFolder extends MixedFolder[FilesConnection] {
         val result = new NonRootFilesFolder(name)
         result.parent = this
 
-        result.asInstanceOf[F]
+        result
     }
 
 
@@ -86,7 +86,7 @@ abstract class FilesFolder extends MixedFolder[FilesConnection] {
                 result
             }).toSeq
 
-        result.foreach(_.asInstanceOf[F].parent = this)
+        result.foreach(_.parent = this)
 
         result
     }

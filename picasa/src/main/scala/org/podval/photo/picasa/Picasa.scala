@@ -22,24 +22,14 @@ import org.podval.photo.picasa.model.{Feed, Entry, UserFeed, AlbumFeed, AlbumEnt
 
 import com.google.api.client.googleapis.auth.clientlogin.ClientLogin
 
-import com.google.api.client.googleapis.GoogleHeaders;
-import com.google.api.client.googleapis.MethodOverride;
+import com.google.api.client.googleapis.GoogleHeaders
 
-import com.google.api.client.googleapis.xml.atom.AtomPatchRelativeToOriginalContent;
-import com.google.api.client.googleapis.xml.atom.GoogleAtom;
-import com.google.api.client.http.xml.atom.AtomContent;
-import com.google.api.client.http.xml.atom.AtomParser;
+import com.google.api.client.googleapis.xml.atom.{GoogleAtom, AtomPatchRelativeToOriginalContent}
+import com.google.api.client.http.xml.atom.{AtomContent, AtomParser}
 import com.google.api.client.xml.XmlNamespaceDictionary;
 
-import com.google.api.client.http.AbstractInputStreamContent;
-import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpExecuteInterceptor;
-import com.google.api.client.http.HttpRequest;
-import com.google.api.client.http.HttpRequestFactory;
-import com.google.api.client.http.HttpRequestInitializer;
-import com.google.api.client.http.InputStreamContent;
-import com.google.api.client.http.MultipartRelatedContent;
-import com.google.api.client.http.{HttpTransport, HttpResponseException}
+import com.google.api.client.http.{HttpRequestFactory, GenericUrl, HttpRequest, HttpRequestInitializer,
+    HttpResponseException, MultipartRelatedContent, AbstractInputStreamContent, InputStreamContent}
 
 import com.google.api.client.http.javanet.NetHttpTransport;
 
@@ -48,15 +38,9 @@ import java.util.logging.{Logger, Level}
 import java.io.IOException
 
 
-final class Picasa(connector: PicasaConnector) extends Connection(connector) {
+final class Picasa(connector: PicasaConnector) extends Connection[Picasa, PicasaFolder, PicasaPhoto](connector) {
 
     type T = HttpRequestFactory
-
-
-    type C = Picasa
-
-
-    type F = PicasaFolder
 
 
     override def enableLowLevelLogging() {
@@ -147,10 +131,8 @@ final class Picasa(connector: PicasaConnector) extends Connection(connector) {
 
 
     @throws(classOf[IOException])
-    def executeGetAlbum(link: String): AlbumEntry = {
-        val url = new PicasaUrl(link)
-        executeGetEntry(url, classOf[AlbumEntry]).asInstanceOf[AlbumEntry]
-    }
+    def executeGetAlbum(link: String): AlbumEntry =
+        executeGetEntry(new PicasaUrl(link), classOf[AlbumEntry]).asInstanceOf[AlbumEntry]
 
 
     @throws(classOf[IOException])

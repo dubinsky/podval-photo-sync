@@ -20,4 +20,5 @@ package org.podval.photo.files
 import org.podval.photo.RootFolder
 
 
-final class RootFilesFolder(val connection: FilesConnection) extends FilesFolder with RootFolder[FilesConnection]
+final class RootFilesFolder(val connection: FilesConnection) extends FilesFolder
+    with RootFolder[FilesConnection, FilesFolder, FilesPhoto]
