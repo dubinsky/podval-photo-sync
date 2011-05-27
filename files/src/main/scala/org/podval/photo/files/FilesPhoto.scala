@@ -24,7 +24,7 @@ import java.io.File
 import java.util.Date
 
 
-final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection, FilesFolder, FilesPhoto] {
+final class FilesPhoto(extensions: Seq[String]) extends Photo[FilesConnection, FilesFolder, FilesPhoto] {
 
     protected override def setParent(value: FilesFolder) = {
         // TODO move all the files
@@ -73,7 +73,10 @@ final class FilesPhoto(files: Map[String, File]) extends Photo[FilesConnection, 
     def originalFile() = get("jpg").get
 
 
-    def get(extension: String): Option[File] = files.get(extension)
+    def get(extension: String): Option[File] = {
+        val result = new File(parent.directory, name + "." + extension)
+        if (result.exists) Some(result) else None
+    }
 
 
     def exists(extension: String): Boolean = get(extension).isDefined

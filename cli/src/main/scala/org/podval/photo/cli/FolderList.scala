@@ -19,7 +19,7 @@ package org.podval.photo.cli
 import org.podval.photo.Folder
 
 
-final class FolderList(folder: Folder) {
+final class FolderList(folder: Folder[_,Folder[_,_,_],_]) {
 
     def run() {
         folder.folders.foreach(f => Console.println(f.name))

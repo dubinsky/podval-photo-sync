@@ -20,12 +20,6 @@ import org.podval.photo.PhotoException
 
 import org.podval.photo.picasa.model.{Feed, Entry, PicasaUrl, Link}
 
-import scala.collection.mutable.ListBuffer
-
-import java.util.List
-
-import scala.collection.JavaConversions.collectionAsScalaIterable
-
 import java.io.IOException
 
 
@@ -34,27 +28,34 @@ object Util {
     def readFeed[F <: Feed, E <: Entry](
         url: PicasaUrl,
         getFeed: (PicasaUrl => F),
-        getEntries: (F => List[E])): Seq[E] =
+        getEntries: (F => Seq[E])): Seq[E] =
     {
         try {
-            val result = new ListBuffer[E]()
-
-            var nextUrl = url
-            do {
-                val chunk = getFeed(nextUrl)
-
-                val entries: List[E] = getEntries(chunk)
-                if (entries != null) {
-                    result ++= entries
-                }
-
-                val next = Link.find(chunk.links, "next")
-                nextUrl = if (next == null) null else new PicasaUrl(next) // TODO standard function?
-            } while (nextUrl != null)
-
-            result
+            unfold[PicasaUrl, F, Seq[E]](getFeed, getEntries, nextUrl, url).flatten
         } catch {
             case e: IOException => throw new PhotoException(e)
         }
+    }
+
+
+    private def nextUrl(feed: Feed): Option[PicasaUrl] = {
+        val next = Link.find(feed.links, "next")
+        if (next == null) None else Some(new PicasaUrl(next))
+    }
+
+
+    def unfold[N,F,R](
+        f: N => F,
+        result: F => R,
+        next: F => Option[N],
+        seed: N): List[R] =
+    {
+        val feed = f(seed)
+
+        result(feed) ::
+            (next(feed) match {
+                case Some(n) => unfold(f, result, next, n)
+                case None => Nil
+            })
     }
 }

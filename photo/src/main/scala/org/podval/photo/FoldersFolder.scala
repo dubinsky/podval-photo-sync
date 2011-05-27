@@ -46,7 +46,7 @@ trait FoldersFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P
 
     final override def folders: Seq[F] = {
         if (!isPopulated) {
-            foldersList ++= retrieveFolders()
+            retrieveFolders().foreach(_.parent = this.asInstanceOf[F])
             isPopulated = true
         }
 

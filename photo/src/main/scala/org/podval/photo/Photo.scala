@@ -22,7 +22,7 @@ import java.io.File
 
 trait Photo[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends NonRootThing[C,F,P] with PhotoId {
 
-    self: P =>
+    this: P =>
 
 
     final override def path: String = parent.path + name

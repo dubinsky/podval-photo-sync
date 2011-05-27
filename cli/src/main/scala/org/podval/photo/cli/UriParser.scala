@@ -27,7 +27,7 @@ import java.net.{URI, URISyntaxException}
 object UriParser {
 
     @throws(classOf[CmdLineException])
-    def uri2folder(uriStr: String, enableLowLevelLogging: Boolean, suffix: String): Folder = {
+    def uri2folder(uriStr: String, enableLowLevelLogging: Boolean, suffix: String): Folder[_,_,_] = {
         val uri: URI = 
             try {
                 new URI(uriStr)
@@ -110,7 +110,7 @@ object UriParser {
         if ((what == null) || (suffix == null)) what else what + "/" + suffix
 
 
-    private final def getSubFolderByPath(folder: Folder, path: String): Folder = {
+    private final def getSubFolderByPath[F <: Folder[_,F,_]](folder: F, path: String): F = {
         var result = folder
 
         if (path != null) {

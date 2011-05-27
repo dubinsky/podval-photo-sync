@@ -74,34 +74,21 @@ abstract class FilesFolder extends MixedFolder[FilesConnection, FilesFolder, Fil
 
 
     protected final override def retrievePhotos(): Seq[FilesPhoto] = {
-        // TODO: use grouping of tuples from a list...
+        val files: Seq[File] = directory.listFiles().toSeq.filter(_.isFile)
 
-        val bunches = mutable.Map.empty[String, mutable.Map[String, File]]
+        val bunches: Map[String, Seq[String]] =
+            files.map(splitName).groupBy(_._1).mapValues(v => v.map(_._2))
 
-        directory.listFiles() filter(_.isFile) foreach(register(bunches, _))
+        // TODO ignore non-photos
 
-        val result = bunches.keys.map(name => {
-                val result = new FilesPhoto(Map.empty ++ bunches(name))
+        val result = bunches.map(_ match {
+            case (name, extensions) =>
+                val result = new FilesPhoto(extensions)
                 result.name = name
                 result
-            }).toSeq
-
-        result.foreach(_.parent = this)
+        }).toSeq
 
         result
-    }
-
-
-    // TODO: introduce builder
-    private def register(bunches: mutable.Map[String, mutable.Map[String, File]], file: File) {
-        val (name, extension) = splitName(file)
-
-        if (!bunches.contains(name)) {
-            val newBunch= mutable.Map.empty[String, File]
-            bunches += (name -> newBunch)
-        }
-
-        bunches(name) += (extension -> file)  // TODO duplicates?
     }
 
 
