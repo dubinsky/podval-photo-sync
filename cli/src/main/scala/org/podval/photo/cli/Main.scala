@@ -17,8 +17,7 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.{Connector, Connection}
-import org.podval.photo.{Folder, Photo, PhotoId, PhotoException}
+import org.podval.photo.{Connector, Connection, Folder, Photo, PhotoId, PhotoException}
 
 import java.util.logging.{Logger, Level, Handler}
 
@@ -146,10 +145,8 @@ object Main {
     private def run() {
         if (secondUri.isEmpty) {
             val folder = getFolder(firstUri.get)
-            new
 //            FolderList(folder)
-            XmlList(folder)
-            .run
+            XmlList.list(folder)
         } else {
 //            val secondConnection = ConnectionFactories.getConnection(secondTicket)
 //            synchronize(firstConnection, secondConnection)

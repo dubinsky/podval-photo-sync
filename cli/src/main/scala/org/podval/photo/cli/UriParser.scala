@@ -16,7 +16,7 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.{Connector, Folder, PhotoException}
+import org.podval.photo.{Connector, Connection, Folder, Photo, PhotoException}
 import org.podval.photo.files.{FilesConnector, FilesConnection}
 
 import org.kohsuke.args4j.CmdLineException
@@ -27,7 +27,7 @@ import java.net.{URI, URISyntaxException}
 object UriParser {
 
     @throws(classOf[CmdLineException])
-    def uri2folder(uriStr: String, enableLowLevelLogging: Boolean, suffix: String): Folder[_,_,_] = {
+    def uri2folder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](uriStr: String, enableLowLevelLogging: Boolean, suffix: String) = {
         val uri: URI = 
             try {
                 new URI(uriStr)
@@ -42,7 +42,7 @@ object UriParser {
             throw new CmdLineException("Unknown scheme: " + scheme)
         }
 
-        val connection = connector.get.connect()
+        val connection = connector.get.connect().asInstanceOf[C]
 
         if (enableLowLevelLogging) {
             connection.enableLowLevelLogging
@@ -66,7 +66,7 @@ object UriParser {
             connection.open(login, password)
         }
 
-        getSubFolderByPath(connection.rootFolder, addSuffix(path.get, suffix))
+        getSubFolderByPath[C,F,P](connection, addSuffix(path.get, suffix))
     }
 
 
@@ -110,8 +110,8 @@ object UriParser {
         if ((what == null) || (suffix == null)) what else what + "/" + suffix
 
 
-    private final def getSubFolderByPath[F <: Folder[_,F,_]](folder: F, path: String): F = {
-        var result = folder
+    private final def getSubFolderByPath[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](connection: C, path: String): F = {
+        var result = connection.rootFolder.asInstanceOf[F]
 
         if (path != null) {
             for (name <- path.split("/")) {

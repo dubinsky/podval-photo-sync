@@ -16,21 +16,21 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.{Folder, Photo, Rotation}
+import org.podval.photo.{Connection, Folder, Photo, Rotation}
 
 import scala.xml.{Elem, Text, PrettyPrinter}
 
 
-final class XmlList(folder: Folder[_,_,_]) {
+object XmlList {
 
-    def run() {
+    def list[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](folder: F) {
         val prettyPrinter = new PrettyPrinter(120, 4)
         val xml = listFolder(folder)
         Console.println(prettyPrinter.formatNodes(xml))
     }
 
 
-    private def listFolder[F <: Folder[_,F,_]](folder: F): Elem =
+    private def listFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](folder: F): Elem =
         <folder>
            <name>{folder.name}</name>
            {folder.folders map (listFolder(_))}
@@ -38,7 +38,7 @@ final class XmlList(folder: Folder[_,_,_]) {
         </folder>
 
 
-    private def listPhoto(photo: Photo[_, _, _]): Elem = {
+    private def listPhoto[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](photo: P): Elem = {
         val rotationAttribute = if (photo.rotation == Rotation.None) None else Some(Text(photo.rotation.toString))
 
         <photo
