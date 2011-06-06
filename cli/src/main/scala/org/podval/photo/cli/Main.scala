@@ -142,11 +142,11 @@ object Main {
     }
 
 
-    private def run() {
+    private def run[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]]() {
         if (secondUri.isEmpty) {
-            val folder = getFolder(firstUri.get)
-//            FolderList(folder)
-            XmlList.list(folder)
+            val folder = getFolder[C,F,P](firstUri.get)
+            FolderList.list[C,F,P](folder)
+//            XmlList.list(folder)
         } else {
 //            val secondConnection = ConnectionFactories.getConnection(secondTicket)
 //            synchronize(firstConnection, secondConnection)
@@ -154,7 +154,8 @@ object Main {
     }
 
 
-    private def getFolder(uri: String) = UriParser.uri2folder(uri, enableLowLevelLogging, suffix)
+    private def getFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](uri: String) =
+        UriParser.uri2folder[C,F,P](uri, enableLowLevelLogging, suffix)
 
 
 //    private <F extends Photo, T extends Photo> void synchronize(

@@ -26,7 +26,7 @@ abstract class Connector(val scheme: String) {
 
     // TODO do connect() through reflection?
 
-    def connect(): Connection[_,_,_]
+    def connect[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](): C
 }
 
 

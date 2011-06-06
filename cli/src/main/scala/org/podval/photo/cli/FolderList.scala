@@ -16,12 +16,12 @@
 
 package org.podval.photo.cli
 
-import org.podval.photo.Folder
+import org.podval.photo.{Connection, Folder, Photo}
 
 
-final class FolderList(folder: Folder[_,Folder[_,_,_],_]) {
+object FolderList {
 
-    def run() {
+    def list[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](folder: F) {
         folder.folders.foreach(f => Console.println(f.name))
     }
 }

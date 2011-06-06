@@ -82,17 +82,19 @@ final class Picasa(connector: PicasaConnector) extends Connection[Picasa, Picasa
 
     @throws(classOf[IOException])
     private def initializeRequest(request: HttpRequest) {
-        val headers = request.headers.asInstanceOf[GoogleHeaders]
+        val headers = new GoogleHeaders();
+        request.headers = headers;
+
         headers.setApplicationName("Podval-Photo-Sync/1.0")
         headers.gdataVersion = "2"
+
+        if (authorizationHeaderValue.isDefined) {
+            headers.authorization = authorizationHeaderValue.get
+        }
         
         val parser = new AtomParser()
         parser.namespaceDictionary = Picasa.DICTIONARY
         request.addParser(parser)
-
-        if (authorizationHeaderValue.isDefined) {
-            request.headers.authorization = authorizationHeaderValue.get
-        }
     }
 
 

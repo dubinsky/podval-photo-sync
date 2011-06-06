@@ -27,7 +27,7 @@ import java.net.{URI, URISyntaxException}
 object UriParser {
 
     @throws(classOf[CmdLineException])
-    def uri2folder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](uriStr: String, enableLowLevelLogging: Boolean, suffix: String) = {
+    def uri2folder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](uriStr: String, enableLowLevelLogging: Boolean, suffix: String): F = {
         val uri: URI = 
             try {
                 new URI(uriStr)
@@ -42,7 +42,7 @@ object UriParser {
             throw new CmdLineException("Unknown scheme: " + scheme)
         }
 
-        val connection = connector.get.connect().asInstanceOf[C]
+        val connection = connector.get.connect[C,F,P]()
 
         if (enableLowLevelLogging) {
             connection.enableLowLevelLogging

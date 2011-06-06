@@ -25,7 +25,7 @@ object XmlList {
 
     def list[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](folder: F) {
         val prettyPrinter = new PrettyPrinter(120, 4)
-        val xml = listFolder(folder)
+        val xml = listFolder[C,F,P](folder)
         Console.println(prettyPrinter.formatNodes(xml))
     }
 
@@ -33,8 +33,8 @@ object XmlList {
     private def listFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]](folder: F): Elem =
         <folder>
            <name>{folder.name}</name>
-           {folder.folders map (listFolder(_))}
-           {folder.photos map (listPhoto(_))}
+           {folder.folders map (listFolder[C,F,P](_))}
+           {folder.photos map (listPhoto[C,F,P](_))}
         </folder>
 
 
