@@ -19,7 +19,7 @@ package org.podval.photo
 
 
 trait NonRootFolder[C <: Connection[C,F,P], F <: Folder[C,F,P], P <: Photo[C,F,P]] extends Folder[C,F,P] with NonRootThing[C,F,P] {
-
+    // What's up with the casts? Even self: F => does not work...
     final override def path: String = parent.path + name + "/"
 
 
