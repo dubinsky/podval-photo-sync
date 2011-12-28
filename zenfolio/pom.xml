@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.podval</groupId>
-        <artifactId>photo-sync</artifactId>
+        <groupId>org.podval.photo-sync</groupId>
+        <artifactId>parent</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
 
