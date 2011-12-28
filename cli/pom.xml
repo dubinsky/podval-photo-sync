@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.podval</groupId>
-        <artifactId>photo-sync</artifactId>
+        <groupId>org.podval.photo-sync</groupId>
+        <artifactId>parent</artifactId>
         <version>0.2-SNAPSHOT</version>
     </parent>
 
@@ -12,6 +12,7 @@
     <name>Photo Synchronizer CLI</name>
     <packaging>jar</packaging>
 
+    <!-- TODO move into parent and bump the version -->
     <pluginRepositories>
         <pluginRepository>
             <id>onejar-maven-plugin.googlecode.com</id>
@@ -41,8 +42,8 @@
 
     <dependencies>
         <dependency>
-            <artifactId>directory</artifactId>
             <groupId>${project.groupId}</groupId>
+            <artifactId>directory</artifactId>
             <version>${project.version}</version>
         </dependency>
 
