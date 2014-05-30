@@ -1,0 +1,65 @@
+There is no people tags API in PWA; no API for Google+ altogether :)
+
+To access PicasaWeb after Google+: https://picasaweb.google.com/lh/myphotos?noredirect=1
+
+User Id: name or email; can contain ‘@’ (%40).
+Album Id: name?
+
+gphoto: rotation timestamp size shapes shape
+    http://schemes.google.com/photo/2007/
+    http://schemes.google.com/photo/exif/2007/ (this is what my reader should produce :))
+
+Undocumented authToken type is “lh2”.
+curl https://www.google.com/accounts/ClientLogin
+  -d accountType=HOSTED_OR_GOOGLE
+  -d service=lh2
+  -d source=sklPost
+  -d Email=dub@podval.org
+  -d Passwd=<app-specific> (rizh meaz jprt mvxc)
+
+sid=... LSID=... AUTH=...
+
+“New” GData client: no model for Picasa, but - a sample; needs work for partial fetch.
+
+.../data/entry/back-compat/user/<username>/albumid/<albumid>/photoid/<phoyoid>?alt=rss&v=4&fd=shapes2
+
+photo.googleapis.com = https://picasaweb.google.com/data/feed/<projection>/<path>?kind=<kind>&access=<visibility>
+  kind is a comma-separated list
+  projection is “api” or “tiny”
+  default visibility is all for authenticated owner or visible otherwise
+
+path                                                  kind
+/user/<userid>                                        album tag user photo
+/user/<userid>/contacts                               user
+/user/<userid>/albumid/<albumid>                      photo tag
+/user/<userid>/albumid/<albumid>/photoid/<photoid>    comment tag
+
+Query parameters
+  start-index
+  max-results
+  alt
+  fields
+  prettyprint
+  user (& community)
+  feed: q=tag
+
+Faces (from code.google.com/p/picasa-upsynch-faces)
+
+Wine-installed Picasa
+~/.wine/drive.c/windows/profiles/<user>/Local
+Settings/Application Data/Google/Picasa2/contacts/contacts.xml: name, id, subjectid.
+picasa.ini - rectangles coded as left-top right-bottom, each 4 hex digits, divided by 65536.
+
+
+Picasa Web Albums
+https://picasaweb.google.com/data/feed/tiny/user/<username>/album/<albumid>/photoid/<photoid>
+
+POST application/json access=public
+{“data”: {“kind”: “shape”, “upperLeft”: …, “lowerRight”}}
+
+201: worth retrying; -> shape id
+
+.../<photoid>/shapeid/<shapeid>
+
+POST/PUT {“data”: {“contactid”: <subjectid>}}
+POST {“data”: {“kind”: “person”, “fullname”: …, “name”: ...}} -> contact id
