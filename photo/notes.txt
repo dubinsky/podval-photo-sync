@@ -1,0 +1,5 @@
+I want to synchronize local structure with Picasa / Google+.
+- mapping to 1-level albums is needed;
+- on disk: album title, cover picture, date, sharing, people, tags...
+- automatic break-up into events; override (by moving files);
+- web-based UI;
